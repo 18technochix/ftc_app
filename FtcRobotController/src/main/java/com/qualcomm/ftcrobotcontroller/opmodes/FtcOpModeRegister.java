@@ -65,6 +65,8 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("MRTouchTest", MRTouchTest.class);
     manager.register("LegacySensorTest", LegacySensorTest.class);
     manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
+    manager.register("ServoTest", ServoTest.class);
+    manager.register("hot rod.", TestDrive4Motors.class);
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.
