@@ -67,6 +67,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
     manager.register("ServoTest", ServoTest.class);
     manager.register("hot rod.", TestDrive4Motors.class);
+    manager.register("Our robot is metal.",  MecanumDrive.class);
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.

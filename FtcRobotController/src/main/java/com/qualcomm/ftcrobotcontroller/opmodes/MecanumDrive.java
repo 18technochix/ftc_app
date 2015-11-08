@@ -4,16 +4,19 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.util.Range;
 
 /**
  * Created by Techno Team_PC_III on 9/27/2015.
  */
 
-
+/*
+fl = ly + rx + lx
+rl = ly + rx - lx
+fr = ly - rx - lx
+rr = ly - rx + lx
+ */
 // after class, replace "TeleOpTemplate" with your class/"program" name.
-public class TestDrive4Motors extends LinearOpMode{
+public class MecanumDrive extends LinearOpMode{
 
     DcMotor backLeft;
     DcMotor backRight;
@@ -31,7 +34,6 @@ public class TestDrive4Motors extends LinearOpMode{
 
      */
 
-
     public void runOpMode() throws InterruptedException{ //Initializes/runs the program.
 
 
@@ -41,8 +43,8 @@ public class TestDrive4Motors extends LinearOpMode{
         frontRight = hardwareMap.dcMotor.get("fR");
 
 
-        backRight.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.REVERSE);
+        frontLeft.setDirection(DcMotor.Direction.REVERSE);
+        backLeft.setDirection(DcMotor.Direction.REVERSE);
         /*
 
             Initialize the sensors / motors here.
@@ -59,43 +61,26 @@ public class TestDrive4Motors extends LinearOpMode{
 
         while(opModeIsActive()) { //While the program is running, do this.
 
+            double lx = gamepad1.left_stick_x;
+            double ly = gamepad1.left_stick_y;
+
+            double rx = gamepad1.right_stick_x;
+            double ry = gamepad1.right_stick_y;
 
             /*
-
-            || - or
-            && - and
-            != - does not equal
-            == equals
-
-
-
-             */
+            fl = ly + rx + lx
+            rl = ly + rx - lx
+            fr = ly - rx - lx
+            rr = ly - rx + lx
+            */
 
 
-            if(gamepad1.left_stick_y > .1 || gamepad1.left_stick_y < -.1){
 
-                backLeft.setPower(1 * gamepad1.left_stick_y);
-                frontLeft.setPower(1 * gamepad1.left_stick_y);
 
-            }else{
-
-                backLeft.setPower(0);
-                frontLeft.setPower(0);
-                
-
-            }
-
-            if(gamepad1.right_stick_y > .1 || gamepad1.right_stick_y < -.1){
-
-                backRight.setPower(1 * gamepad1.right_stick_y);
-                frontRight.setPower(1 * gamepad1.right_stick_y);
-
-            }else{
-
-                backRight.setPower(0);
-                frontRight.setPower(0);
-
-            }
+            frontLeft.setPower(scale(ly, rx, lx));
+            backLeft.setPower(scale(ly, rx, (-1 * lx)));
+            frontRight.setPower(scale(ly, (-1* rx), (-1* lx)));
+            backRight.setPower(scale(ly, (-1 * rx), lx));
 
             /*
 
@@ -113,6 +98,24 @@ public class TestDrive4Motors extends LinearOpMode{
 
              */
             waitOneFullHardwareCycle();
+        }
+
+    }
+
+    public double scale(double one, double two, double three){
+
+        if(one + two + three > 1){
+
+            return 1;
+
+        }else if(one + two + three < -1){
+
+            return -1;
+
+        }else{
+
+            return one + two + three;
+
         }
 
     }
