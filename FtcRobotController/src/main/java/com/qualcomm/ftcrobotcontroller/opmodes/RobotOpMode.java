@@ -4,16 +4,16 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 /**
  * Created by Techno Team_PC_III on 1/3/2016.
  */
-public class Robot{
+public class RobotOpMode extends LinearOpMode{
 
     // true for auto, true for red, false for teleop, false for blue
     boolean auto;
@@ -34,28 +34,37 @@ public class Robot{
     final double circ = Math.PI * diameter;
     final double ratio = 1;
 
-    int range = 5;
+    int range = 15;
 
     double hipower = 0.7;
     double lopower = 0.3;
     double slowpower = 0.1;
 
 
-    // Arm creation ////////////////////////
-
-    DcMotor aL;
-    DcMotor aR;
-
     // Flipper creation ////////////////////
 
-    Servo left;
-    Servo right;
+    Servo leftFlipper;
+    Servo rightFlipper;
 
     final double leftDown = 0.5; // value for left servo's extended position
     final double leftUp = 0.25; //value for left servo's retracted position
 
     final double rightDown = 0; //value for right servo's extended position
     final double rightUp = 0.25; //value for right servo's retracted position
+
+    // Cowcatcher /////////////////////////////////////////////////////
+
+    DcMotor leftPlow;
+    DcMotor rightPlow;
+
+    Servo cowLeft;
+    Servo cowRight;
+    double plowPower = 0.3;
+    
+    Servo plowTop;
+    
+    DcMotor plow;
+
 
     // Beacon servo creation ///////////////
 
@@ -87,51 +96,52 @@ public class Robot{
     double lightRight;
     double lightLeft;
 
+    public void runOpMode() throws InterruptedException{
 
+        initialize();
 
-
-
-    public Robot(boolean autonomous, boolean color){
-        auto = autonomous;
-        red = color;
     }
 
+    public void initialize(){
 
-
-
-    public void initialize(LinearOpMode opmode){
-
-        fR = opmode.hardwareMap.dcMotor.get("fR");
-        bR = opmode.hardwareMap.dcMotor.get("bR");
-        fL = opmode.hardwareMap.dcMotor.get("fL");
-        bL = opmode.hardwareMap.dcMotor.get("bL");
+        fR = hardwareMap.dcMotor.get("fR");
+        bR = hardwareMap.dcMotor.get("bR");
+        fL = hardwareMap.dcMotor.get("fL");
+        bL = hardwareMap.dcMotor.get("bL");
 
         fR.setDirection(DcMotor.Direction.REVERSE);
         bR.setDirection(DcMotor.Direction.REVERSE);
 
-        aL = opmode.hardwareMap.dcMotor.get("aL");
-        aR = opmode.hardwareMap.dcMotor.get("aR");
+        leftPlow = hardwareMap.dcMotor.get("leftplow");
+        rightPlow = hardwareMap.dcMotor.get("rightplow");
 
-        aR.setDirection(DcMotor.Direction.REVERSE);
+        rightPlow.setDirection(DcMotor.Direction.REVERSE);
 
-        left = opmode.hardwareMap.servo.get("sL");
-        right = opmode.hardwareMap.servo.get("sR");
+        leftFlipper = hardwareMap.servo.get("flipperl");
+        rightFlipper = hardwareMap.servo.get("flipperr");
+        
+        plowTop = hardwareMap.servo.get("plowtop");
 
-        beacon = opmode.hardwareMap.servo.get("beacon");
+        //plow = hardwareMap.dcMotor.get("plow");
 
-        fruity = opmode.hardwareMap.colorSensor.get("fruity");
+        cowLeft = hardwareMap.servo.get("cowleft");
+        cowRight = hardwareMap.servo.get("cowright");
 
-        eyes = opmode.hardwareMap.ultrasonicSensor.get("eyes");
+        beacon = hardwareMap.servo.get("beacon");
 
-        lightR = opmode.hardwareMap.lightSensor.get("lineright");
-        lightL = opmode.hardwareMap.lightSensor.get("lineleft");
+        fruity = hardwareMap.colorSensor.get("fruity");
+
+        eyes = hardwareMap.ultrasonicSensor.get("eyes");
+
+        lightR = hardwareMap.lightSensor.get("lineright");
+        lightL = hardwareMap.lightSensor.get("lineleft");
 
         if(auto){
 
             // init for servos /////////////////////
 
-            left.setPosition(leftDown);
-            right.setPosition(rightDown);
+            leftFlipper.setPosition(leftDown);
+            rightFlipper.setPosition(rightDown);
             lightL.enableLed(true);
             lightR.enableLed(true);
 
@@ -141,8 +151,9 @@ public class Robot{
 
         }else{ // teleop configuration
 
-            left.setPosition(leftDown);
-            right.setPosition(rightDown);
+            leftFlipper.setPosition(leftDown);
+            rightFlipper.setPosition(rightDown);
+            beacon.setPosition(fullRight);
         }
 
 
@@ -153,22 +164,22 @@ public class Robot{
 
     // Move Commands ///////////////////////////////////////////////////////////////////////////////
 
-    public void move(LinearOpMode opmode, double distance, double power) throws InterruptedException {
+    public void move( double distance, double power) throws InterruptedException {
 
-        move(opmode, distance, distance, distance, distance, power);
+        move( distance, distance, distance, distance, power);
 
     }
 
     //positive is clockwise aka turning right
-    public void pivot(LinearOpMode opmode, double distance, double power) throws InterruptedException {
+    public void pivot( double distance, double power) throws InterruptedException {
 
-        move(opmode, distance, -distance, distance, -distance, power);
+        move( distance, -distance, distance, -distance, power);
 
     }
 
 
 
-    public void move(LinearOpMode opmode, double dfL, double dfR, double dbL, double dbR, double power) throws InterruptedException{
+    public void move( double dfL, double dfR, double dbL, double dbR, double power) throws InterruptedException{
 
         //resetEncoders();
 
@@ -192,10 +203,10 @@ public class Robot{
         while(!atPosition((currentBL + counts(dbL)), (currentBR + counts(dbR)),
                 (currentFL + counts(dfL)),(currentFR + counts(dfR))) ){
 
-            opmode.telemetry.addData("Pos:", String.format("%03d %03d %03d %03d", bR.getCurrentPosition(),
+            telemetry.addData("Pos:", String.format("%03d %03d %03d %03d", bR.getCurrentPosition(),
                     fR.getCurrentPosition(), bL.getCurrentPosition(), bR.getCurrentPosition()));
 
-            opmode.waitOneFullHardwareCycle();
+            waitOneFullHardwareCycle();
 
         }
 
@@ -204,32 +215,64 @@ public class Robot{
         fL.setPower(0.0);
         bL.setPower(0.0);
 
-        opmode.waitOneFullHardwareCycle();
+        waitOneFullHardwareCycle();
 
 
     }
 
-    public void moveBeacon(LinearOpMode opmode, double position) throws InterruptedException {
+    public void startWheels(double power){
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(power);
+        bL.setPower(power);
+
+    }
+
+    public void startWheels(double powerL, double powerR){
+
+        fR.setPower(powerR);
+        bR.setPower(powerR);
+        fL.setPower(powerL);
+        bL.setPower(powerL);
+
+    }
+
+    public void stopWheels(){
+
+        fR.setPower(0);
+        bR.setPower(0);
+        fL.setPower(0);
+        bL.setPower(0);
+
+    }
+
+
+    public void moveBeacon( double position) throws InterruptedException {
 
         beacon.setPosition(position);
 
 
         while(beacon.getPosition() > position + servorange ||
                 beacon.getPosition() < position - servorange) {
-            opmode.sleep(100);
-            opmode.waitOneFullHardwareCycle();
+            sleep(100);
+            waitOneFullHardwareCycle();
         }
 
 
 
     }
 
-    public boolean followLine(LinearOpMode opmode) throws InterruptedException {
+    public boolean followLine() throws InterruptedException {
 
-        while(distance > 20.0) {
+        runWithoutEncoders();
 
-            opmode.telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
-            opmode.telemetry.addData("Distance", distance);
+        distance = eyes.getUltrasonicLevel();
+
+        if(distance > 20.0) {
+
+            telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
+            telemetry.addData("Distance", distance);
 
             lightLeft = lightL.getLightDetected();
             lightRight = lightR.getLightDetected();
@@ -237,45 +280,63 @@ public class Robot{
 
             if(lightLeft > 0.8){
 
-                pivot(opmode, -1, slowpower);
+                double startTime = getRuntime();
+                startWheels(0.1, -0.1);
+                waitOneFullHardwareCycle();
+                while(getRuntime() < startTime + 0.25){
+                    waitOneFullHardwareCycle();
+                }
+                stopWheels();
+                waitOneFullHardwareCycle();
 
             }else if(lightRight > 0.8){
 
-                pivot(opmode, 1, slowpower);
+                double startTime = getRuntime();
+                startWheels(-0.1, 0.1);
+                waitOneFullHardwareCycle();
+                while(getRuntime() < startTime + 0.25){
+                    waitOneFullHardwareCycle();
+                }
+                stopWheels();
+                waitOneFullHardwareCycle();
+
+            } else{
+
+                move(1, slowpower);
 
             }
 
             return false;
 
+        }else {
+            return true;
         }
-
-        return true;
 
     }
 
-    public void sense(LinearOpMode opmode) throws InterruptedException { //THIS IS WRITTEN FOR THE RED ALLIANCE
+    public void sense() throws InterruptedException { //THIS IS WRITTEN FOR THE RED ALLIANCE
 
         float hsvValues [] = {0F,0F,0F};
 
-        moveBeacon(opmode, midLeft);
-        opmode.waitOneFullHardwareCycle();
+        moveBeacon( midLeft);
+        waitOneFullHardwareCycle();
 
-        opmode.sleep(500);
+        sleep(500);
 
         int leftBlue = fruity.blue();
         int leftRed = fruity.red();
         int leftGreen = fruity.green();
         Color.RGBToHSV((leftRed * 255) / 800, (leftGreen * 255) / 800, (leftBlue * 255) / 800, hsvValues);
         float leftHue = hsvValues[0];
-        opmode.waitOneFullHardwareCycle();
+        waitOneFullHardwareCycle();
 
-        opmode.sleep(500);
+        sleep(500);
 
-        moveBeacon(opmode, midRight);
-        opmode.waitOneFullHardwareCycle();
+        moveBeacon( midRight);
+        waitOneFullHardwareCycle();
 
-        opmode.sleep(3000);
-        opmode.waitOneFullHardwareCycle();
+        sleep(3000);
+        waitOneFullHardwareCycle();
 
         hsvValues [0] = 0;
 
@@ -284,49 +345,49 @@ public class Robot{
         int rightGreen = fruity.green();
         Color.RGBToHSV((rightRed * 255) / 800, (rightGreen * 255) / 800, (rightBlue * 255) / 800, hsvValues);
         float rightHue = hsvValues[0];
-        opmode.waitOneFullHardwareCycle();
+        waitOneFullHardwareCycle();
 
-        opmode.telemetry.addData("left", String.format("%03d %03d %03d", leftRed, leftGreen, leftBlue));
-        opmode.telemetry.addData("right", String.format("%03d %03d %03d", rightRed, rightGreen, rightBlue));
-        opmode.telemetry.addData("leftHue", leftHue);
-        opmode.telemetry.addData("rightHue", rightHue);
+        telemetry.addData("left", String.format("%03d %03d %03d", leftRed, leftGreen, leftBlue));
+        telemetry.addData("right", String.format("%03d %03d %03d", rightRed, rightGreen, rightBlue));
+        telemetry.addData("leftHue", leftHue);
+        telemetry.addData("rightHue", rightHue);
 
-        opmode.sleep(500);
+        sleep(500);
 
         if(red) {
 
             if (leftHue < hue && rightHue > hue) {
                 // RIGHT IS RED
-                moveBeacon(opmode, fullRight);
-                opmode.sleep(500);
-                move(opmode, 3, hipower);
-                opmode.sleep(200);
-                move(opmode, -3, hipower);
+                moveBeacon( fullRight);
+                sleep(500);
+                move( 3, hipower);
+                sleep(200);
+                move( -3, hipower);
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
-                moveBeacon(opmode,fullLeft);
-                opmode.sleep(500);
-                move(opmode, 3, hipower);
-                opmode.sleep(200);
-                move(opmode, -3.0, hipower);
+                moveBeacon(fullLeft);
+                sleep(500);
+                move( 3, hipower);
+                sleep(200);
+                move( -3.0, hipower);
             }
 
-        } else{
+        }else{
 
             if (leftHue < hue && rightHue > hue) {
                 // RIGHT IS RED
-                moveBeacon(opmode, fullLeft);
-                opmode.sleep(500);
-                move(opmode, 3, hipower);
-                opmode.sleep(200);
-                move(opmode, -3, hipower);
+                moveBeacon( fullLeft);
+                sleep(500);
+                move( 3, hipower);
+                sleep(200);
+                move( -3, hipower);
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
-                moveBeacon(opmode, fullRight);
-                opmode.sleep(500);
-                move(opmode, 3, hipower);
-                opmode.sleep(200);
-                move(opmode, -3.0, hipower);
+                moveBeacon( fullRight);
+                sleep(500);
+                move( 3, hipower);
+                sleep(200);
+                move( -3.0, hipower);
             }
 
         }
@@ -335,60 +396,65 @@ public class Robot{
     }
 
 
-    public void teleop(LinearOpMode opmode) throws InterruptedException {
+    public void teleop() throws InterruptedException {
 
         // Controls for the wheels
 
-        bL.setPower(scaleInput(opmode.gamepad1.left_stick_y));
-        fL.setPower(scaleInput(opmode.gamepad1.left_stick_y));
+        bL.setPower(scaleInput(gamepad1.left_stick_y));
+        fL.setPower(scaleInput(gamepad1.left_stick_y));
 
-        bR.setPower(scaleInput(opmode.gamepad1.right_stick_y));
-        fR.setPower(scaleInput(opmode.gamepad1.right_stick_y));
+        bR.setPower(scaleInput(gamepad1.right_stick_y));
+        fR.setPower(scaleInput(gamepad1.right_stick_y));
 
         //Controls for the servos
         // The dpad controls the left side, the buttons control the right
 
-        if(opmode.gamepad2.dpad_left){ //if left dpad is pressed, move left servo to the outside position
+        if(gamepad2.dpad_left){ //if left dpad is pressed, move left servo to the outside position
 
-            left.setPosition(leftUp);
+            leftFlipper.setPosition(leftUp);
 
-        }else if(opmode.gamepad2.dpad_right){ //if the right dpad is pressed, move left servo to inward position
+        }else if(gamepad2.dpad_right){ //if the right dpad is pressed, move left servo to inward position
 
-            left.setPosition(leftDown);
-
-        }
-
-        if(opmode.gamepad2.b){
-
-            right.setPosition(rightUp);
-
-        }else if(opmode.gamepad2.x){
-
-            right.setPosition(rightDown);
+            leftFlipper.setPosition(leftDown);
 
         }
 
-        if(opmode.gamepad2.dpad_down){
-            aL.setTargetPosition(0);
-            aL.setPower(0.15);
-        }else if(opmode.gamepad2.dpad_up){
-            aL.setTargetPosition(500);
-            aL.setPower(0.15);
-        }
-        else{
-            aL.setPower(0.);
+        if(gamepad2.b){
+
+            rightFlipper.setPosition(rightUp);
+
+        }else if(gamepad2.x){
+
+            rightFlipper.setPosition(rightDown);
+
         }
 
-        if(opmode.gamepad2.a){
-            aR.setTargetPosition(0);
-            aR.setPower(0.15);
-        }else if(opmode.gamepad2.y){
-            aR.setTargetPosition(500);
-            aR.setPower(0.15);
+        if(gamepad2.dpad_down){
+            leftPlow.setTargetPosition(0);
+            leftPlow.setPower(plowPower);
+            rightPlow.setTargetPosition(0);
+            rightPlow.setPower(plowPower);
+        }else if(gamepad2.dpad_up){
+            leftPlow.setTargetPosition(500);
+            leftPlow.setPower(plowPower);
+            rightPlow.setTargetPosition(500);
+            rightPlow.setPower(plowPower);
         }
         else{
-            aR.setPower(0.);
+            leftPlow.setPower(0.);
+            rightPlow.setPower(0.);
         }
+
+        /*
+        if(gamepad2.a){
+
+        }else if(gamepad2.y){
+
+        }
+        else{
+
+        }
+        */
 
 
     }
@@ -435,8 +501,8 @@ public class Robot{
         fL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         bL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-        aL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
-        aR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        leftPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rightPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
     }
 
@@ -478,6 +544,15 @@ public class Robot{
             return false;
 
         }
+
+    }
+
+    public void runWithoutEncoders(){
+
+        fL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        fR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        bL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        bR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
 

@@ -14,27 +14,18 @@ import com.qualcomm.robotcore.util.Range;
 
 
 // after class, replace "TeleOpTemplate" with your class/"program" name.
-public class TestDrive4Motors extends LinearOpMode{
-
-    Robot robot = new Robot(true,true);
-
-    final double leftDown = 0.5; // value for left servo's extended position
-    final double leftUp = 0.25; //value for left servo's retracted position
-
-    final double rightDown = 0; //value for right servo's extended position
-    final double rightUp = 0.25; //value for right servo's retracted position
+public class TestDrive4Motors extends RobotOpMode{
 
     public void runOpMode() throws InterruptedException {
 
-        robot.initialize(this);
+        super.runOpMode();
 
         waitForStart();
 
         while (opModeIsActive()) {
 
            // robot.fL.setPower(0.5);
-           robot.teleop(this);
-
+           teleop();
             waitOneFullHardwareCycle();
 
         }

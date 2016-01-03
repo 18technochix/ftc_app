@@ -5,23 +5,23 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 /**
  * Created by Techno Team_PC_III on 11/22/2015.
  */
-public class RedAuto extends LinearOpMode {
-
-    Robot robot = new Robot(true, true);
+public class RedAuto extends RobotOpMode {
 
     public void runOpMode() throws InterruptedException{
 
-        robot.initialize(this);
+        auto = true;
+        red = true;
+        super.runOpMode(); //initalizes robot
 
         waitForStart();
 
         if(opModeIsActive()){
 
           //robot.move(this, 96);
-            while(robot.followLine(this) == false){
+            while(followLine() == false){
 
             }
-            robot.sense(this);
+            sense();
 
         }
 
