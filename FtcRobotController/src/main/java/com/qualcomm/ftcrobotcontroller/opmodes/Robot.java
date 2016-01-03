@@ -4,9 +4,11 @@ import android.graphics.Color;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 /**
  * Created by Techno Team_PC_III on 1/3/2016.
@@ -36,6 +38,7 @@ public class Robot{
 
     double hipower = 0.7;
     double lopower = 0.3;
+    double slowpower = 0.1;
 
 
     // Arm creation ////////////////////////
@@ -74,6 +77,17 @@ public class Robot{
     float hue = 300;
     //blue is less than, red greater
 
+    // Sonar and Line Following //////////////////
+
+    UltrasonicSensor eyes;
+    double distance = 1000;
+
+    LightSensor lightL;
+    LightSensor lightR;
+    double lightRight;
+    double lightLeft;
+
+
 
 
 
@@ -107,12 +121,19 @@ public class Robot{
 
         fruity = opmode.hardwareMap.colorSensor.get("fruity");
 
+        eyes = opmode.hardwareMap.ultrasonicSensor.get("eyes");
+
+        lightR = opmode.hardwareMap.lightSensor.get("lineright");
+        lightL = opmode.hardwareMap.lightSensor.get("lineleft");
+
         if(auto){
 
             // init for servos /////////////////////
 
             left.setPosition(leftDown);
             right.setPosition(rightDown);
+            lightL.enableLed(true);
+            lightR.enableLed(true);
 
             beacon.setPosition(mid);
 
@@ -132,13 +153,22 @@ public class Robot{
 
     // Move Commands ///////////////////////////////////////////////////////////////////////////////
 
-    public void move(LinearOpMode opmode, double distance) throws InterruptedException {
+    public void move(LinearOpMode opmode, double distance, double power) throws InterruptedException {
 
-        move(opmode, distance, distance, distance, distance);
+        move(opmode, distance, distance, distance, distance, power);
 
     }
 
-    public void move(LinearOpMode opmode, double dfL, double dfR, double dbL, double dbR) throws InterruptedException{
+    //positive is clockwise aka turning right
+    public void pivot(LinearOpMode opmode, double distance, double power) throws InterruptedException {
+
+        move(opmode, distance, -distance, distance, -distance, power);
+
+    }
+
+
+
+    public void move(LinearOpMode opmode, double dfL, double dfR, double dbL, double dbR, double power) throws InterruptedException{
 
         //resetEncoders();
 
@@ -194,6 +224,35 @@ public class Robot{
 
     }
 
+    public boolean followLine(LinearOpMode opmode) throws InterruptedException {
+
+        while(distance > 20.0) {
+
+            opmode.telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
+            opmode.telemetry.addData("Distance", distance);
+
+            lightLeft = lightL.getLightDetected();
+            lightRight = lightR.getLightDetected();
+            distance = eyes.getUltrasonicLevel();
+
+            if(lightLeft > 0.8){
+
+                pivot(opmode, -1, slowpower);
+
+            }else if(lightRight > 0.8){
+
+                pivot(opmode, 1, slowpower);
+
+            }
+
+            return false;
+
+        }
+
+        return true;
+
+    }
+
     public void sense(LinearOpMode opmode) throws InterruptedException { //THIS IS WRITTEN FOR THE RED ALLIANCE
 
         float hsvValues [] = {0F,0F,0F};
@@ -240,16 +299,16 @@ public class Robot{
                 // RIGHT IS RED
                 moveBeacon(opmode, fullRight);
                 opmode.sleep(500);
-                move(opmode, 3);
+                move(opmode, 3, hipower);
                 opmode.sleep(200);
-                move(opmode, -3);
+                move(opmode, -3, hipower);
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
                 moveBeacon(opmode,fullLeft);
                 opmode.sleep(500);
-                move(opmode, 3);
+                move(opmode, 3, hipower);
                 opmode.sleep(200);
-                move(opmode, -3.0);
+                move(opmode, -3.0, hipower);
             }
 
         } else{
@@ -258,16 +317,16 @@ public class Robot{
                 // RIGHT IS RED
                 moveBeacon(opmode, fullLeft);
                 opmode.sleep(500);
-                move(opmode, 3);
+                move(opmode, 3, hipower);
                 opmode.sleep(200);
-                move(opmode, -3);
+                move(opmode, -3, hipower);
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
                 moveBeacon(opmode, fullRight);
                 opmode.sleep(500);
-                move(opmode, 3);
+                move(opmode, 3, hipower);
                 opmode.sleep(200);
-                move(opmode, -3.0);
+                move(opmode, -3.0, hipower);
             }
 
         }

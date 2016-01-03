@@ -17,8 +17,11 @@ public class RedAuto extends LinearOpMode {
 
         if(opModeIsActive()){
 
-          //robot.sense();
-          robot.move(this, 96);
+          //robot.move(this, 96);
+            while(robot.followLine(this) == false){
+
+            }
+            robot.sense(this);
 
         }
 
