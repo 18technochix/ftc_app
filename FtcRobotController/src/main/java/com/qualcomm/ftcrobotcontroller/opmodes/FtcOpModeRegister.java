@@ -60,7 +60,7 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class);
 
     manager.register("Tele Op", TestDrive4Motors.class);
-    manager.register("Autonomous Test", AutonTest.class);
+    manager.register("Autonomous-Red", RedAuto.class);
     manager.register("Ada Test", AdafruitRGBExample.class);
 
     /*
