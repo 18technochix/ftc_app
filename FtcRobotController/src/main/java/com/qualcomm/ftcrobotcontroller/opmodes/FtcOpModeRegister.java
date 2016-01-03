@@ -58,6 +58,12 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("NullOp", NullOp.class);
 
     //manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class);
+
+    manager.register("Tele Op", TestDrive4Motors.class);
+    manager.register("Autonomous Test", AutonTest.class);
+    manager.register("Ada Test", AdafruitRGBExample.class);
+
+    /*
     manager.register("K9TeleOp", K9TeleOp.class);
     manager.register("K9Line", K9Line.class);
     manager.register ("PushBotAuto", PushBotAuto.class);
@@ -66,8 +72,10 @@ public class FtcOpModeRegister implements OpModeRegister {
     manager.register("LegacySensorTest", LegacySensorTest.class);
     manager.register("AdafruitRGBExample", AdafruitRGBExample.class);
     manager.register("ServoTest", ServoTest.class);
-    manager.register("hot rod.", TestDrive4Motors.class);
+
     manager.register("Our robot is metal.",  MecanumDrive.class);
+    manager.register("Auto testing", AutonTest.class);
+    */
 
     /*
      * Uncomment any of the following lines if you want to register an op mode.
