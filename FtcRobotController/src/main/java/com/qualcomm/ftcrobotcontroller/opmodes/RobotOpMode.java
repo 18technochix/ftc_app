@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 /**
@@ -15,9 +16,17 @@ import com.qualcomm.robotcore.hardware.UltrasonicSensor;
  */
 public class RobotOpMode extends LinearOpMode{
 
+    /*
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Object creation
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+     */
+
     // true for auto, true for red, false for teleop, false for blue
     boolean auto;
     boolean red;
+
+    // Wheels //////////////////////////////////////////////////////////////////////////////////////
 
     DcMotor fR;
     DcMotor bR;
@@ -40,8 +49,11 @@ public class RobotOpMode extends LinearOpMode{
     double lopower = 0.3;
     double slowpower = 0.1;
 
+    double linePower = 0.12; // power for the wheels in follow line sequence
+    double lineTime = 0.25; // time for wheels running in follow line sequence
 
-    // Flipper creation ////////////////////
+
+    // Flipper creation ////////////////////////////////////////////////////////////////////////////
 
     Servo leftFlipper;
     Servo rightFlipper;
@@ -52,21 +64,21 @@ public class RobotOpMode extends LinearOpMode{
     final double rightDown = 0; //value for right servo's extended position
     final double rightUp = 0.25; //value for right servo's retracted position
 
-    // Cowcatcher /////////////////////////////////////////////////////
+    // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
 
     DcMotor leftPlow;
     DcMotor rightPlow;
 
     Servo cowLeft;
     Servo cowRight;
-    double plowPower = 0.3;
+    double cowPower = 0.3;
     
     Servo plowTop;
     
     DcMotor plow;
 
 
-    // Beacon servo creation ///////////////
+    // Beacon servo ////////////////////////////////////////////////////////////////////////////////
 
     Servo beacon;
 
@@ -79,14 +91,14 @@ public class RobotOpMode extends LinearOpMode{
     double fullRight = 1.0;
 
 
-    // Aidafruit creation ////////////////////////
+    // Adafruit ////////////////////////////////////////////////////////////////////////////////////
 
     ColorSensor fruity;
 
     float hue = 300;
     //blue is less than, red greater
 
-    // Sonar and Line Following //////////////////
+    // Sonar and Line Following ///////////////////////////////////////////////////////////////////
 
     UltrasonicSensor eyes;
     double distance = 1000;
@@ -95,6 +107,19 @@ public class RobotOpMode extends LinearOpMode{
     LightSensor lightR;
     double lightRight;
     double lightLeft;
+
+    // Touch sensor ////////////////////////////////////////////////////////////////////////////////
+
+    TouchSensor touchy;
+
+    /*
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //Init Sequence
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+     */
+
 
     public void runOpMode() throws InterruptedException{
 
@@ -136,6 +161,8 @@ public class RobotOpMode extends LinearOpMode{
         lightR = hardwareMap.lightSensor.get("lineright");
         lightL = hardwareMap.lightSensor.get("lineleft");
 
+        touchy = hardwareMap.touchSensor.get("touchy");
+
         if(auto){
 
             // init for servos /////////////////////
@@ -145,7 +172,7 @@ public class RobotOpMode extends LinearOpMode{
             lightL.enableLed(true);
             lightR.enableLed(true);
 
-            beacon.setPosition(mid);
+            beacon.setPosition(fullLeft);
 
             resetEncoders();
 
@@ -154,19 +181,26 @@ public class RobotOpMode extends LinearOpMode{
             leftFlipper.setPosition(leftDown);
             rightFlipper.setPosition(rightDown);
             beacon.setPosition(fullRight);
+
+            runWithoutEncoders();
         }
 
 
 
     }
 
+    /*
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    // Methods
+    ////////////////////////////////////////////////////////////////////////////////////////////////
 
+     */
 
-    // Move Commands ///////////////////////////////////////////////////////////////////////////////
+    // Encoders  ///////////////////////////////////////////////////////////////////////////////////
 
-    public void move( double distance, double power) throws InterruptedException {
+    public void move(double distance, double power) throws InterruptedException {
 
-        move( distance, distance, distance, distance, power);
+        move(distance, distance, distance, distance, power);
 
     }
 
@@ -177,11 +211,8 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
-
-
-    public void move( double dfL, double dfR, double dbL, double dbR, double power) throws InterruptedException{
-
-        //resetEncoders();
+    public void move(double dfL, double dfR, double dbL, double dbR, double power)
+            throws InterruptedException{
 
         getNewPositions();
 
@@ -219,280 +250,6 @@ public class RobotOpMode extends LinearOpMode{
 
 
     }
-
-    public void startWheels(double power){
-
-        fR.setPower(power);
-        bR.setPower(power);
-        fL.setPower(power);
-        bL.setPower(power);
-
-    }
-
-    public void startWheels(double powerL, double powerR){
-
-        fR.setPower(powerR);
-        bR.setPower(powerR);
-        fL.setPower(powerL);
-        bL.setPower(powerL);
-
-    }
-
-    public void stopWheels(){
-
-        fR.setPower(0);
-        bR.setPower(0);
-        fL.setPower(0);
-        bL.setPower(0);
-
-    }
-
-
-    public void moveBeacon( double position) throws InterruptedException {
-
-        beacon.setPosition(position);
-
-
-        while(beacon.getPosition() > position + servorange ||
-                beacon.getPosition() < position - servorange) {
-            sleep(100);
-            waitOneFullHardwareCycle();
-        }
-
-
-
-    }
-
-    public boolean followLine() throws InterruptedException {
-
-        runWithoutEncoders();
-
-        distance = eyes.getUltrasonicLevel();
-
-        if(distance > 20.0) {
-
-            telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
-            telemetry.addData("Distance", distance);
-
-            lightLeft = lightL.getLightDetected();
-            lightRight = lightR.getLightDetected();
-            distance = eyes.getUltrasonicLevel();
-
-            if(lightLeft > 0.8){
-
-                double startTime = getRuntime();
-                startWheels(0.1, -0.1);
-                waitOneFullHardwareCycle();
-                while(getRuntime() < startTime + 0.25){
-                    waitOneFullHardwareCycle();
-                }
-                stopWheels();
-                waitOneFullHardwareCycle();
-
-            }else if(lightRight > 0.8){
-
-                double startTime = getRuntime();
-                startWheels(-0.1, 0.1);
-                waitOneFullHardwareCycle();
-                while(getRuntime() < startTime + 0.25){
-                    waitOneFullHardwareCycle();
-                }
-                stopWheels();
-                waitOneFullHardwareCycle();
-
-            } else{
-
-                move(1, slowpower);
-
-            }
-
-            return false;
-
-        }else {
-            return true;
-        }
-
-    }
-
-    public void sense() throws InterruptedException { //THIS IS WRITTEN FOR THE RED ALLIANCE
-
-        float hsvValues [] = {0F,0F,0F};
-
-        moveBeacon( midLeft);
-        waitOneFullHardwareCycle();
-
-        sleep(500);
-
-        int leftBlue = fruity.blue();
-        int leftRed = fruity.red();
-        int leftGreen = fruity.green();
-        Color.RGBToHSV((leftRed * 255) / 800, (leftGreen * 255) / 800, (leftBlue * 255) / 800, hsvValues);
-        float leftHue = hsvValues[0];
-        waitOneFullHardwareCycle();
-
-        sleep(500);
-
-        moveBeacon( midRight);
-        waitOneFullHardwareCycle();
-
-        sleep(3000);
-        waitOneFullHardwareCycle();
-
-        hsvValues [0] = 0;
-
-        int rightRed = fruity.red();
-        int rightBlue = fruity.blue();
-        int rightGreen = fruity.green();
-        Color.RGBToHSV((rightRed * 255) / 800, (rightGreen * 255) / 800, (rightBlue * 255) / 800, hsvValues);
-        float rightHue = hsvValues[0];
-        waitOneFullHardwareCycle();
-
-        telemetry.addData("left", String.format("%03d %03d %03d", leftRed, leftGreen, leftBlue));
-        telemetry.addData("right", String.format("%03d %03d %03d", rightRed, rightGreen, rightBlue));
-        telemetry.addData("leftHue", leftHue);
-        telemetry.addData("rightHue", rightHue);
-
-        sleep(500);
-
-        if(red) {
-
-            if (leftHue < hue && rightHue > hue) {
-                // RIGHT IS RED
-                moveBeacon( fullRight);
-                sleep(500);
-                move( 3, hipower);
-                sleep(200);
-                move( -3, hipower);
-            } else if (leftHue > hue && rightHue < hue) {
-                //LEFT IS RED
-                moveBeacon(fullLeft);
-                sleep(500);
-                move( 3, hipower);
-                sleep(200);
-                move( -3.0, hipower);
-            }
-
-        }else{
-
-            if (leftHue < hue && rightHue > hue) {
-                // RIGHT IS RED
-                moveBeacon( fullLeft);
-                sleep(500);
-                move( 3, hipower);
-                sleep(200);
-                move( -3, hipower);
-            } else if (leftHue > hue && rightHue < hue) {
-                //LEFT IS RED
-                moveBeacon( fullRight);
-                sleep(500);
-                move( 3, hipower);
-                sleep(200);
-                move( -3.0, hipower);
-            }
-
-        }
-
-
-    }
-
-
-    public void teleop() throws InterruptedException {
-
-        // Controls for the wheels
-
-        bL.setPower(scaleInput(gamepad1.left_stick_y));
-        fL.setPower(scaleInput(gamepad1.left_stick_y));
-
-        bR.setPower(scaleInput(gamepad1.right_stick_y));
-        fR.setPower(scaleInput(gamepad1.right_stick_y));
-
-        //Controls for the servos
-        // The dpad controls the left side, the buttons control the right
-
-        if(gamepad2.dpad_left){ //if left dpad is pressed, move left servo to the outside position
-
-            leftFlipper.setPosition(leftUp);
-
-        }else if(gamepad2.dpad_right){ //if the right dpad is pressed, move left servo to inward position
-
-            leftFlipper.setPosition(leftDown);
-
-        }
-
-        if(gamepad2.b){
-
-            rightFlipper.setPosition(rightUp);
-
-        }else if(gamepad2.x){
-
-            rightFlipper.setPosition(rightDown);
-
-        }
-
-        if(gamepad2.dpad_down){
-            leftPlow.setTargetPosition(0);
-            leftPlow.setPower(plowPower);
-            rightPlow.setTargetPosition(0);
-            rightPlow.setPower(plowPower);
-        }else if(gamepad2.dpad_up){
-            leftPlow.setTargetPosition(500);
-            leftPlow.setPower(plowPower);
-            rightPlow.setTargetPosition(500);
-            rightPlow.setPower(plowPower);
-        }
-        else{
-            leftPlow.setPower(0.);
-            rightPlow.setPower(0.);
-        }
-
-        /*
-        if(gamepad2.a){
-
-        }else if(gamepad2.y){
-
-        }
-        else{
-
-        }
-        */
-
-
-    }
-
-    double scaleInput(double dVal)  {
-        double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
-                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
-
-        // get the corresponding index for the scaleInput array.
-        int index = (int) (dVal * 16.0);
-
-        // index should be positive.
-        if (index < 0) {
-            index = -index;
-        }
-
-        // index cannot exceed size of array minus 1.
-        if (index > 16) {
-            index = 16;
-        }
-
-        // get value from the array.
-        double dScale = 0.0;
-        if (dVal < 0) {
-            dScale = -scaleArray[index];
-        } else {
-            dScale = scaleArray[index];
-        }
-
-        // return scaled value.
-        return dScale;
-    }
-
-
-
-
-    // Other Commands //////////////////////////////////////////////////////////////////////////////
-
 
     public void resetEncoders(){
 
@@ -555,6 +312,86 @@ public class RobotOpMode extends LinearOpMode{
         bR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
+
+    // Wheel Power /////////////////////////////////////////////////////////////////////////////////
+
+    public void startWheels(double power)throws InterruptedException {
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(power);
+        bL.setPower(power);
+        waitOneFullHardwareCycle();
+
+    }
+
+    public void startWheels(double powerL, double powerR)throws InterruptedException {
+
+        fR.setPower(powerR);
+        bR.setPower(powerR);
+        fL.setPower(powerL);
+        bL.setPower(powerL);
+        waitOneFullHardwareCycle();
+
+    }
+
+    public void stopWheels()throws InterruptedException {
+
+        fR.setPower(0);
+        bR.setPower(0);
+        fL.setPower(0);
+        bL.setPower(0);
+        waitOneFullHardwareCycle();
+
+    }
+
+    // Autonomous //////////////////////////////////////////////////////////////////////////////////
+
+    public void moveBeacon( double position) throws InterruptedException {
+
+        beacon.setPosition(position);
+
+        while(beacon.getPosition() > position + servorange ||
+                beacon.getPosition() < position - servorange) {
+            sleep(100);
+            waitOneFullHardwareCycle();
+        }
+
+
+    }
+
+    // Math ////////////////////////////////////////////////////////////////////////////////////////
+
+    double scaleInput(double dVal)  {
+        double[] scaleArray = { 0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
+                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00 };
+
+        // get the corresponding index for the scaleInput array.
+        int index = (int) (dVal * 16.0);
+
+        // index should be positive.
+        if (index < 0) {
+            index = -index;
+        }
+
+        // index cannot exceed size of array minus 1.
+        if (index > 16) {
+            index = 16;
+        }
+
+        // get value from the array.
+        double dScale = 0.0;
+        if (dVal < 0) {
+            dScale = -scaleArray[index];
+        } else {
+            dScale = scaleArray[index];
+        }
+
+        // return scaled value.
+        return dScale;
+    }
+
+
 
 
 
