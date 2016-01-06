@@ -69,9 +69,17 @@ public class RobotOpMode extends LinearOpMode{
     DcMotor leftPlow;
     DcMotor rightPlow;
 
-    Servo cowLeft;
-    Servo cowRight;
-    double cowPower = 0.3;
+    double armPower = 0.2;
+    double autoArmPower = 0.4;
+    int armFloor = 2700;
+    int armClimbers = 1400;
+
+    Servo cowLeft; //closed is 0, open is 1
+    Servo cowRight; //closed is 1, open is 0
+
+    double cowLeftOpen =  0.35;
+    double cowRightOpen = 0.65;
+
     
     Servo plowTop;
     
@@ -140,17 +148,23 @@ public class RobotOpMode extends LinearOpMode{
         leftPlow = hardwareMap.dcMotor.get("leftplow");
         rightPlow = hardwareMap.dcMotor.get("rightplow");
 
-        rightPlow.setDirection(DcMotor.Direction.REVERSE);
+        leftPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rightPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        leftPlow.setDirection(DcMotor.Direction.REVERSE);
 
         leftFlipper = hardwareMap.servo.get("flipperl");
         rightFlipper = hardwareMap.servo.get("flipperr");
         
         plowTop = hardwareMap.servo.get("plowtop");
 
-        //plow = hardwareMap.dcMotor.get("plow");
+        plow = hardwareMap.dcMotor.get("plow");
 
         cowLeft = hardwareMap.servo.get("cowleft");
         cowRight = hardwareMap.servo.get("cowright");
+
+        cowLeft.setPosition(0);
+        cowRight.setPosition(1);
 
         beacon = hardwareMap.servo.get("beacon");
 

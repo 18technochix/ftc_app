@@ -67,32 +67,69 @@ public class TestDrive4Motors extends RobotOpMode{
 
         }
 
+        leftPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        rightPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         if(gamepad2.dpad_down){
             leftPlow.setTargetPosition(0);
-            leftPlow.setPower(cowPower);
+            leftPlow.setPower(-armPower);
             rightPlow.setTargetPosition(0);
-            rightPlow.setPower(cowPower);
+            rightPlow.setPower(-armPower);
         }else if(gamepad2.dpad_up){
-            leftPlow.setTargetPosition(500);
-            leftPlow.setPower(cowPower);
-            rightPlow.setTargetPosition(500);
-            rightPlow.setPower(cowPower);
+            leftPlow.setTargetPosition(armFloor);
+            leftPlow.setPower(armPower);
+            rightPlow.setTargetPosition(armFloor);
+            rightPlow.setPower(armPower);
         }
         else{
             leftPlow.setPower(0.);
             rightPlow.setPower(0.);
         }
 
-        /*
-        if(gamepad2.a){
+        if(gamepad2.left_bumper){
 
-        }else if(gamepad2.y){
+            //turn the plow motor left
+
+        }else if(gamepad2.right_bumper){
+
+            //turn plow motor right
 
         }
-        else{
+
+        if(gamepad2.left_trigger > 0 ){
+
+            cowLeft.setPosition(gamepad2.left_trigger);
+
+        } else {
+
+            cowLeft.setPosition(0);
 
         }
-        */
+
+        if(gamepad2.right_trigger > 0){
+
+            cowRight.setPosition(1 - gamepad2.right_trigger);
+
+        }else{
+
+            cowRight.setPosition(1);
+
+        }
+
+
+        if(gamepad2.y){
+
+            cowLeft.setPosition(cowLeftOpen);
+            cowRight.setPosition(cowRightOpen);
+
+
+        }else if(gamepad2.a){
+
+            cowLeft.setPosition(0);
+            cowRight.setPosition(1);
+
+        }
+
 
 
     }

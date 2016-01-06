@@ -42,6 +42,11 @@ public class RedAuto extends RobotOpMode {
                 stopWheels();
 
                 sense();
+                climbers();
+
+            }else{
+
+                climbers();
 
             }
 
@@ -56,6 +61,24 @@ public class RedAuto extends RobotOpMode {
     ////////////////////////////////////////////////////////////////////////////////////////////////
 
      */
+
+    public void climbers() throws InterruptedException {
+
+        leftPlow.setTargetPosition(armClimbers);
+        leftPlow.setPower(autoArmPower);
+        rightPlow.setTargetPosition(armClimbers);
+        rightPlow.setPower(autoArmPower);
+
+        waitForTime(1.25);
+
+        leftPlow.setTargetPosition(0);
+        leftPlow.setPower(-autoArmPower);
+        rightPlow.setTargetPosition(0);
+        rightPlow.setPower(-autoArmPower);
+
+
+    }
+
 
     public boolean sense() throws InterruptedException {
 

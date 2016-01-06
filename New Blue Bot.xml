@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot>
+    <ServoController name="Servo Controller" serialNumber="AI02QSKO">
+        <Servo name="flipperl" port="1" />
+        <Servo name="flipperr" port="2" />
+        <Servo name="beacon" port="3" />
+        <Servo name="cowright" port="4" />
+        <Servo name="cowleft" port="5" />
+        <Servo name="plowtop" port="6" />
+    </ServoController>
+    <LegacyModuleController name="Legacy Module" serialNumber="AL00VGXZ">
+        <LightSensor name="lineleft" port="1" />
+        <LightSensor name="lineright" port="2" />
+        <UltrasonicSensor name="eyes" port="4" />
+    </LegacyModuleController>
+    <MotorController name="Plow MC" serialNumber="AL00VEA8">
+        <Motor name="plow" port="2" />
+    </MotorController>
+    <MotorController name="BRMC (Back Wheels)" serialNumber="AL00YCWT">
+        <Motor name="bL" port="1" />
+        <Motor name="bR" port="2" />
+    </MotorController>
+    <MotorController name="Arm MC" serialNumber="AH00QJBO">
+        <Motor name="leftplow" port="1" />
+        <Motor name="rightplow" port="2" />
+    </MotorController>
+    <MotorController name="FLMC (Front Wheels)" serialNumber="AL00VEA0">
+        <Motor name="fL" port="1" />
+        <Motor name="fR" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="Device Interface Module" serialNumber="AL00VC8K">
+        <AdafruitColorSensor name="fruity" port="0" />
+        <TouchSensor name="touchy" port="7" />
+    </DeviceInterfaceModule>
+</Robot>
