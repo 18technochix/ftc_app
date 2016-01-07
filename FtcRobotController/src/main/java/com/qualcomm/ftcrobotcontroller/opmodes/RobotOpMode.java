@@ -81,9 +81,11 @@ public class RobotOpMode extends LinearOpMode{
     double cowRightOpen = 0.65;
 
     
-    Servo plowTop;
+    Servo plowTop; //1 is fully open, 0 is closed
     
     DcMotor plow;
+    double plowPower = 0.1;
+    boolean negPlow = false;
 
 
     // Beacon servo ////////////////////////////////////////////////////////////////////////////////
@@ -157,8 +159,11 @@ public class RobotOpMode extends LinearOpMode{
         rightFlipper = hardwareMap.servo.get("flipperr");
         
         plowTop = hardwareMap.servo.get("plowtop");
+        plowTop.setPosition(0); ///!!!!
 
         plow = hardwareMap.dcMotor.get("plow");
+        plow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        plow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
         cowLeft = hardwareMap.servo.get("cowleft");
         cowRight = hardwareMap.servo.get("cowright");
@@ -264,6 +269,8 @@ public class RobotOpMode extends LinearOpMode{
 
 
     }
+
+
 
     public void resetEncoders(){
 

@@ -86,15 +86,43 @@ public class TestDrive4Motors extends RobotOpMode{
             rightPlow.setPower(0.);
         }
 
-        if(gamepad2.left_bumper){
+        // Plow ////////////////////////////////////////////////////////////////////////////////////
 
-            //turn the plow motor left
+        if(gamepad1.left_bumper){
 
-        }else if(gamepad2.right_bumper){
+            plow.setTargetPosition(-80);
+            plow.setPower(-plowPower);
+            negPlow = true;
 
-            //turn plow motor right
+        }else if(gamepad1.right_bumper){
+
+            plow.setTargetPosition(80);
+            plow.setPower(plowPower);
+            negPlow = false;
+
+        }else{
+
+            plow.setTargetPosition(0);
+            if(negPlow){
+                plow.setPower(plowPower);
+            } else{
+                plow.setPower(-plowPower);
+            }
+
 
         }
+
+        if(gamepad1.right_trigger > 0){
+
+            plowTop.setPosition(0.6 *  gamepad1.right_trigger);
+
+        }else{
+
+            plowTop.setPosition(0);
+
+        }
+
+        // Cow Catchers ////////////////////////////////////////////////////////////////////////////
 
         if(gamepad2.left_trigger > 0 ){
 
@@ -106,7 +134,7 @@ public class TestDrive4Motors extends RobotOpMode{
 
         }
 
-        if(gamepad2.right_trigger > 0){
+        if(gamepad2.right_trigger > 0) {
 
             cowRight.setPosition(1 - gamepad2.right_trigger);
 
@@ -117,7 +145,7 @@ public class TestDrive4Motors extends RobotOpMode{
         }
 
 
-        if(gamepad2.y){
+        if(gamepad2.y) {
 
             cowLeft.setPosition(cowLeftOpen);
             cowRight.setPosition(cowRightOpen);
