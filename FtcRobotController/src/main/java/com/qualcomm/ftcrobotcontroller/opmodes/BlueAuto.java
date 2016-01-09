@@ -6,13 +6,13 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
 
-public class RedAuto extends RobotOpMode {
+public class BlueAuto extends RobotOpMode {
     double startTime;
 
     public void runOpMode() throws InterruptedException {
 
         auto = true;
-        red = true;
+        red = false;
         super.runOpMode(); //initalizes robot
 
         waitForStart();
@@ -24,9 +24,9 @@ public class RedAuto extends RobotOpMode {
 
 
             move(24, 0.5); //move forward from the wall 15 inches
-            turn(0.57, 0.7, true);
+            turn(0.57, 0.7, false);
             move(76, 0.5);
-            turn(0.55, 0.7, true);
+            turn(0.55, 0.7, false);
 
             while (followLine() == false) {
 

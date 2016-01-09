@@ -153,10 +153,16 @@ public class RobotOpMode extends LinearOpMode{
         leftPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         rightPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
+        leftPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        rightPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         leftPlow.setDirection(DcMotor.Direction.REVERSE);
 
         leftFlipper = hardwareMap.servo.get("flipperl");
         rightFlipper = hardwareMap.servo.get("flipperr");
+
+        leftFlipper.setPosition(leftDown);
+        rightFlipper.setPosition(rightDown);
         
         plowTop = hardwareMap.servo.get("plowtop");
         plowTop.setPosition(0); ///!!!!
@@ -185,22 +191,13 @@ public class RobotOpMode extends LinearOpMode{
         if(auto){
 
             // init for servos /////////////////////
-
-            leftFlipper.setPosition(leftDown);
-            rightFlipper.setPosition(rightDown);
             lightL.enableLed(true);
             lightR.enableLed(true);
-
             beacon.setPosition(fullLeft);
-
             resetEncoders();
 
         }else{ // teleop configuration
-
-            leftFlipper.setPosition(leftDown);
-            rightFlipper.setPosition(rightDown);
             beacon.setPosition(fullRight);
-
             runWithoutEncoders();
         }
 
@@ -216,61 +213,6 @@ public class RobotOpMode extends LinearOpMode{
      */
 
     // Encoders  ///////////////////////////////////////////////////////////////////////////////////
-
-    public void move(double distance, double power) throws InterruptedException {
-
-        move(distance, distance, distance, distance, power);
-
-    }
-
-    //positive is clockwise aka turning right
-    public void pivot( double distance, double power) throws InterruptedException {
-
-        move( distance, -distance, distance, -distance, power);
-
-    }
-
-    public void move(double dfL, double dfR, double dbL, double dbR, double power)
-            throws InterruptedException{
-
-        getNewPositions();
-
-        fR.setTargetPosition(currentFR + counts(dfR));
-        fL.setTargetPosition(currentFL + counts(dfL));
-        bR.setTargetPosition(currentBR + counts(dbR));
-        bL.setTargetPosition(currentBL + counts(dbL));
-
-        fR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        fL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        bR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        bL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-
-        fR.setPower(lopower);
-        bR.setPower(lopower);
-        fL.setPower(lopower);
-        bL.setPower(lopower);
-
-        while(!atPosition((currentBL + counts(dbL)), (currentBR + counts(dbR)),
-                (currentFL + counts(dfL)),(currentFR + counts(dfR))) ){
-
-            telemetry.addData("Pos:", String.format("%03d %03d %03d %03d", bR.getCurrentPosition(),
-                    fR.getCurrentPosition(), bL.getCurrentPosition(), bR.getCurrentPosition()));
-
-            waitOneFullHardwareCycle();
-
-        }
-
-        fR.setPower(0.0);
-        bR.setPower(0.0);
-        fL.setPower(0.0);
-        bL.setPower(0.0);
-
-        waitOneFullHardwareCycle();
-
-
-    }
-
-
 
     public void resetEncoders(){
 
