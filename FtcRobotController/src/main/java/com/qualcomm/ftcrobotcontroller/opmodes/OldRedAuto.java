@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
 
-public class RedAuto extends RobotOpMode {
+public class OldRedAuto extends OldRobotOpMode {
     double startTime;
 
     public void runOpMode() throws InterruptedException {
@@ -22,11 +22,11 @@ public class RedAuto extends RobotOpMode {
             cowLeft.setPosition(cowLeftOpen);
             cowRight.setPosition(cowRightOpen);
 
-
-            move(24, 0.5); //move forward from the wall 15 inches
-            turn(0.57, 0.7, true);
-            move(76, 0.5);
-            turn(0.55, 0.7, true);
+            forward(1, 0.3);
+            //move(24, 0.5); //move forward from the wall 15 inches
+            turn(0.8, 0.7, true);// .57,
+            forward (2.75, 0.3); // move(76, 0.5);
+            turn(0.7, 0.7, true);
 
             while (followLine() == false) {
 
@@ -172,7 +172,6 @@ public class RedAuto extends RobotOpMode {
         if(touchy.isPressed() == false) {
 
             telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
-            telemetry.addData("Distance", distance);
 
             lightLeft = lightL.getLightDetected();
             lightRight = lightR.getLightDetected();
@@ -219,6 +218,18 @@ public class RedAuto extends RobotOpMode {
             return true;
 
         }
+
+    }
+
+    public void forward(double seconds, double power) throws InterruptedException {
+
+        runWithoutEncoders();
+
+        startWheels(power, power);
+
+        waitForTime(seconds);
+
+        stopWheels();
 
     }
 

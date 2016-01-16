@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
 
-public class BlueAuto extends RobotOpMode {
+public class OldBlueAuto extends OldRobotOpMode {
     double startTime;
 
     public void runOpMode() throws InterruptedException {
@@ -172,7 +172,6 @@ public class BlueAuto extends RobotOpMode {
         if(touchy.isPressed() == false) {
 
             telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
-            telemetry.addData("Distance", distance);
 
             lightLeft = lightL.getLightDetected();
             lightRight = lightR.getLightDetected();

@@ -1,7 +1,5 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
-import android.graphics.Color;
-
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -9,12 +7,11 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 
 /**
  * Created by Techno Team_PC_III on 1/3/2016.
  */
-public class RobotOpMode extends LinearOpMode{
+public class OldRobotOpMode extends LinearOpMode{
 
     /*
     ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,16 +40,49 @@ public class RobotOpMode extends LinearOpMode{
     final double circ = Math.PI * diameter;
     final double ratio = 1;
 
-    int range = 15; // range for encoders?
+    int range = 15;
 
+    double hipower = 0.7;
+    double lopower = 0.3;
+    double slowpower = 0.1;
+
+    double linePower = 0.12; // power for the wheels in follow line sequence
+    double lineTime = 0.25; // time for wheels running in follow line sequence
+
+
+    // Flipper creation ////////////////////////////////////////////////////////////////////////////
+
+    Servo leftFlipper;
+    Servo rightFlipper;
+
+    final double leftDown = 0.5; // value for left servo's extended position
+    final double leftUp = 0.25; //value for left servo's retracted position
+
+    final double rightDown = 0; //value for right servo's extended position
+    final double rightUp = 0.25; //value for right servo's retracted position
 
     // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
+
+    DcMotor leftPlow;
+    DcMotor rightPlow;
+
+    double armPower = 0.2;
+    double autoArmPower = 0.4;
+    int armFloor = 2700;
+    int armClimbers = 1400;
 
     Servo cowLeft; //closed is 0, open is 1
     Servo cowRight; //closed is 1, open is 0
 
     double cowLeftOpen =  0.35;
     double cowRightOpen = 0.75;
+
+    
+    Servo plowTop; //1 is fully open, 0 is closed
+    
+    DcMotor plow;
+    double plowPower = 0.1;
+    boolean negPlow = false;
 
 
     // Beacon servo ////////////////////////////////////////////////////////////////////////////////
@@ -111,6 +141,30 @@ public class RobotOpMode extends LinearOpMode{
         fR.setDirection(DcMotor.Direction.REVERSE);
         bR.setDirection(DcMotor.Direction.REVERSE);
 
+        leftPlow = hardwareMap.dcMotor.get("leftplow");
+        rightPlow = hardwareMap.dcMotor.get("rightplow");
+
+        leftPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rightPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        leftPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        rightPlow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+        leftPlow.setDirection(DcMotor.Direction.REVERSE);
+
+        leftFlipper = hardwareMap.servo.get("flipperl");
+        rightFlipper = hardwareMap.servo.get("flipperr");
+
+        leftFlipper.setPosition(leftDown);
+        rightFlipper.setPosition(rightDown);
+        
+        plowTop = hardwareMap.servo.get("plowtop");
+        plowTop.setPosition(0); ///!!!!
+
+        plow = hardwareMap.dcMotor.get("plow");
+        plow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        plow.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
         cowLeft = hardwareMap.servo.get("cowleft");
         cowRight = hardwareMap.servo.get("cowright");
 
@@ -132,11 +186,11 @@ public class RobotOpMode extends LinearOpMode{
             lightL.enableLed(true);
             lightR.enableLed(true);
             beacon.setPosition(fullLeft);
-            resetWheelEncoders();
+            resetEncoders();
 
         }else{ // teleop configuration
             beacon.setPosition(fullRight);
-            runWheelsWithoutEncoders();
+            runWithoutEncoders();
         }
 
 
@@ -152,17 +206,20 @@ public class RobotOpMode extends LinearOpMode{
 
     // Encoders  ///////////////////////////////////////////////////////////////////////////////////
 
-    public void resetWheelEncoders(){
+    public void resetEncoders(){
 
         fR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         bR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         fL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         bL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
+        leftPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        rightPlow.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
     }
 
 
-    public void getNewWheelPositions(){
+    public void getNewPositions(){
 
         currentBL = bL.getCurrentPosition();
         currentBR = bR.getCurrentPosition();
@@ -171,7 +228,38 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
-    public void runWheelsWithoutEncoders(){
+    public int counts(double distance){
+
+        double rotations = distance / circ;
+        return (int) (magicnum * rotations * ratio);
+
+    }
+
+    public boolean inRange(int value, int target){
+
+        return (value >= target - range && value <= target + range);
+
+    }
+
+
+    public boolean atPosition(int targetbL, int targetbR, int targetfL, int targetfR){
+
+        if( inRange( bL.getCurrentPosition(), targetbL) &&
+                inRange( bR.getCurrentPosition(), targetbR) &&
+                inRange( fL.getCurrentPosition(), targetfL) &&
+                inRange(fR.getCurrentPosition(), targetfR)){
+
+            return true;
+
+        }else{
+
+            return false;
+
+        }
+
+    }
+
+    public void runWithoutEncoders(){
 
         fL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         fR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
@@ -179,7 +267,6 @@ public class RobotOpMode extends LinearOpMode{
         bR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
-
 
     // Wheel Power /////////////////////////////////////////////////////////////////////////////////
 
@@ -215,7 +302,7 @@ public class RobotOpMode extends LinearOpMode{
 
     // Autonomous //////////////////////////////////////////////////////////////////////////////////
 
-    public void moveBeacon(double position) throws InterruptedException {
+    public void moveBeacon( double position) throws InterruptedException {
 
         beacon.setPosition(position);
 
@@ -227,35 +314,6 @@ public class RobotOpMode extends LinearOpMode{
 
 
     }
-
-    // Encoder Math ////////////////////////////////////////////////////////////////////////////////
-
-    public boolean atWheelPosition(int targetbL, int targetbR, int targetfL, int targetfR){
-
-        if( inRange( bL.getCurrentPosition(), targetbL) &&
-                inRange( bR.getCurrentPosition(), targetbR) &&
-                inRange( fL.getCurrentPosition(), targetfL) &&
-                inRange(fR.getCurrentPosition(), targetfR)){
-
-            return true;
-
-        }else{
-
-            return false;
-
-        }
-
-
-
-    }
-
-    public int counts(double distance){
-
-        double rotations = distance / circ;
-        return (int) (magicnum * rotations * ratio);
-
-    }
-
 
     // Math ////////////////////////////////////////////////////////////////////////////////////////
 
@@ -288,12 +346,6 @@ public class RobotOpMode extends LinearOpMode{
         return dScale;
     }
 
-
-    public boolean inRange(int value, int target){
-
-        return (value >= target - range && value <= target + range);
-
-    }
 
 
 
