@@ -5,7 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
 /**
  * Created by Techno Team_PC_III on 1/6/2016.
  */
-public class ResetArms extends RobotOpMode{
+public class ResetArms extends QualifierRobotOpMode{
 
     public void runOpMode() throws InterruptedException {
 

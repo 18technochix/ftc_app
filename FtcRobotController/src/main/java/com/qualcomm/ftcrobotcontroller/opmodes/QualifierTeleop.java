@@ -14,7 +14,7 @@ import com.qualcomm.robotcore.util.Range;
 
 
 // after class, replace "TeleOpTemplate" with your class/"program" name.
-public class TestDrive4Motors extends RobotOpMode{
+public class QualifierTeleop extends QualifierRobotOpMode{
 
     public void runOpMode() throws InterruptedException {
 

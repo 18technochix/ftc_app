@@ -33,6 +33,7 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpModeManager;
 import com.qualcomm.robotcore.eventloop.opmode.OpModeRegister;
+import com.github.ImperialRobotics.BoschIMU.IMUtest;
 
 /**
  * Register Op Modes
@@ -59,11 +60,10 @@ public class FtcOpModeRegister implements OpModeRegister {
 
     //manager.register("MatrixK9TeleOp", MatrixK9TeleOp.class);
 
-    manager.register("Tele Op", TestDrive4Motors.class);
-    manager.register("Autonomous-Red", RedAuto.class);
-    manager.register("Autonomous-Blue", BlueAuto.class);
-    manager.register("Reset Arm", ResetArms.class);
+    manager.register("Tele Op", Teleop.class);
+    manager.register("SingleMotor", OneMotor.class);
     manager.register("Ada Test", AdafruitRGBExample.class);
+    manager.register("IMU Test", IMUtest.class);
 
 
     /*

@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 /**
  * Created by Techno Team_PC_III on 1/3/2016.
  */
-public class OldRobotOpMode extends LinearOpMode{
+public class QualifierRobotOpMode extends LinearOpMode{
 
     /*
     ////////////////////////////////////////////////////////////////////////////////////////////////

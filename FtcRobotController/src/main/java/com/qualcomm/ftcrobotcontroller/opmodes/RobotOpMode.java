@@ -6,6 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
+import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
@@ -75,7 +76,11 @@ public class RobotOpMode extends LinearOpMode{
     float hue = 300;
     //blue is less than, red greater
 
-    // Sonar and Line Following ///////////////////////////////////////////////////////////////////
+    // Gyro ////////////////////////////////////////////////////////////////////////////////////////
+
+    I2cDevice gyro;
+
+    // Line Following ///////////////////////////////////////////////////////////////////
 
     LightSensor lightL;
     LightSensor lightR;
@@ -125,6 +130,8 @@ public class RobotOpMode extends LinearOpMode{
         lightL = hardwareMap.lightSensor.get("lineleft");
 
         touchy = hardwareMap.touchSensor.get("touchy");
+
+        gyro = hardwareMap.i2cDevice.get("gyro");
 
         if(auto){
 

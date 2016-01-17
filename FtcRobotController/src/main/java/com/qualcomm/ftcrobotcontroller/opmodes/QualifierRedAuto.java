@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotorController;
 
 
-public class OldRedAuto extends OldRobotOpMode {
+public class QualifierRedAuto extends QualifierRobotOpMode {
     double startTime;
 
     public void runOpMode() throws InterruptedException {
