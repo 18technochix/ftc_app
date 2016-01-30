@@ -1,8 +1,11 @@
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import android.graphics.Color;
+import android.util.Log;
 
+import com.github.ImperialRobotics.BoschIMU.AdafruitIMU;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.exception.RobotCoreException;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -44,6 +47,9 @@ public class RobotOpMode extends LinearOpMode{
     final double circ = Math.PI * diameter;
     final double ratio = 1;
 
+    double hipower = 0.7;
+    double lopower = 0.3;
+
     int range = 15; // range for encoders?
 
 
@@ -69,7 +75,7 @@ public class RobotOpMode extends LinearOpMode{
     double fullRight = 1.0;
 
 
-    // Adafruit ////////////////////////////////////////////////////////////////////////////////////
+    // Color Sensor ////////////////////////////////////////////////////////////////////////////////////
 
     ColorSensor fruity;
 
@@ -78,7 +84,7 @@ public class RobotOpMode extends LinearOpMode{
 
     // Gyro ////////////////////////////////////////////////////////////////////////////////////////
 
-    I2cDevice gyro;
+    AdafruitIMU gyro;
 
     // Line Following ///////////////////////////////////////////////////////////////////
 
@@ -116,6 +122,8 @@ public class RobotOpMode extends LinearOpMode{
         fR.setDirection(DcMotor.Direction.REVERSE);
         bR.setDirection(DcMotor.Direction.REVERSE);
 
+        /*
+
         cowLeft = hardwareMap.servo.get("cowleft");
         cowRight = hardwareMap.servo.get("cowright");
 
@@ -131,8 +139,16 @@ public class RobotOpMode extends LinearOpMode{
 
         touchy = hardwareMap.touchSensor.get("touchy");
 
-        gyro = hardwareMap.i2cDevice.get("gyro");
+        try {
+            gyro = new AdafruitIMU(hardwareMap, "gyro"
+                    , (byte)(AdafruitIMU.BNO055_ADDRESS_A * 2)
+                    , (byte)AdafruitIMU.OPERATION_MODE_IMU);
+        } catch (RobotCoreException e){
+            Log.i("FtcRobotController", "Exception: " + e.getMessage());
+        }
+        */
 
+        /*
         if(auto){
 
             // init for servos /////////////////////
@@ -141,10 +157,15 @@ public class RobotOpMode extends LinearOpMode{
             beacon.setPosition(fullLeft);
             resetWheelEncoders();
 
+            //init for gyro
+
+            gyro.startIMU();
+
         }else{ // teleop configuration
             beacon.setPosition(fullRight);
             runWheelsWithoutEncoders();
         }
+        */
 
 
 

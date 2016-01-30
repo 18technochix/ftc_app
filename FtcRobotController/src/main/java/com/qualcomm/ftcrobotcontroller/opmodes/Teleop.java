@@ -19,8 +19,6 @@ public class Teleop extends RobotOpMode{
         waitForStart();
 
         while (opModeIsActive()) {
-
-           // robot.fL.setPower(0.5);
            teleop();
             waitOneFullHardwareCycle();
 
@@ -34,15 +32,16 @@ public class Teleop extends RobotOpMode{
 
         // Controls for the wheels
 
-        bL.setPower(-scaleInput(gamepad1.left_stick_y));
-        fL.setPower(-scaleInput(gamepad1.left_stick_y));
+        bL.setPower(scaleInput(gamepad1.left_stick_y));
+        fL.setPower(scaleInput(gamepad1.left_stick_y));
 
-        bR.setPower(-scaleInput(gamepad1.right_stick_y));
-        fR.setPower(-scaleInput(gamepad1.right_stick_y));
+        bR.setPower(scaleInput(gamepad1.right_stick_y));
+        fR.setPower(scaleInput(gamepad1.right_stick_y));
 
 
         // Cow Catchers ////////////////////////////////////////////////////////////////////////////
 
+        /*
         if(gamepad2.left_trigger > 0 ){
 
             cowLeft.setPosition(gamepad2.left_trigger);
@@ -76,6 +75,7 @@ public class Teleop extends RobotOpMode{
             cowRight.setPosition(1);
 
         }
+        */
 
 
 
