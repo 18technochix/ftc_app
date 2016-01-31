@@ -16,42 +16,21 @@ public class IMURedAuto extends RobotOpMode {
 
         waitForStart();
 
-        /*
 
         if (opModeIsActive()) {
 
-            cowLeft.setPosition(cowLeftOpen);
-            cowRight.setPosition(cowRightOpen);
+            /*
+            gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+            telemetry.addData("Headings(yaw): ",
+                    String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+            turnRight(0.7);
+            waitOneFullHardwareCycle();
+            */
 
-
-            forward(1, 0.3);
-            //move(24, 0.5); //move forward from the wall 15 inches
-            turn(0.8, 0.7, true);// .57,
-            forward (2.75, 0.3); // move(76, 0.5);
-            turn(0.7, 0.7, true);
-
-            while (followLine() == false) {
-
-            }
-
-            if(!sense()){
-
-                startWheels(-lopower);
-                waitForTime(0.65);
-                stopWheels();
-
-                startWheels(lopower);
-                waitForTime(0.73);
-                stopWheels();
-
-                sense();
-
-            }
-
-           // climbers();
+            turn(90.0, 0.3);
 
         }
-        */
+
 
     }
 
@@ -64,20 +43,159 @@ public class IMURedAuto extends RobotOpMode {
 
      */
 
-    public void gyroSense(){
 
-        /*
-        * You could set it so that the values are stored in variavles up there
-        * or that it returns an array of values?
-        * hm.
-        *
-         */
+    public void turn2(double angle, double power) throws InterruptedException {
+
+        double startingAngle;
+        double targetAngle;
+
+        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+
+        startingAngle = yawAngle[0];
+
+        telemetry.addData("Headings(yaw): ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
 
 
 
+
+        if(angle < 0){
+
+            if(startingAngle + angle < -180.0){
+
+                targetAngle = (360 + (startingAngle + angle));
+
+            }else{
+
+                targetAngle = startingAngle + angle;
+
+            }
+
+            turnLeft(power);
+
+            while (yawAngle[0] < targetAngle) {
+
+                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                telemetry.addData("Headings(yaw): ",
+                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                waitOneFullHardwareCycle();
+
+            }
+
+            stopWheels();
+
+        }else if(angle > 0){
+
+            if(startingAngle + angle > 180){
+
+                targetAngle = (startingAngle + angle) - 360;
+
+            }else{
+
+                targetAngle = startingAngle + angle;
+
+            }
+
+            turnRight(power);
+
+            while(yawAngle[0] > targetAngle){
+
+                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                telemetry.addData("Headings(yaw): ",
+                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                waitOneFullHardwareCycle();
+
+            }
+
+            stopWheels();
+
+        }
 
 
     }
+
+    public void turn(double angle, double power) throws InterruptedException { // left is positive, right is negative (like quadrants)
+
+        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+
+        telemetry.addData("Headings(yaw): ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+
+        if(angle > 0) {
+
+            turnLeft(power);
+
+            while (yawAngle[0] < angle) {
+
+                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                telemetry.addData("Headings(yaw): ",
+                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                waitOneFullHardwareCycle();
+
+            }
+
+            stopWheels();
+
+        }else if (angle < 0){
+
+            turnRight(power);
+
+            while(yawAngle[0] > angle){
+
+                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                telemetry.addData("Headings(yaw): ",
+                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                waitOneFullHardwareCycle();
+
+            }
+
+            stopWheels();
+
+        }
+
+    }
+
+
+    // Wheel Power /////////////////////////////////////////////////////////////////////////////////
+
+    public void startWheels(double power)throws InterruptedException {
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(power);
+        bL.setPower(power);
+
+    }
+
+    public void stopWheels()throws InterruptedException {
+
+        fR.setPower(0);
+        bR.setPower(0);
+        fL.setPower(0);
+        bL.setPower(0);
+
+    }
+
+    public void turnLeft(double power){
+
+        fR.setPower(0);
+        bR.setPower(0);
+        fL.setPower(power);
+        bL.setPower(power);
+
+    }
+
+    public void turnRight(double power){
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(0);
+        bL.setPower(0);
+
+    }
+
+
+
 
     public boolean sense() throws InterruptedException {
 
@@ -132,7 +250,7 @@ public class IMURedAuto extends RobotOpMode {
 
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
-               //push button
+                //push button
                 return true;
             }
 
@@ -146,7 +264,7 @@ public class IMURedAuto extends RobotOpMode {
                 return true;
             } else if (leftHue > hue && rightHue < hue) {
                 //LEFT IS RED
-              //push button
+                //push button
                 return true;
             }
 
@@ -191,18 +309,18 @@ public class IMURedAuto extends RobotOpMode {
 
             if(lightLeft > 0.65 && lightRight < 0.33){
 
-                turn(0.15, 0.4, false);
+                //turn(0.15, 0.4, false);
                 startWheels(lopower);
                 //waitForTime(lineTime);
-                turn(0.25, 0.4, true);
+                //turn(0.25, 0.4, true);
                 waitOneFullHardwareCycle();
 
             } else if(lightRight > 0.75 && lightLeft < 0.3){
 
-                turn(0.15, 0.4, true);
+                // turn(0.15, 0.4, true);
                 startWheels(lopower);
                 //waitForTime(lineTime);
-                turn(0.25, 0.4, false);
+                // turn(0.25, 0.4, false);
                 waitOneFullHardwareCycle();
 
             } else{
@@ -224,7 +342,7 @@ public class IMURedAuto extends RobotOpMode {
 
     public void forward(double seconds, double power) throws InterruptedException {
 
-        startWheels(power, power);
+        startWheels(power);
 
         waitForTime(seconds);
 
@@ -232,23 +350,6 @@ public class IMURedAuto extends RobotOpMode {
 
     }
 
-    public void turn(double seconds, double power, boolean left) throws InterruptedException {
-
-        if(left){
-
-            startWheels(-power, power);
-
-        }else {
-
-            startWheels(power, -power);
-
-        }
-
-        waitForTime(seconds);
-
-        stopWheels();
-
-    }
 
     //Generic Methods //////////////////////////////////////////////////////////////////////////////
 

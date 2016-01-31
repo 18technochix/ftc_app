@@ -57,6 +57,7 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     manager.register("Tele Op", Teleop.class);
+    manager.register("Red Auto", IMURedAuto.class);
     manager.register("Linear Gyro", IMULinearOp.class);
     manager.register("Ada Test", AdafruitRGBExample.class);
     manager.register("IMU Test", IMUtest.class);

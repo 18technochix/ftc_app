@@ -16,10 +16,12 @@ public class Teleop extends RobotOpMode{
 
         super.runOpMode();
 
+        gyro.startIMU(); //THIS IS TEMPORARY
+
         waitForStart();
 
         while (opModeIsActive()) {
-           teleop();
+            teleop();
             waitOneFullHardwareCycle();
 
         }
@@ -37,6 +39,14 @@ public class Teleop extends RobotOpMode{
 
         bR.setPower(scaleInput(gamepad1.right_stick_y));
         fR.setPower(scaleInput(gamepad1.right_stick_y));
+
+        // TEMP GYRO ------------------------------------------------------------------------------
+
+        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+        telemetry.addData("Headings(yaw): ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+        telemetry.addData("Pitches: ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", pitchAngle[0], pitchAngle[1]));
 
 
         // Cow Catchers ////////////////////////////////////////////////////////////////////////////

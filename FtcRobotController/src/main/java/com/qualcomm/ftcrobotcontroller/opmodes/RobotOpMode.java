@@ -86,6 +86,8 @@ public class RobotOpMode extends LinearOpMode{
 
     AdafruitIMU gyro;
 
+    volatile double[] rollAngle = new double[2], pitchAngle = new double[2], yawAngle = new double[2];
+
     // Line Following ///////////////////////////////////////////////////////////////////
 
     LightSensor lightL;
@@ -119,8 +121,8 @@ public class RobotOpMode extends LinearOpMode{
         fL = hardwareMap.dcMotor.get("fL");
         bL = hardwareMap.dcMotor.get("bL");
 
-        fR.setDirection(DcMotor.Direction.REVERSE);
-        bR.setDirection(DcMotor.Direction.REVERSE);
+        fL.setDirection(DcMotor.Direction.REVERSE);
+        bL.setDirection(DcMotor.Direction.REVERSE);
 
         /*
 
@@ -138,6 +140,7 @@ public class RobotOpMode extends LinearOpMode{
         lightL = hardwareMap.lightSensor.get("lineleft");
 
         touchy = hardwareMap.touchSensor.get("touchy");
+        */
 
         try {
             gyro = new AdafruitIMU(hardwareMap, "gyro"
@@ -146,26 +149,26 @@ public class RobotOpMode extends LinearOpMode{
         } catch (RobotCoreException e){
             Log.i("FtcRobotController", "Exception: " + e.getMessage());
         }
-        */
 
-        /*
+
+
         if(auto){
 
             // init for servos /////////////////////
-            lightL.enableLed(true);
-            lightR.enableLed(true);
-            beacon.setPosition(fullLeft);
-            resetWheelEncoders();
+            //lightL.enableLed(true);
+            //lightR.enableLed(true);
+            //beacon.setPosition(fullLeft);
+            //resetWheelEncoders();
 
             //init for gyro
 
             gyro.startIMU();
 
         }else{ // teleop configuration
-            beacon.setPosition(fullRight);
-            runWheelsWithoutEncoders();
+            //beacon.setPosition(fullRight);
+           runWheelsWithoutEncoders();
         }
-        */
+
 
 
 
@@ -208,38 +211,6 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
-
-    // Wheel Power /////////////////////////////////////////////////////////////////////////////////
-
-    public void startWheels(double power)throws InterruptedException {
-
-        fR.setPower(power);
-        bR.setPower(power);
-        fL.setPower(power);
-        bL.setPower(power);
-        waitOneFullHardwareCycle();
-
-    }
-
-    public void startWheels(double powerL, double powerR)throws InterruptedException {
-
-        fR.setPower(powerR);
-        bR.setPower(powerR);
-        fL.setPower(powerL);
-        bL.setPower(powerL);
-        waitOneFullHardwareCycle();
-
-    }
-
-    public void stopWheels()throws InterruptedException {
-
-        fR.setPower(0);
-        bR.setPower(0);
-        fL.setPower(0);
-        bL.setPower(0);
-        waitOneFullHardwareCycle();
-
-    }
 
     // Autonomous //////////////////////////////////////////////////////////////////////////////////
 
