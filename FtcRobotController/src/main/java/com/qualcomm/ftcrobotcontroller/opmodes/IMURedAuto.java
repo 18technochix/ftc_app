@@ -28,6 +28,7 @@ public class IMURedAuto extends RobotOpMode {
             */
 
             turn(90.0, 0.3);
+            turn(100.0, 0.3);
 
         }
 
@@ -44,7 +45,7 @@ public class IMURedAuto extends RobotOpMode {
      */
 
 
-    public void turn2(double angle, double power) throws InterruptedException {
+    public void turn(double angle, double power) throws InterruptedException {
 
         double startingAngle;
         double targetAngle;
@@ -57,32 +58,41 @@ public class IMURedAuto extends RobotOpMode {
                 String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
 
 
-
-
         if(angle < 0){
 
             if(startingAngle + angle < -180.0){
 
                 targetAngle = (360 + (startingAngle + angle));
 
+                turnLeft(power);
+
+                while ((yawAngle[0] < 0 && yawAngle[0] > -180) || (yawAngle [0] > 0 && yawAngle[0] > targetAngle)) {
+
+                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                    telemetry.addData("Headings(yaw): ",
+                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    waitOneFullHardwareCycle();
+
+                }
+
+
             }else{
 
                 targetAngle = startingAngle + angle;
 
+                turnLeft(power);
+
+                while (yawAngle[0] < targetAngle) {
+
+                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                    telemetry.addData("Headings(yaw): ",
+                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    waitOneFullHardwareCycle();
+
+                }
+
+
             }
-
-            turnLeft(power);
-
-            while (yawAngle[0] < targetAngle) {
-
-                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                telemetry.addData("Headings(yaw): ",
-                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-                waitOneFullHardwareCycle();
-
-            }
-
-            stopWheels();
 
         }else if(angle > 0){
 
@@ -90,68 +100,39 @@ public class IMURedAuto extends RobotOpMode {
 
                 targetAngle = (startingAngle + angle) - 360;
 
+                turnRight(power);
+
+                while ((yawAngle[0] > 0 && yawAngle[0] < 180) || (yawAngle [0] < 0 && yawAngle[0] < targetAngle)) {
+
+                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                    telemetry.addData("Headings(yaw): ",
+                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    waitOneFullHardwareCycle();
+
+                }
+
             }else{
 
                 targetAngle = startingAngle + angle;
 
+                turnRight(power);
+
+                while(yawAngle[0] > targetAngle){
+
+                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+                    telemetry.addData("Headings(yaw): ",
+                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    waitOneFullHardwareCycle();
+
+                }
+
             }
 
-            turnRight(power);
-
-            while(yawAngle[0] > targetAngle){
-
-                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                telemetry.addData("Headings(yaw): ",
-                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-                waitOneFullHardwareCycle();
-
-            }
-
-            stopWheels();
 
         }
 
+        stopWheels();
 
-    }
-
-    public void turn(double angle, double power) throws InterruptedException { // left is positive, right is negative (like quadrants)
-
-        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-
-        telemetry.addData("Headings(yaw): ",
-                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-
-        if(angle > 0) {
-
-            turnLeft(power);
-
-            while (yawAngle[0] < angle) {
-
-                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                telemetry.addData("Headings(yaw): ",
-                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-                waitOneFullHardwareCycle();
-
-            }
-
-            stopWheels();
-
-        }else if (angle < 0){
-
-            turnRight(power);
-
-            while(yawAngle[0] > angle){
-
-                gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                telemetry.addData("Headings(yaw): ",
-                        String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-                waitOneFullHardwareCycle();
-
-            }
-
-            stopWheels();
-
-        }
 
     }
 
