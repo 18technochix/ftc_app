@@ -32,7 +32,7 @@ public class Teleop extends RobotOpMode{
 
     public void teleop() throws InterruptedException {
 
-        // Controls for the wheels
+        // Wheels //////////////////////////////////////////////////////////////////////////////////
 
         bL.setPower(scaleInput(gamepad1.left_stick_y));
         fL.setPower(scaleInput(gamepad1.left_stick_y));
@@ -87,9 +87,34 @@ public class Teleop extends RobotOpMode{
         }
         */
 
+        // Dispenser Arms //////////////////////////////////////////////////////////////////////////
+
+        if(gamepad2.left_stick_y > 0.1){
+
+            dispL.setTargetPosition(dispPosition);
+            dispR.setTargetPosition(dispPosition);
+
+            dispL.setPower(dispPower);
+            dispR.setPower(dispPower);
+
+        }else if(gamepad2.left_stick_y < -0.1){
+
+            dispL.setTargetPosition(0);
+            dispR.setTargetPosition(0);
+
+            dispL.setPower(-dispPower);
+            dispR.setPower(-dispPower);
+
+        }else{
+
+            dispL.setPower(0);
+            dispR.setPower(0);
+
+        }
 
 
-    }
+    }// end of teleop()
+
 
 
 }

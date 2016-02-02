@@ -52,6 +52,13 @@ public class RobotOpMode extends LinearOpMode{
 
     int range = 15; // range for encoders?
 
+    // Dispenser Arms //////////////////////////////////////////////////////////////////////////////
+
+    DcMotor dispL;
+    DcMotor dispR;
+
+    double dispPower = 0.5;
+    int dispPosition = 2000;
 
     // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
 
@@ -123,6 +130,13 @@ public class RobotOpMode extends LinearOpMode{
 
         fL.setDirection(DcMotor.Direction.REVERSE);
         bL.setDirection(DcMotor.Direction.REVERSE);
+
+        dispL = hardwareMap.dcMotor.get("dL");
+        dispR = hardwareMap.dcMotor.get("dR");
+
+        dispL.setDirection(DcMotor.Direction.REVERSE);
+
+        runDispenserWithEncoders();
 
         /*
 
@@ -208,6 +222,16 @@ public class RobotOpMode extends LinearOpMode{
         fR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         bL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         bR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+
+    }
+
+
+    // Dispenser Arm Encoders //////////////////////////////////////////////////////////////////////
+
+    public void runDispenserWithEncoders(){
+
+        dispL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
+        dispR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
     }
 
