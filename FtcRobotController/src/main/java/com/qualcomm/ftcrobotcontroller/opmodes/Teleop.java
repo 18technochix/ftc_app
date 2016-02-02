@@ -42,6 +42,13 @@ public class Teleop extends RobotOpMode{
 
         // TEMP GYRO ------------------------------------------------------------------------------
 
+        /*
+
+            This returns the different values of the IMU unit to show how far we have moved. It's
+            printing back to the Driver Station.
+
+         */
+
         gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
         telemetry.addData("Headings(yaw): ",
                 String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
@@ -88,6 +95,34 @@ public class Teleop extends RobotOpMode{
         */
 
         // Dispenser Arms //////////////////////////////////////////////////////////////////////////
+
+        /*
+            The dispenser arms are controlled by two motors that are run with encoders.
+
+            On the second gamepad, the left joystick's y values (up and down) control wether the
+            arms move (in sync) forward or backwards until it reaches a set encoder count.
+            dispPosition is the lowest/farthest out we want the dispenser to go (which by a
+            matter of fact is the high goal on the ramp) and the other position is 0, which is
+            naturally selected as the resting position of the motors when the program starts
+            (wherever the motors are when the program is started is considered encoder position
+            zero).
+
+            This allows us to use the motors as standard (not continuous) servos with much more
+            power and the ability to use any angle range we want. We measure the 'angle' in encoder
+            counts.
+
+            The value 0.1 in the if statements is a fail-safe number for the joysticks. In the past
+            we have had sticky joysticks that even though they are centered, the values still read
+            back as if they are moved just the slightest bit. This just ensures that we want the
+            arms to move only when the joystick is moved by a driver.
+
+            dispPower is a constant in our RobotOpMode class that is used to specify how fast we
+            want the dispenser arms to travel. Having it there makes it easier to change the value
+            in all of our TeleOp and Autonomous programs on a global scale.
+         */
+
+        dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
         if(gamepad2.left_stick_y > 0.1){
 

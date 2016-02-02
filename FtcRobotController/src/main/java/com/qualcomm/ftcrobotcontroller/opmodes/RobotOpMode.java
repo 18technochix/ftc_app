@@ -57,8 +57,8 @@ public class RobotOpMode extends LinearOpMode{
     DcMotor dispL;
     DcMotor dispR;
 
-    double dispPower = 0.5;
-    int dispPosition = 2000;
+    double dispPower = 0.3;
+    int dispPosition = 200;
 
     // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
 
@@ -137,6 +137,8 @@ public class RobotOpMode extends LinearOpMode{
         dispL.setDirection(DcMotor.Direction.REVERSE);
 
         runDispenserWithEncoders();
+        resetDispenserEncoders();
+
 
         /*
 
@@ -235,6 +237,13 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
+    public void resetDispenserEncoders(){
+
+        dispL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+        dispR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+    }
+
 
     // Autonomous //////////////////////////////////////////////////////////////////////////////////
 
@@ -250,6 +259,45 @@ public class RobotOpMode extends LinearOpMode{
 
 
     }
+
+
+    // IMU /////////////////////////////////////////////////////////////////////////////////////////
+
+    public void printYawData(){
+
+        /*
+
+            This returns the yaw values of the IMU unit to show how far we have moved. It's
+            printing back to the Driver Station.
+
+         */
+
+        telemetry.addData("Headings(yaw): ",
+                String.format("Euler= %4.5f, Quaternion calculated= %4.5f",
+                        yawAngle[0], yawAngle[1]));
+
+
+    }
+
+    public void getAngles(){
+
+        /*
+
+            This gathers new data from the IMU and stores it into variables.
+
+         */
+
+        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+
+    }
+
+    public void refreshIMU(){
+
+        getAngles();
+        printYawData();
+
+    }
+
 
     // Encoder Math ////////////////////////////////////////////////////////////////////////////////
 

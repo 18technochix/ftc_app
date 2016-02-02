@@ -50,12 +50,11 @@ public class IMURedAuto extends RobotOpMode {
         double startingAngle;
         double targetAngle;
 
-        gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
+        getAngles();
 
         startingAngle = yawAngle[0];
 
-        telemetry.addData("Headings(yaw): ",
-                String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+        printYawData();
 
 
         if(angle < 0){
@@ -68,9 +67,7 @@ public class IMURedAuto extends RobotOpMode {
 
                 while ((yawAngle[0] < 0 && yawAngle[0] > -180) || (yawAngle [0] > 0 && yawAngle[0] > targetAngle)) {
 
-                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                    telemetry.addData("Headings(yaw): ",
-                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    refreshIMU();
                     waitOneFullHardwareCycle();
 
                 }
@@ -84,9 +81,7 @@ public class IMURedAuto extends RobotOpMode {
 
                 while (yawAngle[0] < targetAngle) {
 
-                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                    telemetry.addData("Headings(yaw): ",
-                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    refreshIMU();
                     waitOneFullHardwareCycle();
 
                 }
@@ -104,9 +99,7 @@ public class IMURedAuto extends RobotOpMode {
 
                 while ((yawAngle[0] > 0 && yawAngle[0] < 180) || (yawAngle [0] < 0 && yawAngle[0] < targetAngle)) {
 
-                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                    telemetry.addData("Headings(yaw): ",
-                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    refreshIMU();
                     waitOneFullHardwareCycle();
 
                 }
@@ -119,9 +112,7 @@ public class IMURedAuto extends RobotOpMode {
 
                 while(yawAngle[0] > targetAngle){
 
-                    gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-                    telemetry.addData("Headings(yaw): ",
-                            String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
+                    refreshIMU();
                     waitOneFullHardwareCycle();
 
                 }
