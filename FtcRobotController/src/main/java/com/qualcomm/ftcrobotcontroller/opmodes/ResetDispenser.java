@@ -8,17 +8,15 @@ import com.qualcomm.robotcore.hardware.DcMotorController;
  */
 public class ResetDispenser extends RobotOpMode {
 
+  //  @Override
     public void runOpMode() throws InterruptedException {
 
         dispL = hardwareMap.dcMotor.get("dL");
         dispR = hardwareMap.dcMotor.get("dR");
 
-        dispL.setDirection(DcMotor.Direction.REVERSE);
+        dispR.setDirection(DcMotor.Direction.REVERSE);
 
-        dispL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-        dispR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
-
-        gyro.startIMU(); //THIS IS TEMPORARY
+        runDispenserWithoutEncoders();
 
         waitForStart();
 

@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
+
 
 /**
  * Created by Techno Team_PC_III on 1/3/2016.
@@ -43,7 +43,7 @@ public class RobotOpMode extends LinearOpMode{
     int currentFL = 0;
 
     final int magicnum = 1120; //1440 for tetrix motors, 1120 for andymark40
-    final double diameter = 97.6/25.4;
+    final double diameter = 5;
     final double circ = Math.PI * diameter;
     final double ratio = 1;
 
@@ -57,8 +57,8 @@ public class RobotOpMode extends LinearOpMode{
     DcMotor dispL;
     DcMotor dispR;
 
-    double dispPower = 0.3;
-    int dispPosition = 200;
+    final double dispPower = 0.3;
+    final int dispPosition = 5500;
 
     // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
 
@@ -134,9 +134,8 @@ public class RobotOpMode extends LinearOpMode{
         dispL = hardwareMap.dcMotor.get("dL");
         dispR = hardwareMap.dcMotor.get("dR");
 
-        dispL.setDirection(DcMotor.Direction.REVERSE);
+        dispR.setDirection(DcMotor.Direction.REVERSE);
 
-        runDispenserWithEncoders();
         resetDispenserEncoders();
 
 
@@ -208,6 +207,15 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
+    public void runWheelsToPosition(){
+
+        fR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        bR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        fL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        bL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+    }
+
 
     public void getNewWheelPositions(){
 
@@ -232,6 +240,13 @@ public class RobotOpMode extends LinearOpMode{
 
     public void runDispenserWithEncoders(){
 
+        dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+    }
+
+    public void runDispenserWithoutEncoders(){
+
         dispL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         dispR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
@@ -241,6 +256,9 @@ public class RobotOpMode extends LinearOpMode{
 
         dispL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         dispR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
+
+        dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
     }
 
@@ -300,6 +318,15 @@ public class RobotOpMode extends LinearOpMode{
 
 
     // Encoder Math ////////////////////////////////////////////////////////////////////////////////
+
+    public boolean atWheelPosition(int target){
+
+        if(inRange(fL.getCurrentPosition(), target)){ //RIGHT NOW IT'S SET TO THE FRONT LEFT
+            return true;
+        }
+
+        return false;
+    }
 
     public boolean atWheelPosition(int targetbL, int targetbR, int targetfL, int targetfR){
 

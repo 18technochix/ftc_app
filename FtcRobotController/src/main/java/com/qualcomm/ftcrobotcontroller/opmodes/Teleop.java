@@ -16,7 +16,7 @@ public class Teleop extends RobotOpMode{
 
         super.runOpMode();
 
-        gyro.startIMU(); //THIS IS TEMPORARY
+       // gyro.startIMU(); //THIS IS TEMPORARY
 
         waitForStart();
 
@@ -49,11 +49,13 @@ public class Teleop extends RobotOpMode{
 
          */
 
+        /*
         gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
         telemetry.addData("Headings(yaw): ",
                 String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
         telemetry.addData("Pitches: ",
                 String.format("Euler= %4.5f, Quaternion calculated= %4.5f", pitchAngle[0], pitchAngle[1]));
+                */
 
 
         // Cow Catchers ////////////////////////////////////////////////////////////////////////////
@@ -121,10 +123,14 @@ public class Teleop extends RobotOpMode{
             in all of our TeleOp and Autonomous programs on a global scale.
          */
 
+        ///*
+
+        /*
         dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        */
 
-        if(gamepad2.left_stick_y > 0.1){
+        if(gamepad2.left_stick_y < -0.1){
 
             dispL.setTargetPosition(dispPosition);
             dispR.setTargetPosition(dispPosition);
@@ -132,7 +138,7 @@ public class Teleop extends RobotOpMode{
             dispL.setPower(dispPower);
             dispR.setPower(dispPower);
 
-        }else if(gamepad2.left_stick_y < -0.1){
+        }else if(gamepad2.left_stick_y > 0.1){
 
             dispL.setTargetPosition(0);
             dispR.setTargetPosition(0);
@@ -146,6 +152,8 @@ public class Teleop extends RobotOpMode{
             dispR.setPower(0);
 
         }
+
+       // */
 
 
     }// end of teleop()

@@ -16,19 +16,11 @@ public class IMURedAuto extends RobotOpMode {
 
         waitForStart();
 
-
         if (opModeIsActive()) {
 
-            /*
-            gyro.getIMUGyroAngles(rollAngle, pitchAngle, yawAngle);
-            telemetry.addData("Headings(yaw): ",
-                    String.format("Euler= %4.5f, Quaternion calculated= %4.5f", yawAngle[0], yawAngle[1]));
-            turnRight(0.7);
-            waitOneFullHardwareCycle();
-            */
+            forward(-10, 0.5);
 
-            turn(90.0, 0.3);
-            turn(100.0, 0.3);
+            turn(90.0, 0.4);
 
         }
 
@@ -47,6 +39,8 @@ public class IMURedAuto extends RobotOpMode {
 
     public void turn(double angle, double power) throws InterruptedException {
 
+        runWheelsWithoutEncoders();
+
         double startingAngle;
         double targetAngle;
 
@@ -61,9 +55,11 @@ public class IMURedAuto extends RobotOpMode {
 
             if(startingAngle + angle < -180.0){
 
+                //telemetry?
+
                 targetAngle = (360 + (startingAngle + angle));
 
-                turnLeft(power);
+                turnRight(power);
 
                 while ((yawAngle[0] < 0 && yawAngle[0] > -180) || (yawAngle [0] > 0 && yawAngle[0] > targetAngle)) {
 
@@ -77,9 +73,9 @@ public class IMURedAuto extends RobotOpMode {
 
                 targetAngle = startingAngle + angle;
 
-                turnLeft(power);
+                turnRight(power);
 
-                while (yawAngle[0] < targetAngle) {
+                while (yawAngle[0] > targetAngle) {
 
                     refreshIMU();
                     waitOneFullHardwareCycle();
@@ -95,7 +91,7 @@ public class IMURedAuto extends RobotOpMode {
 
                 targetAngle = (startingAngle + angle) - 360;
 
-                turnRight(power);
+                turnLeft(power);
 
                 while ((yawAngle[0] > 0 && yawAngle[0] < 180) || (yawAngle [0] < 0 && yawAngle[0] < targetAngle)) {
 
@@ -108,9 +104,9 @@ public class IMURedAuto extends RobotOpMode {
 
                 targetAngle = startingAngle + angle;
 
-                turnRight(power);
+                turnLeft(power);
 
-                while(yawAngle[0] > targetAngle){
+                while(yawAngle[0] < targetAngle){
 
                     refreshIMU();
                     waitOneFullHardwareCycle();
@@ -150,8 +146,8 @@ public class IMURedAuto extends RobotOpMode {
 
     public void turnLeft(double power){
 
-        fR.setPower(0);
-        bR.setPower(0);
+        fR.setPower(-power);
+        bR.setPower(-power);
         fL.setPower(power);
         bL.setPower(power);
 
@@ -161,8 +157,8 @@ public class IMURedAuto extends RobotOpMode {
 
         fR.setPower(power);
         bR.setPower(power);
-        fL.setPower(0);
-        bL.setPower(0);
+        fL.setPower(-power);
+        bL.setPower(-power);
 
     }
 
@@ -312,11 +308,25 @@ public class IMURedAuto extends RobotOpMode {
 
     }
 
-    public void forward(double seconds, double power) throws InterruptedException {
+
+    public void forward(double inches, double power) throws InterruptedException {
+
+        resetWheelEncoders();
+
+        fR.setTargetPosition(counts(inches));
+        fL.setTargetPosition(counts(inches));
+        bR.setTargetPosition(counts(inches));
+        bL.setTargetPosition(counts(inches));
+
+        runWheelsToPosition();
 
         startWheels(power);
 
-        waitForTime(seconds);
+        while(!atWheelPosition(counts(inches))){
+            telemetry.addData("Pos:", String.format("%03d %03d %03d %03d", bR.getCurrentPosition(),
+                    fR.getCurrentPosition(), bL.getCurrentPosition(), bR.getCurrentPosition()));
+            waitOneFullHardwareCycle();
+        }
 
         stopWheels();
 
