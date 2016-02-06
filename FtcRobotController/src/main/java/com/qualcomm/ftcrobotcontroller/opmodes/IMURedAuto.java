@@ -18,9 +18,35 @@ public class IMURedAuto extends RobotOpMode {
 
         if (opModeIsActive()) {
 
-            forward(-10, 0.5);
+            move(-14, 0.5);
+            waitOneFullHardwareCycle();
+            waitForTime(0.2);
+            turn(34.0, 0.4);
+            waitOneFullHardwareCycle();
+            waitForTime(0.1);
+            move(-80, 0.5);
+            waitOneFullHardwareCycle();
+            waitForTime(0.2);
+            turn(34.0, 0.4);
 
-            turn(90.0, 0.4);
+            // start line sensing
+            followLine();
+            sense();
+
+            /*
+
+            forward off the wall
+            turn cc to be parallel with the line
+            forward until you reach the red box
+            turn cc to be perpendicular to the red box
+            maybe forward a bit
+            follow line forward until you hit the beacon with the touch sensor
+            program that senses the colors by moving the servo, then picking a side
+            then whamming into and back out of the beacon
+            then backing up a bit more
+            how do we get out of here?
+
+             */
 
         }
 
@@ -124,59 +150,18 @@ public class IMURedAuto extends RobotOpMode {
     }
 
 
-    // Wheel Power /////////////////////////////////////////////////////////////////////////////////
-
-    public void startWheels(double power)throws InterruptedException {
-
-        fR.setPower(power);
-        bR.setPower(power);
-        fL.setPower(power);
-        bL.setPower(power);
-
-    }
-
-    public void stopWheels()throws InterruptedException {
-
-        fR.setPower(0);
-        bR.setPower(0);
-        fL.setPower(0);
-        bL.setPower(0);
-
-    }
-
-    public void turnLeft(double power){
-
-        fR.setPower(-power);
-        bR.setPower(-power);
-        fL.setPower(power);
-        bL.setPower(power);
-
-    }
-
-    public void turnRight(double power){
-
-        fR.setPower(power);
-        bR.setPower(power);
-        fL.setPower(-power);
-        bL.setPower(-power);
-
-    }
-
-
-
-
     public boolean sense() throws InterruptedException {
 
-        startWheels(-0.1);
-        waitForTime(0.25);
-        stopWheels();
+        //back up a tiny bit
+        move(4, 0.3);
+        waitOneFullHardwareCycle();
 
         float hsvValues [] = {0F,0F,0F};
 
         moveBeacon(midLeft);
         waitOneFullHardwareCycle();
 
-        sleep(500);
+        waitForTime(0.5);
 
         int leftBlue = fruity.blue();
         int leftRed = fruity.red();
@@ -185,13 +170,12 @@ public class IMURedAuto extends RobotOpMode {
         float leftHue = hsvValues[0];
         waitOneFullHardwareCycle();
 
-        sleep(500);
+        waitForTime(0.5);
 
-        moveBeacon( midRight);
+        moveBeacon(midRight);
         waitOneFullHardwareCycle();
 
-        sleep(3000);
-        waitOneFullHardwareCycle();
+        waitForTime(2);
 
         hsvValues [0] = 0;
 
@@ -207,18 +191,24 @@ public class IMURedAuto extends RobotOpMode {
         telemetry.addData("leftHue", leftHue);
         telemetry.addData("rightHue", rightHue);
 
-        sleep(500);
-
         if(red) {
 
             if (leftHue < hue && rightHue > hue) {
-                // RIGHT IS RED
-                //push button
+                moveBeacon(fullRight);
+                waitOneFullHardwareCycle();
+                move(-5, 0.7);
+                waitOneFullHardwareCycle();
+                move(5, 0.3);
+                waitOneFullHardwareCycle();
                 return true;
 
             } else if (leftHue > hue && rightHue < hue) {
-                //LEFT IS RED
-                //push button
+                moveBeacon(fullLeft);
+                waitOneFullHardwareCycle();
+                move(-5, 0.7);
+                waitOneFullHardwareCycle();
+                move(5, 0.3);
+                waitOneFullHardwareCycle();
                 return true;
             }
 
@@ -227,100 +217,87 @@ public class IMURedAuto extends RobotOpMode {
         }else{
 
             if (leftHue < hue && rightHue > hue) {
-                // RIGHT IS RED
-                //push button
+                moveBeacon(fullLeft);
+                waitOneFullHardwareCycle();
+                move(-5, 0.7);
+                waitOneFullHardwareCycle();
+                move(5, 0.3);
+                waitOneFullHardwareCycle();
                 return true;
             } else if (leftHue > hue && rightHue < hue) {
-                //LEFT IS RED
-                //push button
+                moveBeacon(fullRight);
+                waitOneFullHardwareCycle();
+                move(-5, 0.7);
+                waitOneFullHardwareCycle();
+                move(5, 0.3);
+                waitOneFullHardwareCycle();
                 return true;
             }
 
 
 
         }
+
+
         return false;
 
 
     }
 
-    public boolean followLine() throws InterruptedException {
+    public void followLine() throws InterruptedException {
 
-        beacon.setPosition(mid);
-        //open beacon sensor
+        beacon.setPosition(mid); //open beacon sensor
+
+        waitOneFullHardwareCycle();
 
         //close cows
-        cowLeft.setPosition(0);
-        cowRight.setPosition(1);
+        //cowLeft.setPosition(0);
+       // cowRight.setPosition(1);
 
-        //distance = eyes.getUltrasonicLevel();
-
-        //distance >= 20.0
-        if(touchy.isPressed() == false) {
+        while(touchy.isPressed() == false) {
 
             telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
 
             lightLeft = lightL.getLightDetected();
             lightRight = lightR.getLightDetected();
-            //distance = eyes.getUltrasonicLevel();
-
-            /*
-            if(lightLeft < 0.1 || lightRight < 0.1){ //if its red, move forward a bit
-
-                startWheels(linePower);
-                waitForTime(lineTime);
-                stopWheels();
-
-
-            } else
-            */
 
             if(lightLeft > 0.65 && lightRight < 0.33){
 
-                //turn(0.15, 0.4, false);
-                startWheels(lopower);
-                //waitForTime(lineTime);
-                //turn(0.25, 0.4, true);
-                waitOneFullHardwareCycle();
+                slightTurn(true, 0.3, 0.1);
 
             } else if(lightRight > 0.75 && lightLeft < 0.3){
 
-                // turn(0.15, 0.4, true);
-                startWheels(lopower);
-                //waitForTime(lineTime);
-                // turn(0.25, 0.4, false);
-                waitOneFullHardwareCycle();
+                slightTurn(false, 0.3, 0.1);
 
             } else{
-                startWheels(lopower);
-                //waitForTime(lineTime);
-                stopWheels();
+
+                move(-2, 0.3);
 
             }
 
-            return false;
+            waitOneFullHardwareCycle();
 
-        }else {
-
-            return true;
 
         }
 
     }
 
 
-    public void forward(double inches, double power) throws InterruptedException {
+    public void move(double inches, double power) throws InterruptedException {
 
         resetWheelEncoders();
+        runWheelsToPosition();
 
         fR.setTargetPosition(counts(inches));
         fL.setTargetPosition(counts(inches));
         bR.setTargetPosition(counts(inches));
         bL.setTargetPosition(counts(inches));
 
-        runWheelsToPosition();
+        waitOneFullHardwareCycle();
 
         startWheels(power);
+
+        waitOneFullHardwareCycle();
 
         while(!atWheelPosition(counts(inches))){
             telemetry.addData("Pos:", String.format("%03d %03d %03d %03d", bR.getCurrentPosition(),
@@ -332,6 +309,32 @@ public class IMURedAuto extends RobotOpMode {
 
     }
 
+    public void slightTurn(boolean left, double power, double seconds) throws InterruptedException {
+
+        runWheelsWithoutEncoders();
+
+        if (!left) {
+            fR.setPower(0);
+            bR.setPower(0);
+            fL.setPower(power);
+            bL.setPower(power);
+        }else{
+
+            fR.setPower(power);
+            bR.setPower(power);
+            fL.setPower(0);
+            bL.setPower(0);
+
+        }
+
+        waitForTime(seconds);
+
+        stopWheels();
+
+        waitOneFullHardwareCycle();
+
+    }
+
 
     //Generic Methods //////////////////////////////////////////////////////////////////////////////
 
@@ -340,6 +343,7 @@ public class IMURedAuto extends RobotOpMode {
         while(getRuntime() < startTime + seconds){
             waitOneFullHardwareCycle();
         }
+        waitOneFullHardwareCycle();
     } //end of wait for time void
 
 

@@ -121,7 +121,7 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
-    public void initialize(){
+    public void initialize() throws InterruptedException {
 
         fR = hardwareMap.dcMotor.get("fR");
         bR = hardwareMap.dcMotor.get("bR");
@@ -146,6 +146,7 @@ public class RobotOpMode extends LinearOpMode{
 
         cowLeft.setPosition(0);
         cowRight.setPosition(1);
+        */
 
         beacon = hardwareMap.servo.get("beacon");
 
@@ -155,7 +156,7 @@ public class RobotOpMode extends LinearOpMode{
         lightL = hardwareMap.lightSensor.get("lineleft");
 
         touchy = hardwareMap.touchSensor.get("touchy");
-        */
+
 
         try {
             gyro = new AdafruitIMU(hardwareMap, "gyro"
@@ -169,19 +170,16 @@ public class RobotOpMode extends LinearOpMode{
 
         if(auto){
 
-            // init for servos /////////////////////
-            //lightL.enableLed(true);
-            //lightR.enableLed(true);
-            //beacon.setPosition(fullLeft);
-            //resetWheelEncoders();
+            lightL.enableLed(true);
+            lightR.enableLed(true);
 
-            //init for gyro
+            beacon.setPosition(fullLeft);
 
             gyro.startIMU();
 
         }else{ // teleop configuration
-            //beacon.setPosition(fullRight);
-           runWheelsWithoutEncoders();
+            beacon.setPosition(fullRight);
+            runWheelsWithoutEncoders();
         }
 
 
@@ -198,21 +196,27 @@ public class RobotOpMode extends LinearOpMode{
 
     // Encoders  ///////////////////////////////////////////////////////////////////////////////////
 
-    public void resetWheelEncoders(){
+    public void resetWheelEncoders() throws InterruptedException {
 
         fR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         bR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         fL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         bL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
+        for (int i = 0; i < 2; i++)
+            waitOneFullHardwareCycle();
+
     }
 
-    public void runWheelsToPosition(){
+    public void runWheelsToPosition() throws InterruptedException {
 
         fR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         bR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         fL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         bL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+
+        for (int i = 0; i < 2; i++)
+            waitOneFullHardwareCycle();
 
     }
 
@@ -226,44 +230,88 @@ public class RobotOpMode extends LinearOpMode{
 
     }
 
-    public void runWheelsWithoutEncoders(){
+    public void runWheelsWithoutEncoders() throws InterruptedException {
 
         fL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         fR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         bL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         bR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
+        for (int i = 0; i < 2; i++)
+            waitOneFullHardwareCycle();
+
     }
 
 
     // Dispenser Arm Encoders //////////////////////////////////////////////////////////////////////
 
-    public void runDispenserWithEncoders(){
+    public void runDispensersToPosition() throws InterruptedException {
 
         dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
         dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
 
+        waitOneFullHardwareCycle();
+
     }
 
-    public void runDispenserWithoutEncoders(){
+    public void runDispenserWithoutEncoders() throws InterruptedException {
 
         dispL.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
         dispR.setMode(DcMotorController.RunMode.RUN_WITHOUT_ENCODERS);
 
+        waitOneFullHardwareCycle();
+
     }
 
-    public void resetDispenserEncoders(){
+    public void resetDispenserEncoders() throws InterruptedException {
 
         dispL.setMode(DcMotorController.RunMode.RESET_ENCODERS);
         dispR.setMode(DcMotorController.RunMode.RESET_ENCODERS);
 
-        dispL.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
-        dispR.setMode(DcMotorController.RunMode.RUN_TO_POSITION);
+        waitOneFullHardwareCycle();
 
     }
 
 
     // Autonomous //////////////////////////////////////////////////////////////////////////////////
+
+    // Wheel Power /////////////////////////////////////////////////////////////////////////////////
+
+    public void startWheels(double power)throws InterruptedException {
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(power);
+        bL.setPower(power);
+
+    }
+
+    public void stopWheels()throws InterruptedException {
+
+        fR.setPower(0);
+        bR.setPower(0);
+        fL.setPower(0);
+        bL.setPower(0);
+
+    }
+
+    public void turnLeft(double power){
+
+        fR.setPower(-power);
+        bR.setPower(-power);
+        fL.setPower(power);
+        bL.setPower(power);
+
+    }
+
+    public void turnRight(double power){
+
+        fR.setPower(power);
+        bR.setPower(power);
+        fL.setPower(-power);
+        bL.setPower(-power);
+
+    }
 
     public void moveBeacon(double position) throws InterruptedException {
 
