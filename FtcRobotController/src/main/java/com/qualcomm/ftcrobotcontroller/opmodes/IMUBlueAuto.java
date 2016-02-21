@@ -2,16 +2,17 @@ package com.qualcomm.ftcrobotcontroller.opmodes;
 
 import android.graphics.Color;
 
-import com.qualcomm.robotcore.hardware.DcMotorController;
+/**
+ * Created by Techno Team_PC_III on 2/20/2016.
+ */
+public class IMUBlueAuto extends RobotOpMode {
 
-
-public class IMURedAuto extends RobotOpMode {
     double startTime;
 
     public void runOpMode() throws InterruptedException {
 
         auto = true;
-        red = true;
+        red = false;
         super.runOpMode(); //initalizes robot
 
         waitForStart();
@@ -26,7 +27,7 @@ public class IMURedAuto extends RobotOpMode {
             waitOneFullHardwareCycle();
             waitForTime(0.2);
 
-            turn(34.0, 0.7);
+            turn(-34.0, 0.7);
             waitOneFullHardwareCycle();
             waitForTime(0.1);
 
@@ -34,7 +35,7 @@ public class IMURedAuto extends RobotOpMode {
             waitOneFullHardwareCycle();
             waitForTime(0.2);
 
-            turn(40.0, 0.7);
+            turn(-40.0, 0.7);
             waitOneFullHardwareCycle();
             waitForTime(0.1);
 
@@ -58,13 +59,13 @@ public class IMURedAuto extends RobotOpMode {
             // start line sensing
             followLine();
 
-           // back up a tiny bit
+            // back up a tiny bit
             move(4, 0.3);
             waitOneFullHardwareCycle();
 
             climbers();
 
-           // sense();
+            // sense();
 
             /*
 
@@ -333,7 +334,7 @@ public class IMURedAuto extends RobotOpMode {
 
         //close cows
         //cowLeft.setPosition(0);
-       // cowRight.setPosition(1);
+        // cowRight.setPosition(1);
 
         while(touchy.isPressed() == false) {
 
@@ -428,7 +429,4 @@ public class IMURedAuto extends RobotOpMode {
     } //end of wait for time void
 
 
-}// end of auto class
-
-
-
+}

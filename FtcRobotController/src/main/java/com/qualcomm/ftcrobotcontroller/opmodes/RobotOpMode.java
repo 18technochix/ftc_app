@@ -59,6 +59,20 @@ public class RobotOpMode extends LinearOpMode{
 
     final double dispPower = 0.3;
     final int dispPosition = 5500;
+    final int climbersPosition = 3000;
+
+    // Dispenser Bucket ////////////////////////////////////////////////////////////////////////////
+
+    Servo release; // this is the two(using a y-connector) that relase the debris from the bucket
+    double releaseClosed = 0.9;
+    double releaseOpen = 0.4 ;
+
+    Servo tilt; // used to tilt the bucket, needs to be variable
+    double tiltMiddle = 0.5;
+
+    Servo climbers; // releases the climbers
+    double climbersClosed = 0.45;
+    double climbersOpen = 0.75;
 
     // Cowcatcher //////////////////////////////////////////////////////////////////////////////////
 
@@ -68,10 +82,14 @@ public class RobotOpMode extends LinearOpMode{
     double cowLeftOpen =  0.35;
     double cowRightOpen = 0.75;
 
+    // Harvester //////////////////////////////////////////////////////////////////////////////////
+
+    DcMotor harvester;
 
     // Beacon servo ////////////////////////////////////////////////////////////////////////////////
 
     Servo beacon;
+
 
     double servorange = 0.05;
 
@@ -118,6 +136,9 @@ public class RobotOpMode extends LinearOpMode{
     public void runOpMode() throws InterruptedException{
 
         initialize();
+        waitOneFullHardwareCycle();
+        runDispensersToPosition();
+        waitOneFullHardwareCycle();
 
     }
 
@@ -138,15 +159,13 @@ public class RobotOpMode extends LinearOpMode{
 
         resetDispenserEncoders();
 
-
-        /*
-
         cowLeft = hardwareMap.servo.get("cowleft");
         cowRight = hardwareMap.servo.get("cowright");
 
         cowLeft.setPosition(0);
         cowRight.setPosition(1);
-        */
+
+        harvester = hardwareMap.dcMotor.get("harvest");
 
         beacon = hardwareMap.servo.get("beacon");
 
@@ -156,6 +175,15 @@ public class RobotOpMode extends LinearOpMode{
         lightL = hardwareMap.lightSensor.get("lineleft");
 
         touchy = hardwareMap.touchSensor.get("touchy");
+
+        release = hardwareMap.servo.get("release");
+        tilt = hardwareMap.servo.get("tilt");
+        climbers = hardwareMap.servo.get("climbers");
+
+        release.setPosition(releaseClosed);
+        tilt.setPosition(tiltMiddle);
+        climbers.setPosition(climbersClosed);
+
 
 
         try {
@@ -175,11 +203,14 @@ public class RobotOpMode extends LinearOpMode{
 
             beacon.setPosition(fullLeft);
 
+            release.setPosition(releaseClosed);
+
             gyro.startIMU();
 
         }else{ // teleop configuration
             beacon.setPosition(fullRight);
             runWheelsWithoutEncoders();
+
         }
 
 
