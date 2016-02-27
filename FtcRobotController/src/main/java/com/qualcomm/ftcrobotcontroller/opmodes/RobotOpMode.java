@@ -64,8 +64,8 @@ public class RobotOpMode extends LinearOpMode{
     // Dispenser Bucket ////////////////////////////////////////////////////////////////////////////
 
     Servo release; // this is the two(using a y-connector) that relase the debris from the bucket
-    double releaseClosed = 0.9;
-    double releaseOpen = 0.4 ;
+    double releaseClosed = 1.0;
+    double releaseOpen = 0.15 ;
 
     Servo tilt; // used to tilt the bucket, needs to be variable
     double tiltMiddle = 0.5;
