@@ -79,8 +79,11 @@ public class RobotOpMode extends LinearOpMode{
     Servo cowLeft; //closed is 0, open is 1
     Servo cowRight; //closed is 1, open is 0
 
+    double cowLeftClosed = 0;
+    double cowRightClosed = 1;
+
     double cowLeftOpen =  0.35;
-    double cowRightOpen = 0.75;
+    double cowRightOpen = 0.65;
 
     // Harvester //////////////////////////////////////////////////////////////////////////////////
 
@@ -119,6 +122,9 @@ public class RobotOpMode extends LinearOpMode{
     LightSensor lightR;
     double lightRight;
     double lightLeft;
+
+    double white;
+    double gray;
 
     // Touch sensor ////////////////////////////////////////////////////////////////////////////////
 

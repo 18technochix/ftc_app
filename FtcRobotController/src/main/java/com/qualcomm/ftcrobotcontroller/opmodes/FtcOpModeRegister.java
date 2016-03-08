@@ -57,8 +57,9 @@ public class FtcOpModeRegister implements OpModeRegister {
      */
 
     manager.register("Tele Op", Teleop.class);
-    manager.register("Red Auto", IMURedAuto.class);
-    manager.register("Blue Auto", IMUBlueAuto.class);
+    manager.register("TestAuto", SuperRedAuto.class);
+    //manager.register("Red Auto", IMURedAuto.class);
+    //manager.register("Blue Auto", IMUBlueAuto.class);
     manager.register("Reset Dispenser Arms", ResetDispenser.class);
 
    // manager.register("Linear Gyro", IMULinearOp.class);
