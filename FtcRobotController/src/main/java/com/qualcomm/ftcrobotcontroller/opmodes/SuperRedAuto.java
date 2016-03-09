@@ -8,7 +8,15 @@ public class SuperRedAuto extends RobotOpMode {
     double startTime;
 
     double moveSpeed = 0.3;
+    double sweepSpeed = 0.5;
     double turnSpeed = 0.7;
+
+    double whiteValue = 0.9;
+
+    boolean left = false;
+    int turnCount = 0;
+    final int finalTurnCount = 18;
+    final int sweepDeg = 5;
 
     public void runOpMode() throws InterruptedException {
 
@@ -61,13 +69,17 @@ public class SuperRedAuto extends RobotOpMode {
 
             //make sure that the line is sensed and present
 
-            //findLine();
+            while(findLine() == false){
+                waitOneFullHardwareCycle();
+            }
 
-            followLine();
-
+            //followLine();
             waitOneFullHardwareCycle();
 
-            climbers();
+            //sense();
+            waitOneFullHardwareCycle();
+
+            //climbers();
 
         }
     }
@@ -89,11 +101,11 @@ public class SuperRedAuto extends RobotOpMode {
             lightLeft = lightL.getLightDetected();
             lightRight = lightR.getLightDetected();
 
-            if(lightLeft > 0.5){
+            if(lightLeft > whiteValue){
 
                 slightTurn(true, 0.3, 0.1);
 
-            } else if(lightRight > 0.5){
+            } else if(lightRight > whiteValue){
 
                 slightTurn(false, 0.3, 0.1);
 
@@ -252,21 +264,62 @@ public class SuperRedAuto extends RobotOpMode {
 
     }//end of move void
 
-    public void findLine() throws InterruptedException {
+    public boolean findLine() throws InterruptedException {
         beacon.setPosition(mid);
         waitOneFullHardwareCycle();
 
         while(touchy.isPressed() == false) {
 
-            telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
+             telemetry.addData("it's getting values lol", "okay? cool.");
 
-            lightLeft = lightL.getLightDetected();
-            lightRight = lightR.getLightDetected();
+             lightLeft = lightL.getLightDetected();
+             lightRight = lightR.getLightDetected();
 
             waitOneFullHardwareCycle();
 
+            telemetry.addData("Floor reading", String.format("%.4f %.4f", lightLeft, lightRight));
 
+            waitOneFullHardwareCycle();
+
+            if(lightLeft > whiteValue || lightRight > whiteValue) {
+                telemetry.addData("one is sensed as white", "okay? cool.");
+                return true;
+
+            }else {
+
+                if (!left && turnCount >= finalTurnCount) {
+                    telemetry.addData("it turned right, switching left", "okay? cool.");
+                    turnCount = 0;
+                    turn(finalTurnCount * sweepDeg, turnSpeed);
+                    left = true;
+
+                } else if (left && turnCount >= finalTurnCount) {
+                    telemetry.addData("it turned both ways, resetting program", "okay? cool.");
+                    turn(-finalTurnCount * sweepDeg, turnSpeed);
+                    move(-4, moveSpeed);
+                    left = false;
+                    return false;
+
+                } else if (left) {
+                    telemetry.addData("turning left", "okay? cool.");
+                    turn(sweepDeg, sweepSpeed);
+                    waitForTime(0.1);
+
+                } else {
+                    telemetry.addData("turning right", "okay? cool.");
+                    turn(-sweepDeg, sweepSpeed);
+                    waitForTime(0.1);
+
+                }
+
+                waitOneFullHardwareCycle();
+
+            }
+
+            waitOneFullHardwareCycle();
         }
+        telemetry.addData("the button is presses LOL", "okay? cool.");
+        return true;
     }
 
     public void waitForTime(double seconds) throws InterruptedException{

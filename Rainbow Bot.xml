@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot>
+    <ServoController name="Servo Controller" serialNumber="AI02QSKO">
+        <Servo name="tilt" port="1" />
+        <Servo name="release" port="2" />
+        <Servo name="climbers" port="3" />
+        <Servo name="cowleft" port="4" />
+        <Servo name="cowright" port="5" />
+        <Servo name="beacon" port="6" />
+    </ServoController>
+    <LegacyModuleController name="Legacy Module" serialNumber="AL00VGXZ">
+        <LightSensor name="lineright" port="4" />
+        <LightSensor name="lineleft" port="5" />
+    </LegacyModuleController>
+    <MotorController name="Left MC" serialNumber="AL00VEA8">
+        <Motor name="fL" port="1" />
+        <Motor name="bL" port="2" />
+    </MotorController>
+    <MotorController name="Harvester Left" serialNumber="AL00YCWT">
+        <Motor name="dL" port="1" />
+    </MotorController>
+    <MotorController name="Right MC" serialNumber="AH00QJBO">
+        <Motor name="fR" port="1" />
+        <Motor name="bR" port="2" />
+    </MotorController>
+    <MotorController name="Harvester Right" serialNumber="AL00VEA0">
+        <Motor name="dR" port="1" />
+        <Motor name="harvest" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="Device Interface Module" serialNumber="AL00VC8K">
+        <ColorSensor name="fruity" port="4" />
+        <I2cDevice name="gyro" port="5" />
+        <TouchSensor name="touchy" port="7" />
+    </DeviceInterfaceModule>
+</Robot>
