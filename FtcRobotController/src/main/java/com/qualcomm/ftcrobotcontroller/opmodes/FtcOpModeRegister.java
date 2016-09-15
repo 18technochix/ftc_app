@@ -63,6 +63,8 @@ public class FtcOpModeRegister implements OpModeRegister {
     //manager.register("Blue Auto", IMUBlueAuto.class);
     manager.register("Reset Dispenser Arms", ResetDispenser.class);
 
+    manager.register("Demo", DemoTeleOp.class);
+
    // manager.register("Linear Gyro", IMULinearOp.class);
     //manager.register("Ada Test", AdafruitRGBExample.class);
 
