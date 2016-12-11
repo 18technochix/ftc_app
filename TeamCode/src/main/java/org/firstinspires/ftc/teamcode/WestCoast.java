@@ -37,6 +37,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -60,6 +61,11 @@ public class WestCoast extends LinearOpMode {
     DcMotor leftMotor = null;
     DcMotor rightMotor = null;
     DcMotor shooter = null;
+    DcMotor collector = null;
+    Servo particleLift = null;
+    Servo ccLeft = null;
+    Servo ccRight = null;
+
        double p=0.;
 
     @Override
@@ -74,47 +80,81 @@ public class WestCoast extends LinearOpMode {
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         shooter = hardwareMap.dcMotor.get("shooter");
+        particleLift = hardwareMap.servo.get("particle lift");
+        collector = hardwareMap.dcMotor.get("collector");
+        ccLeft = hardwareMap.servo.get("cc left");
+        ccRight = hardwareMap.servo.get("cc right");
 
+        double ccLeftClose = (10./255.);
+        double ccRightClose = (212./255.);
+        double ccLeftOpen = (200./255.);
+        double ccRightOpen = (50./255.);
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        shooter.setDirection(DcMotorSimple.Direction.FORWARD);
+        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
+        collector.setDirection(DcMotor.Direction.REVERSE);
+        particleLift.setPosition(250./255.);
+        ccRight.setPosition(ccRightClose);
+        ccLeft.setPosition(ccLeftClose);
+
+        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
+        leftMotor.setPower(0.);
+        rightMotor.setPower(0.);
+        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            Double tp = p;
+            telemetry.addData("Shooter:", tp.toString());
             telemetry.update();
+
+            double lp = gamepad1.left_stick_y;
+            double rp = gamepad1.right_stick_y;
 
             //shooter
             double motorIncrement= .01;
-            float a;
 
-            if (gamepad1.y){
-                if (p < 1.) {
+            if (gamepad2.y){
+                if (p < .8) {
                     p = p + motorIncrement;
                 }
-                else if (p >= 1.) {
-                    p = 1.;
+                else if (p >= .8) {
+                    p = .8;
                                     }
                          }
-            else if (gamepad1.x){
-                p=.35;
-            }
-            else if (gamepad1.a){
-                if (p < .5) {
+            else if (gamepad2.b){
+                if (p < .2) {
                     p = p + motorIncrement;
                 }
-                else if (p >= .5) {
-                    p = .5;
+                else if (p >= .2) {
+                    p = .2;
                 }
             }
-            else if (gamepad1.b){
-                p=.4;
+            else if (gamepad2.a){
+                if (p < .4) {
+                    p = p + motorIncrement;
+                }
+                else if (p >= .4) {
+                    p = .2;
+                }
+            }
+            else if (gamepad2.x){
+                if (p < .6) {
+                    p = p + motorIncrement;
+                }
+                else if (p >= .6) {
+                    p = .6;
+                }
             }
             else{
                 if (p > 0.){
@@ -124,7 +164,7 @@ public class WestCoast extends LinearOpMode {
                     }
                 }
                 else{ //p <= 0 ?
-                    p = 0;
+                    p = 0.;
                 }
             }
 
@@ -135,8 +175,41 @@ public class WestCoast extends LinearOpMode {
             shooter.setPower(p);
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-            leftMotor.setPower(gamepad1.left_stick_y);
-            rightMotor.setPower(gamepad1.right_stick_y);
+
+            if (gamepad1.right_bumper){
+                lp = lp / 2;
+                rp = rp / 2;
+            }
+
+            leftMotor.setPower(lp);
+            rightMotor.setPower(rp);
+
+            //servo control
+            if (gamepad2.dpad_up){
+                particleLift.setPosition(190./255.);
+            }
+            else{
+                particleLift.setPosition(250./255.);
+            }
+
+            //collector control
+
+            collector.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+
+            //cowcatcher control
+
+            //open them
+            if (gamepad2.dpad_left){
+                ccLeft.setPosition(ccLeftOpen);
+                sleep(100);
+                ccRight.setPosition(ccRightOpen);
+            }
+            //close them
+            if (gamepad2.dpad_right){
+                ccRight.setPosition(ccRightClose);
+                sleep(100);
+                ccLeft.setPosition(ccLeftClose);
+            }
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
