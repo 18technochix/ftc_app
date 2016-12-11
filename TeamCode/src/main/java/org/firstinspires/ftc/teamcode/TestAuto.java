@@ -94,7 +94,7 @@ public class TestAuto extends LinearOpMode{
         waitForStart();
 
         double p = 0;
-        while (p < 0.6) {
+        while (p < 0.45) {
             p += .01;
             shooter.setPower(p);
             sleep(20);
