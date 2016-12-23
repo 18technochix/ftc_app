@@ -40,6 +40,8 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
  * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
@@ -53,91 +55,59 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="WestCoast OpMode", group="Linear Opmode")  // @Autonomous(...) is the other common choice
+@TeleOp(name="WestCoast OpMode", group="Linear Opmode")
 public class WestCoast extends LinearOpMode {
+    //connect hardware code with teleop code
+    GoldilocksHardware robot           = new GoldilocksHardware();
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
-    DcMotor leftMotor = null;
-    DcMotor rightMotor = null;
-    DcMotor shooter = null;
-    DcMotor collector = null;
-    DcMotor buttonBopper = null;
-    Servo particleLift = null;
-    Servo ccLeft = null;
-    Servo ccRight = null;
-
-       double p=0.;
+    double p=0.;
 
     @Override
     public void runOpMode() throws InterruptedException {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        /* eg: Initialize the hardware variables. Note that the strings used here as parameters
-         * to 'get' must correspond to the names assigned during the robot configuration
-         * step (using the FTC Robot Controller app on the phone).
-         */
-        leftMotor  = hardwareMap.dcMotor.get("left motor");
-        rightMotor = hardwareMap.dcMotor.get("right motor");
-        shooter = hardwareMap.dcMotor.get("shooter");
-        buttonBopper = hardwareMap.dcMotor.get("button bopper");
-        collector = hardwareMap.dcMotor.get("collector");
-        ccLeft = hardwareMap.servo.get("cc left");
-        ccRight = hardwareMap.servo.get("cc right");
-        particleLift = hardwareMap.servo.get("particle lift");
-
-        double ccLeftClose = (10./255.);
-        double ccRightClose = (212./255.);
-        double ccLeftOpen = (200./255.);
-        double ccRightOpen = (50./255.);
-
-        boolean leftOpen = false;
-        boolean rightOpen = false;
-        // eg: Set the drive motor directions:
-        // "Reverse" the motor that runs backwards when connected directly to the battery
-        leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        rightMotor.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
-        shooter.setDirection(DcMotorSimple.Direction.REVERSE);
-        collector.setDirection(DcMotor.Direction.REVERSE);
-        particleLift.setPosition(250./255.);
-        ccRight.setPosition(ccRightClose);
-        ccLeft.setPosition(ccLeftClose);
-
-        leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.teleInit(hardwareMap);
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
 
-        leftMotor.setPower(0.);
-        rightMotor.setPower(0.);
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        // run until the end of the match (driver presses STOP)
+       // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             Double tp = p;
             telemetry.addData("Shooter:", tp.toString());
             telemetry.update();
 
-            double lp = gamepad1.left_stick_y;
+
+            //DRIVE CONTROL
+            double lp = gamepad1.left_stick_y;          //direct relationship: joystick-motor
             double rp = gamepad1.right_stick_y;
 
-            //shooter
+            if (gamepad1.right_trigger > .5){           //scale down drive speed for control
+                lp = lp / 2;
+                rp = rp / 2;
+            }
+
+            robot.leftMotor.setPower(lp);               //set drive motor power
+            robot.rightMotor.setPower(rp);
+
+
+            //SHOOTER
             double motorIncrement= .01;
 
-            if (gamepad2.y){
+            if (gamepad2.y){                    //12
                 if (p < .8) {
                     p = p + motorIncrement;
                 }
                 else if (p >= .8) {
                     p = .8;
-                                    }
-                         }
-            else if (gamepad2.b){
+                }
+            }
+            else if (gamepad2.b){               //3
                 if (p < .2) {
                     p = p + motorIncrement;
                 }
@@ -145,7 +115,7 @@ public class WestCoast extends LinearOpMode {
                     p = .2;
                 }
             }
-            else if (gamepad2.a){
+            else if (gamepad2.a){               //6
                 if (p < .4) {
                     p = p + motorIncrement;
                 }
@@ -153,7 +123,7 @@ public class WestCoast extends LinearOpMode {
                     p = .4;
                 }
             }
-            else if (gamepad2.x){
+            else if (gamepad2.x){               //9
                 if (p < .6) {
                     p = p + motorIncrement;
                 }
@@ -161,7 +131,7 @@ public class WestCoast extends LinearOpMode {
                     p = .6;
                 }
             }
-            else{
+            else{                               //slowly decrease power once button released
                 if (p > 0.){
                     p = p - motorIncrement;
                     if (p < 0.){
@@ -173,70 +143,72 @@ public class WestCoast extends LinearOpMode {
                 }
             }
 
-//            gamepad1.left_trigger = a;
-//
-//            p + a = p;
+            robot.shooter.setPower(p);          //set shooter power
 
-            shooter.setPower(p);
 
-            // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
-
-            if (gamepad1.right_trigger > .5){
-                lp = lp / 2;
-                rp = rp / 2;
-            }
-
-            leftMotor.setPower(lp);
-            rightMotor.setPower(rp);
-
-            //servo control
+            //PARTICLE LIFT CONTROL
             if (gamepad2.dpad_up){
-                particleLift.setPosition(190./255.);
+                robot.particleLift.setPosition(GoldilocksHardware.particleLiftUp);
             }
             else{
-                particleLift.setPosition(250./255.);
+                robot.particleLift.setPosition(GoldilocksHardware.particleLiftDown);
             }
 
-            //collector control
 
-            collector.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            //COLLECTOR CONTROL
+            robot.collector.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
 
-            //cowcatcher control
 
-            //open them
+            //COWCATCHER CONTROL
+            //open both
             if (gamepad2.dpad_left || gamepad1.dpad_left){
-                ccLeft.setPosition(ccLeftOpen);
+                robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
                 sleep(100);
-                ccRight.setPosition(ccRightOpen);
+                robot.ccRight.setPosition(GoldilocksHardware.ccRightOpen);
             }
-            //close them
+            //close both
             if (gamepad2.dpad_right || gamepad1.dpad_right){
-                ccRight.setPosition(ccRightClose);
+                robot.ccRight.setPosition(GoldilocksHardware.ccRightClose);
                 sleep(100);
-                ccLeft.setPosition(ccLeftClose);
+                robot.ccLeft.setPosition(GoldilocksHardware.ccLeftClose);
             }
 
-            if (! rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper)) {
-                ccRight.setPosition(ccRightOpen);
+            //open right cc
+            if (! GoldilocksHardware.rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper)) {
+                robot.ccRight.setPosition(GoldilocksHardware.ccRightOpen);
                 sleep(100);
-                rightOpen = true;
+                GoldilocksHardware.rightOpen = true;
             }
-            else if (rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper) ){
-                ccRight.setPosition(ccRightClose);
+            //close right cc
+            else if (GoldilocksHardware.rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper) ){
+                robot.ccRight.setPosition(GoldilocksHardware.ccRightClose);
                 sleep(100);
-                rightOpen = false;
+                GoldilocksHardware.rightOpen = false;
             }
 
-            if (! leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper)) {
-                ccLeft.setPosition(ccLeftOpen);
+            //open left cc
+            if (! GoldilocksHardware.leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper)) {
+                robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
                 sleep(100);
-                leftOpen = true;
+                GoldilocksHardware.leftOpen = true;
             }
-            else if (leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper) ){
-                ccLeft.setPosition(ccLeftClose);
+            //close right cc
+            else if (GoldilocksHardware.leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper) ){
+                robot.ccLeft.setPosition(GoldilocksHardware.ccLeftClose);
                 sleep(100);
-                leftOpen = false;
+                GoldilocksHardware.leftOpen = false;
             }
+
+            //BUTTON BOPPER CONTROL
+            /*if (gamepad1.x){
+                robot.buttonBopper.setPower(.5);
+            }
+            if (gamepad1.b){
+                robot.buttonBopper.setPower(-.5);
+            }*/
+            //stop them once they reach a certain encoder value (what is the value?)
+
+
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
     }
