@@ -62,6 +62,7 @@ public class WestCoast extends LinearOpMode {
     DcMotor rightMotor = null;
     DcMotor shooter = null;
     DcMotor collector = null;
+    DcMotor buttonBopper = null;
     Servo particleLift = null;
     Servo ccLeft = null;
     Servo ccRight = null;
@@ -80,15 +81,19 @@ public class WestCoast extends LinearOpMode {
         leftMotor  = hardwareMap.dcMotor.get("left motor");
         rightMotor = hardwareMap.dcMotor.get("right motor");
         shooter = hardwareMap.dcMotor.get("shooter");
-        particleLift = hardwareMap.servo.get("particle lift");
+        buttonBopper = hardwareMap.dcMotor.get("button bopper");
         collector = hardwareMap.dcMotor.get("collector");
         ccLeft = hardwareMap.servo.get("cc left");
         ccRight = hardwareMap.servo.get("cc right");
+        particleLift = hardwareMap.servo.get("particle lift");
 
         double ccLeftClose = (10./255.);
         double ccRightClose = (212./255.);
         double ccLeftOpen = (200./255.);
         double ccRightOpen = (50./255.);
+
+        boolean leftOpen = false;
+        boolean rightOpen = false;
         // eg: Set the drive motor directions:
         // "Reverse" the motor that runs backwards when connected directly to the battery
         leftMotor.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
@@ -145,7 +150,7 @@ public class WestCoast extends LinearOpMode {
                     p = p + motorIncrement;
                 }
                 else if (p >= .4) {
-                    p = .2;
+                    p = .4;
                 }
             }
             else if (gamepad2.x){
@@ -176,7 +181,7 @@ public class WestCoast extends LinearOpMode {
 
             // eg: Run wheels in tank mode (note: The joystick goes negative when pushed forwards)
 
-            if (gamepad1.right_bumper){
+            if (gamepad1.right_trigger > .5){
                 lp = lp / 2;
                 rp = rp / 2;
             }
@@ -199,18 +204,39 @@ public class WestCoast extends LinearOpMode {
             //cowcatcher control
 
             //open them
-            if (gamepad2.dpad_left){
+            if (gamepad2.dpad_left || gamepad1.dpad_left){
                 ccLeft.setPosition(ccLeftOpen);
                 sleep(100);
                 ccRight.setPosition(ccRightOpen);
             }
             //close them
-            if (gamepad2.dpad_right){
+            if (gamepad2.dpad_right || gamepad1.dpad_right){
                 ccRight.setPosition(ccRightClose);
                 sleep(100);
                 ccLeft.setPosition(ccLeftClose);
             }
 
+            if (! rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper)) {
+                ccRight.setPosition(ccRightOpen);
+                sleep(100);
+                rightOpen = true;
+            }
+            else if (rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper) ){
+                ccRight.setPosition(ccRightClose);
+                sleep(100);
+                rightOpen = false;
+            }
+
+            if (! leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper)) {
+                ccLeft.setPosition(ccLeftOpen);
+                sleep(100);
+                leftOpen = true;
+            }
+            else if (leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper) ){
+                ccLeft.setPosition(ccLeftClose);
+                sleep(100);
+                leftOpen = false;
+            }
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
         }
     }
