@@ -81,11 +81,13 @@ public class WestCoast extends LinearOpMode {
             Double tp = p;
             telemetry.addData("Shooter:", tp.toString());
             telemetry.update();
+            Integer teleBop = robot.buttonBopper.getCurrentPosition();
+            telemetry.addData("Bopper:", teleBop.toString());
 
 
             //DRIVE CONTROL
-            double lp = gamepad1.left_stick_y;          //direct relationship: joystick-motor
-            double rp = gamepad1.right_stick_y;
+            double rp = gamepad1.left_stick_y;          //direct relationship: joystick-motor
+            double lp = gamepad1.right_stick_y;
 
             if (gamepad1.right_trigger > .5){           //scale down drive speed for control
                 lp = lp / 2;
@@ -163,13 +165,11 @@ public class WestCoast extends LinearOpMode {
             //open both
             if (gamepad2.dpad_left || gamepad1.dpad_left){
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
-                sleep(100);
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightOpen);
             }
             //close both
             if (gamepad2.dpad_right || gamepad1.dpad_right){
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightClose);
-                sleep(100);
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftClose);
             }
 
@@ -200,12 +200,15 @@ public class WestCoast extends LinearOpMode {
             }
 
             //BUTTON BOPPER CONTROL
-            /*if (gamepad1.x){
+            if (gamepad1.x){
                 robot.buttonBopper.setPower(.5);
             }
-            if (gamepad1.b){
+            else if (gamepad1.b){
                 robot.buttonBopper.setPower(-.5);
-            }*/
+            }
+            else {
+                robot.buttonBopper.setPower(0);
+            }
             //stop them once they reach a certain encoder value (what is the value?)
 
 
