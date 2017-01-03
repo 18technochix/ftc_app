@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
+import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -32,8 +33,8 @@ public class GoldilocksHardware {
 
     public TouchSensor touchBlue = null;
     public TouchSensor touchRed = null;
-    public ColorSensor whiteLineSensorOne = null;
-    public ColorSensor whiteLineSensorTwo = null;
+    public LightSensor whiteLineSensorOne = null;
+    public LightSensor whiteLineSensorTwo = null;
     public ColorSensor colorBlue = null;
     public ColorSensor colorRed = null;
 
@@ -93,8 +94,10 @@ public class GoldilocksHardware {
         buttonBopper = hwMap.dcMotor.get("button bopper");
         collector = hwMap.dcMotor.get("collector");
         touchBlue = hwMap.touchSensor.get("touch left");
-        //touchRed = hwMap.touchSensor.get("touch right");
-        //cdim = hwMap.lightSensor.get("color sensor left");
+        touchRed = hwMap.touchSensor.get("touch right");
+        colorBlue = hwMap.colorSensor.get("color sensor left");
+        whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
+
         //set direction
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
         collector.setDirection(DcMotor.Direction.REVERSE);
@@ -115,8 +118,7 @@ public class GoldilocksHardware {
         ccRight.setPosition(ccRightClose);
         ccLeft.setPosition(ccLeftClose);
 
-        //SENSORS STILL UNDER TESTING
-        //cdim = hwMap.deviceInterfaceModule.get("dim");
+       whiteLineSensorOne.enableLed(true);
     }
 
     //AUTONOMOUS INIT

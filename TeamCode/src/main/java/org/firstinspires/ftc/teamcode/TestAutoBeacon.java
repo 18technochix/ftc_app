@@ -59,7 +59,7 @@ public class TestAutoBeacon extends LinearOpMode{
         robot.particleLift.setPosition(190. / 255.);
         sleep(500);     // pause for servos to move*/
 
-        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -36, -36, 4.0);        //drive forward from wall to get closer to beacons
+       /* moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -36, -36, 4.0);        //drive forward from wall to get closer to beacons
         sleep(500);
         telemetry.addLine("Move completed");
         moveThatRobot(GoldilocksHardware.TURN_SPEED, (3*Math.PI), -(3*Math.PI), 10.0);           //9.42 is roughly 3pi, which turns 90deg FOR BLUE
@@ -68,7 +68,7 @@ public class TestAutoBeacon extends LinearOpMode{
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 40, 40, 8.0);         // drive towards beacons 43.5
         sleep(500);
         moveThatRobot(GoldilocksHardware.TURN_SPEED, (3*Math.PI), -(3*Math.PI), 4.0);       // turn 270deg to go backwards so that sensor is in front of pusher
-        sleep(500);
+        sleep(500);*/
         if (opModeIsActive()) {
             robot.buttonBopper.setPower(.5);
         }
@@ -76,7 +76,7 @@ public class TestAutoBeacon extends LinearOpMode{
              }
         robot.buttonBopper.setPower(0.);
         if (!robot.touchBlue.isPressed()){
-            //stop();
+             stop();
         }
         robot.wallTouch = robot.buttonBopper.getCurrentPosition();
 
