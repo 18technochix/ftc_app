@@ -54,12 +54,13 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;                            //have we touched the wall
-    public static double wallTouchMinus;
-
-    public static boolean redTrue;                              //boolean for color value
-    public static boolean blueTrue;
+    public static int wallTouchMinus = 500;
 
     public static final int maxBop = 2500;
+
+    public static final int redHue = 346;
+    public static final int blueHue = 234;
+    public static final int lineLight = 350;
 
 
     //auto constants
