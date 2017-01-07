@@ -113,19 +113,19 @@ public class WestCoast extends LinearOpMode {
                 }
             }
             else if (gamepad2.b){               //3
-                if (p < .2) {
-                    p = p + motorIncrement;
-                }
-                else if (p >= .2) {
-                    p = .2;
-                }
-            }
-            else if (gamepad2.a){               //6
                 if (p < .4) {
                     p = p + motorIncrement;
                 }
                 else if (p >= .4) {
                     p = .4;
+                }
+            }
+            else if (gamepad2.a){               //6
+                if (p < .5) {
+                    p = p + motorIncrement;
+                }
+                else if (p >= .5) {
+                    p = .5;
                 }
             }
             else if (gamepad2.x){               //9
@@ -203,16 +203,18 @@ public class WestCoast extends LinearOpMode {
             }
 
             //BUTTON BOPPER CONTROL
-            if (gamepad1.x){
+            if (gamepad1.x && (robot.buttonBopper.getCurrentPosition() < robot.maxBop)){
                 robot.buttonBopper.setPower(.5);
+
             }
-            else if (gamepad1.b){
+            else if (gamepad1.b && (robot.buttonBopper.getCurrentPosition() > -(robot.maxBop))){
                 robot.buttonBopper.setPower(-.5);
             }
             else {
                 robot.buttonBopper.setPower(0);
             }
-            //stop them once they reach a certain encoder value (what is the value?)
+
+            //stop them once they reach a certain encoder value (maxBop)
 
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop

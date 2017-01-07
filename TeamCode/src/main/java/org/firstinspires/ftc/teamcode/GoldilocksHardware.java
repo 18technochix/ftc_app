@@ -94,8 +94,8 @@ public class GoldilocksHardware {
         shooter = hwMap.dcMotor.get("shooter");
         buttonBopper = hwMap.dcMotor.get("button bopper");
         collector = hwMap.dcMotor.get("collector");
-        touchBlue = hwMap.touchSensor.get("touch left");
-        touchRed = hwMap.touchSensor.get("touch right");
+        touchRed = hwMap.touchSensor.get("touch left");
+        touchBlue = hwMap.touchSensor.get("touch right");
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
 
@@ -125,23 +125,21 @@ public class GoldilocksHardware {
     //AUTONOMOUS INIT
     public void autoInit(HardwareMap someHwMap){
         init(someHwMap);
-        rightMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        leftMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
         //encoder setup
         leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        buttonBopper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoders
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        buttonBopper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
     }
 

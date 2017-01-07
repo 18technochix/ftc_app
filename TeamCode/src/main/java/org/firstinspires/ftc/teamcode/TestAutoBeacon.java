@@ -59,18 +59,23 @@ public class TestAutoBeacon extends LinearOpMode{
         robot.particleLift.setPosition(190. / 255.);
         sleep(500);     // pause for servos to move*/
 
-        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 36, 36, 4.0);        //drive forward from wall to get closer to beacons
+       moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 24, 24, 4.0);        //drive forward from wall to get closer to beacons
         sleep(300);
         telemetry.addLine("Move completed");
+
         moveThatRobot(GoldilocksHardware.TURN_SPEED, (1.5*Math.PI), -(1.5*Math.PI), 10.0);           //1.5 pi is 45 deg (CHECK DIRECTIONS)
         sleep(300);
         telemetry.addLine("Move completed");
-        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 66, 66, 8.0);         // drive towards beacons 43.5
-        sleep(300);
-        moveThatRobot(GoldilocksHardware.TURN_SPEED, -(1.5*Math.PI), (1.5*Math.PI), 4.0);       // turn 45deg towards back beacon
+
+        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 67, 67, 8.0);         // drive towards beacons 43.5
         sleep(300);
 
+        moveThatRobot(GoldilocksHardware.TURN_SPEED, -(1.5*Math.PI), (1.5*Math.PI), 2.0);       // turn 45deg towards back beacon
+        sleep(300);
+        telemetry.addLine("Move completed");
+
         wallDistanceTest();
+        telemetry.addLine("THIS IS WORKING!!!!!!!!!!!!!!!!");
 
         //BEACON 1
         bBeacon1();
@@ -79,46 +84,7 @@ public class TestAutoBeacon extends LinearOpMode{
         wallDistanceTest();
         //drive closer to beacon and then...
 
-        robot.leftMotor.setPower(.2);
-        robot.rightMotor.setPower(.2);
-        if (robot.whiteLineSensorOne.getLightDetected() > 350){
-            robot.leftMotor.setPower(0);
-            robot.rightMotor.setPower(0);
-            if (robot.colorBlue.blue()>500){
-                robot.buttonBopper.setTargetPosition(robot.wallTouch - 500);
-                moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 4, 4, 2.0);
-                robot.buttonBopper.setTargetPosition(0);
-                moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 30, 30, 8.0);// distance to close to the second beacon
-            }
-            else{
-                robot.leftMotor.setPower(.1);
-                if (robot.whiteLineSensorTwo.getLightDetected()>400){
-                    robot.leftMotor.setPower(0);
-                    robot.rightMotor.setPower(0);
-                    robot.buttonBopper.setTargetPosition(robot.wallTouch - 500);
-                    moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 4, 4, 2.0);
-                    robot.buttonBopper.setTargetPosition(0);
-                    moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
-                }
-            }
-        }
-
-
-                                                                //test wall distance
-                                                        //move r&p back
-                                                        //drive until white line (BACKWARDS DRIVE NOW)
-                                                        //test r/b IF R continue IF B then...
-                                                        //distanceWall- ~500
-                                                        //move forward an inch or so to ensure button is pressed
-                                                        //test wall distance
-                                                        //move r&p back
-                                                        //drive until white line (BACKWARDS DRIVE NOW)
-                                                        //test r/b IF R continue IF B then...
-                                                        //distanceWall- ~500
-                                                        //move forward an inch or so to ensure button is pressed
-                                                        //make it back to the base idk really
-
-
+        bbeacon2();
 
         //moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
         //^from old code, moves robot forward to base
@@ -171,6 +137,7 @@ public class TestAutoBeacon extends LinearOpMode{
                             robot.leftMotor.getCurrentPosition(),
                             robot.rightMotor.getCurrentPosition());
                     telemetry.update();
+                    idle();
                 }
 
                 // Stop all motion;
@@ -192,7 +159,7 @@ public class TestAutoBeacon extends LinearOpMode{
     //METHODS
     public void wallDistanceTest(){
         if (opModeIsActive()) {
-            robot.buttonBopper.setPower(.5);
+            robot.buttonBopper.setPower(-.5);
         }
         while (!robot.touchBlue.isPressed()&& (robot.buttonBopper.getCurrentPosition()<robot.maxBop)&& opModeIsActive()){
         }
@@ -205,6 +172,7 @@ public class TestAutoBeacon extends LinearOpMode{
 
     public void bBeacon1(){
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 15, 15, 4.0);
+        robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         robot.leftMotor.setPower(.2);
         robot.rightMotor.setPower(.2);
@@ -221,12 +189,39 @@ public class TestAutoBeacon extends LinearOpMode{
             }
             else{ //if beacon is NOT blue then move to the next one, which is blue
                 moveThatRobot(.2, 5.5, 5.5, 4.0);
-                robot.buttonBopper.setTargetPosition(robot.wallTouch - 500);
+                robot.buttonBopper.setTargetPosition(robot.wallTouch - robot.wallTouchMinus);
                 moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 4, 4, 2.0);
                 robot.buttonBopper.setTargetPosition(0);
                 moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
             }
 
+        }
+    }
+
+    public void bbeacon2(){
+        robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.leftMotor.setPower(.2);
+        robot.rightMotor.setPower(.2);
+        if (robot.whiteLineSensorOne.getLightDetected() > robot.lineLight){
+            robot.leftMotor.setPower(0);
+            robot.rightMotor.setPower(0);
+            if (robot.colorBlue.blue() > robot.blueHue){
+                robot.buttonBopper.setTargetPosition(robot.wallTouch - robot.wallTouchMinus);
+                moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 4, 4, 2.0);
+                robot.buttonBopper.setTargetPosition(0);
+                moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 30, 30, 8.0);// distance to close to the second beacon
+            }
+            else{
+                robot.leftMotor.setPower(.1);
+                if (robot.whiteLineSensorTwo.getLightDetected() > robot.lineLight){
+                    robot.leftMotor.setPower(0);
+                    robot.rightMotor.setPower(0);
+                    robot.buttonBopper.setTargetPosition(robot.wallTouch - robot.wallTouchMinus);
+                    moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 4, 4, 2.0);
+                    robot.buttonBopper.setTargetPosition(0);
+                    moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+                }
+            }
         }
     }
 
