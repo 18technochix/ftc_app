@@ -48,7 +48,7 @@ public class TestAuto extends LinearOpMode{
         waitForStart();
 
         double p = 0;
-        while (p < 0.6) {
+        while (p < 0.45) {
             p += .01;
             robot.shooter.setPower(p);
             sleep(20);
@@ -56,7 +56,7 @@ public class TestAuto extends LinearOpMode{
         sleep(2500); //sleep for a second just to make sure the shooter is up to speed
 
         robot.particleLift.setPosition(190. / 255.);
-        sleep(1000);     // pause for servos to move
+        sleep(500);     // pause for servos to move
         robot.particleLift.setPosition(250. / 255.);
         sleep(1500);     // pause for servos to move
         robot.particleLift.setPosition(190. / 255.);
@@ -66,10 +66,9 @@ public class TestAuto extends LinearOpMode{
 
         // Step through each leg of the path,
         // Note: Reverse movement is obtained by setting a negative distance (not speed)
-        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
+        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
         //moveThatRobot(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
         //moveThatRobot(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
-
 
 
         while ( p > 0.) {

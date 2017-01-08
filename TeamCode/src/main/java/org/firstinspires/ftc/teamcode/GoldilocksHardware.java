@@ -54,13 +54,15 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;                            //have we touched the wall
-    public static int wallTouchMinus = 500;
+    public static final int beaconDepth = 500;
+    public static final int beaconClearance = 1750;
 
     public static final int maxBop = 2500;
 
-    public static final int redHue = 346;
-    public static final int blueHue = 234;
-    public static final int lineLight = 350;
+    public static final double redHue = 346.;
+    public static final double blueHue = 234.;
+    public static final double midHue = (blueHue + redHue)/2;
+    public static final double lineLight = .350;
 
 
     //auto constants
@@ -160,6 +162,12 @@ public class GoldilocksHardware {
         leftOpen = false;
         rightOpen = false;
 
+    }
+
+    public float getBlueHue(){
+        float hsvValues[] = {0F,0F,0F};
+        Color.RGBToHSV((colorBlue.red() * 255) / 800, (colorBlue.green() * 255) / 800, (colorBlue.blue() * 255) / 800, hsvValues);
+        return hsvValues [0];
     }
 
 }

@@ -96,6 +96,15 @@ public class WestCoast extends LinearOpMode {
                 lp = lp / 2;
                 rp = rp / 2;
             }
+            else if (gamepad1.y){
+                lp = (-.2);
+                rp = (-.2);
+            }
+            else if (gamepad1.a){
+                lp = (.2);
+                rp = (.2);
+            }
+
 
             robot.leftMotor.setPower(lp);               //set drive motor power
             robot.rightMotor.setPower(rp);
@@ -215,6 +224,7 @@ public class WestCoast extends LinearOpMode {
             }
 
             //stop them once they reach a certain encoder value (maxBop)
+
 
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop
