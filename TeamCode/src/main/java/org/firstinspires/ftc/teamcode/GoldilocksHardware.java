@@ -56,6 +56,7 @@ public class GoldilocksHardware {
     public static int wallTouch;                            //have we touched the wall
     public static final int beaconDepth = 500;
     public static final int beaconClearance = 1750;
+    public static double driveCorrect;
 
     public static final int maxBop = 2500;
 
