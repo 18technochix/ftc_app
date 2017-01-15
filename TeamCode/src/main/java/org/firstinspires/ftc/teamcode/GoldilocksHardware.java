@@ -200,4 +200,9 @@ public class GoldilocksHardware {
     public int inchToEncoder(double inches){
      return (int)(inches * GoldilocksHardware.COUNTS_PER_INCH);
     }
+
+    public void stopDriveMotors(){
+        leftMotor.setPower(0);
+        rightMotor.setPower(0);
+    }
 }

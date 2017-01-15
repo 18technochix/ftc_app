@@ -51,6 +51,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         robot.rightMotor.setPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(26.5)){
         }
+        if (!opModeIsActive()){return;}
 
         float targetAngle = 45;
         robot.rightMotor.setPower(p*.4);
@@ -62,7 +63,8 @@ public class AutoBeacon_RED extends LinearOpMode{
             telemetry.update();
             sleep(20);
             idle();
-        } while ( h <= targetAngle );
+        } while ( h <= targetAngle && opModeIsActive());
+        if (!opModeIsActive()){return;}
   /*
         while (robot.getHeading() > targetAngle){
             sleep(20);
@@ -77,6 +79,10 @@ public class AutoBeacon_RED extends LinearOpMode{
         robot.rightMotor.setPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(37)){
         }
+        if (!opModeIsActive()){
+            robot.stopDriveMotors();
+            return;
+        }
 
 
         targetAngle = 7; //CHECK TO SEE WHICH DIRECTION GYRO FAVORS, BLUE WAS -7
@@ -88,16 +94,15 @@ public class AutoBeacon_RED extends LinearOpMode{
             telemetry.update();
             sleep(20);
             idle();
-        } while ( h >= targetAngle );
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
+        } while ( h >= targetAngle && opModeIsActive() );
+        robot.stopDriveMotors();
+        if (!opModeIsActive()){return;}
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
 
         wallDistanceTest();
-        telemetry.addLine("exited walldistance");
-        telemetry.update();
+        if (!opModeIsActive()){return;}
 
         //BEACON 1
         float beaconHeading = robot.getHeading();
@@ -114,13 +119,16 @@ public class AutoBeacon_RED extends LinearOpMode{
             telemetry.update();
         }
 
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
+        robot.stopDriveMotors();
+        if (!opModeIsActive()){return;}
 
         bBeacon1();
+        if (!opModeIsActive()){return;}
 
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
+        if (!opModeIsActive()){return;}
         wallDistanceTest();
+        if (!opModeIsActive()){return;}
 
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -129,12 +137,11 @@ public class AutoBeacon_RED extends LinearOpMode{
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())){
         }
-
-
-        robot.leftMotor.setPower(0);
-        robot.rightMotor.setPower(0);
+        robot.stopDriveMotors();
+        if (!opModeIsActive()){return;}
 
         bBeacon1();
+        if (!opModeIsActive()){return;}
 
         //moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
         //^from old code, moves robot forward to base
@@ -241,11 +248,7 @@ public class AutoBeacon_RED extends LinearOpMode{
 
         robot.buttonBopper.setPower(0.);
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (!robot.touchRed.isPressed()){
-            stop();
-            telemetry.addLine("stopped");
-            telemetry.update();
-        }
+        if (!opModeIsActive()){return;}
         robot.wallTouch = robot.buttonBopper.getCurrentPosition();
         telemetry.addLine("wallTouch accounted for");
         telemetry.update();
@@ -270,10 +273,12 @@ public class AutoBeacon_RED extends LinearOpMode{
     public void bBeacon1(){
 
         moveThatRobot(.2, -2, -2, 1.5);
+        if (!opModeIsActive()){return;}
         sleep(250);
         idle();
         if (robot.getBlueHue() > robot.midHue){
             moveThatRobot(.3, -2.75, -2.75, 1.5);
+            if (!opModeIsActive()){return;}
             moveThatBopper(robot.wallTouch - robot.beaconDepth);
 
             moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
@@ -281,6 +286,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         }
         else{ //if beacon is NOT red then move to the next one, which is red
             moveThatRobot(.3, -8.25, -8.25, 3.0);
+            if (!opModeIsActive()){return;}
             moveThatBopper(robot.wallTouch - robot.beaconDepth);
             moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
             //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
@@ -298,7 +304,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         }
         robot.buttonBopper.setPower(0);
         if (!opModeIsActive()){
-            stop();
+            return;
         }
     }
 
