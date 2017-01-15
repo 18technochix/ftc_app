@@ -1,39 +1,18 @@
 package org.firstinspires.ftc.teamcode;
 
-/**
- * Created by Techno Team_PC_III on 11/13/2016.
- */
-
-import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.RobotLog;
 
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-
 /**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a PushBot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ * Created by Techno Team_PC_III on 1/14/2017.
  */
 
-@Autonomous(name="TestAutoBeacon", group="Autonomous")
-//@Disabled
-public class TestAutoBeacon extends LinearOpMode{
-     private ElapsedTime runtime = new ElapsedTime();
+@Autonomous (name="AutoBeacon RED", group="Autonomous")
+public class AutoBeacon_RED extends LinearOpMode{
+    private ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
     GoldilocksHardware robot   = new GoldilocksHardware();   // Use a Pushbot's hardware
@@ -73,9 +52,9 @@ public class TestAutoBeacon extends LinearOpMode{
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(26.5)){
         }
 
-        float targetAngle = -45;
-        robot.leftMotor.setPower(p*.4);
-        robot.rightMotor.setPower((p*.4)*.1);
+        float targetAngle = 45;
+        robot.rightMotor.setPower(p*.4);
+        robot.leftMotor.setPower((p*.4)*.1);
         float h;
         do {
             h = robot.getHeading();
@@ -83,8 +62,8 @@ public class TestAutoBeacon extends LinearOpMode{
             telemetry.update();
             sleep(20);
             idle();
-        } while ( h >= targetAngle );
- /*
+        } while ( h <= targetAngle );
+  /*
         while (robot.getHeading() > targetAngle){
             sleep(20);
             idle();
@@ -96,20 +75,20 @@ public class TestAutoBeacon extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.leftMotor.setPower(p);
         robot.rightMotor.setPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(42)){
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(37)){
         }
 
 
-        targetAngle = -7;
-        robot.leftMotor.setPower((p*.4)*.1);
-        robot.rightMotor.setPower(p*.4);
+        targetAngle = 7; //CHECK TO SEE WHICH DIRECTION GYRO FAVORS, BLUE WAS -7
+        robot.rightMotor.setPower((p*.4)*.1);
+        robot.leftMotor.setPower(p*.4);
         do {
             h = robot.getHeading();
             telemetry.addData("heading: ", "%f", h);
             telemetry.update();
             sleep(20);
             idle();
-        } while ( h <= targetAngle ); //counterclockwise
+        } while ( h >= targetAngle );
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
         telemetry.addData("heading:", robot.getHeading());
@@ -117,18 +96,22 @@ public class TestAutoBeacon extends LinearOpMode{
 
 
         wallDistanceTest();
+        telemetry.addLine("exited walldistance");
+        telemetry.update();
 
         //BEACON 1
         float beaconHeading = robot.getHeading();
         //moveThatRobot(.2, 25, 25, 5.0);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.leftMotor.setPower(.2);
         robot.rightMotor.setPower(.2);
+        robot.leftMotor.setPower(.2);
 
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()){
+            telemetry.addData("linelight:", robot.whiteLineSensorOne.getLightDetected());
+            telemetry.update();
         }
 
         robot.leftMotor.setPower(0);
@@ -138,7 +121,6 @@ public class TestAutoBeacon extends LinearOpMode{
 
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         wallDistanceTest();
-
 
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -151,12 +133,13 @@ public class TestAutoBeacon extends LinearOpMode{
 
         robot.leftMotor.setPower(0);
         robot.rightMotor.setPower(0);
+
         bBeacon1();
 
         //moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
         //^from old code, moves robot forward to base
 
-       //decrease shooter speed (disabled for testing)
+        //decrease shooter speed (disabled for testing)
        /* while ( p > 0.) {
             p -= .01;
             shooter.setPower(Math.abs(p));
@@ -169,45 +152,45 @@ public class TestAutoBeacon extends LinearOpMode{
 
 
     public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout){
-            int newLeftTarget;
-            int newRightTarget;
-            int lCurrent;
-            int rCurrent;
-            int lPercent;
-            int rPercent;
+        int newLeftTarget;
+        int newRightTarget;
+        int lCurrent;
+        int rCurrent;
+        int lPercent;
+        int rPercent;
 
-            //are we still running? good. if so:
-            if (opModeIsActive()) {
-                robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //are we still running? good. if so:
+        if (opModeIsActive()) {
+            robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-                //now, where do we go? let's set the target position.
-                newLeftTarget = robot.leftMotor.getCurrentPosition() + (int)(leftInches * GoldilocksHardware.COUNTS_PER_INCH);
-                newRightTarget = robot.rightMotor.getCurrentPosition() + (int)(rightInches * GoldilocksHardware.COUNTS_PER_INCH);
-                robot.leftMotor.setTargetPosition(newLeftTarget);
-                robot.rightMotor.setTargetPosition(newRightTarget);
+            //now, where do we go? let's set the target position.
+            newLeftTarget = robot.leftMotor.getCurrentPosition() + (int)(leftInches * GoldilocksHardware.COUNTS_PER_INCH);
+            newRightTarget = robot.rightMotor.getCurrentPosition() + (int)(rightInches * GoldilocksHardware.COUNTS_PER_INCH);
+            robot.leftMotor.setTargetPosition(newLeftTarget);
+            robot.rightMotor.setTargetPosition(newRightTarget);
 
-                //now you gotta make sure they know what to do with this info. give the motor a runmode.
-                robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //now you gotta make sure they know what to do with this info. give the motor a runmode.
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-                // reset the timeout time and start motion.
-                runtime.reset();
-                robot.leftMotor.setPower(Math.abs(speed));
-                robot.rightMotor.setPower(Math.abs(speed));
+            // reset the timeout time and start motion.
+            runtime.reset();
+            robot.leftMotor.setPower(Math.abs(speed));
+            robot.rightMotor.setPower(Math.abs(speed));
 
 
-                // keep looping while we are still active, and there is time left, and both motors are running.
-                while (opModeIsActive() &&
-                        (runtime.seconds() < timeout) &&
-                        (robot.leftMotor.isBusy() || robot.rightMotor.isBusy())) {
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeout) &&
+                    (robot.leftMotor.isBusy() || robot.rightMotor.isBusy())) {
 
-                    // Display it for the driver.
-                    telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                    telemetry.addData("Path2",  "Running at %7d :%7d",
-                            robot.leftMotor.getCurrentPosition(),
-                            robot.rightMotor.getCurrentPosition());
-                    telemetry.update();
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        robot.leftMotor.getCurrentPosition(),
+                        robot.rightMotor.getCurrentPosition());
+                telemetry.update();
 
                     /*lCurrent = robot.leftMotor.getCurrentPosition();
                     rCurrent = robot.rightMotor.getCurrentPosition();
@@ -228,18 +211,18 @@ public class TestAutoBeacon extends LinearOpMode{
                     robot.leftMotor.setPower(Math.abs(speed));
                     robot.rightMotor.setPower(Math.abs(speed));*/
 
-                    idle();
-                }
-
-                // Stop all motion;
-                robot.leftMotor.setPower(0.);
-                robot.rightMotor.setPower(0.);
-
-                // Turn off RUN_TO_POSITION
-                robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
+                idle();
             }
+
+            // Stop all motion;
+            robot.leftMotor.setPower(0.);
+            robot.rightMotor.setPower(0.);
+
+            // Turn off RUN_TO_POSITION
+            robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
 
 
 
@@ -251,24 +234,24 @@ public class TestAutoBeacon extends LinearOpMode{
     public void wallDistanceTest(){
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (opModeIsActive()) {
-            robot.buttonBopper.setPower(-.5);
+            robot.buttonBopper.setPower(.5);
         }
-        while (!robot.touchBlue.isPressed()&& (robot.buttonBopper.getCurrentPosition()>-3700)&& opModeIsActive()){
+        while (!robot.touchRed.isPressed()&& (robot.buttonBopper.getCurrentPosition()<robot.maxBop)&& opModeIsActive()){
         }
 
         robot.buttonBopper.setPower(0.);
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        if (!robot.touchBlue.isPressed()){
+        if (!robot.touchRed.isPressed()){
             stop();
             telemetry.addLine("stopped");
             telemetry.update();
         }
         robot.wallTouch = robot.buttonBopper.getCurrentPosition();
-        telemetry.addLine("variable accounted for");
+        telemetry.addLine("wallTouch accounted for");
         telemetry.update();
         RobotLog.ii("technochix", "wall = %d", robot.wallTouch);
 
-        moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
+        moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
 
       /*  //FAR
         if (3500 > robot.wallTouch){
@@ -286,22 +269,22 @@ public class TestAutoBeacon extends LinearOpMode{
 
     public void bBeacon1(){
 
-            moveThatRobot(.2, -2, -2, 1.5);
-            sleep(250);
-            idle();
-            if (robot.getBlueHue() < robot.midHue){
-                moveThatRobot(.3, -2.0, -2.0, 1.5);
-                moveThatBopper(robot.wallTouch + robot.beaconDepth);
+        moveThatRobot(.2, -2, -2, 1.5);
+        sleep(250);
+        idle();
+        if (robot.getBlueHue() > robot.midHue){
+            moveThatRobot(.3, -2.75, -2.75, 1.5);
+            moveThatBopper(robot.wallTouch - robot.beaconDepth);
 
-                moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
-            }
-            else{ //if beacon is NOT blue then move to the next one, which is blue
-                moveThatRobot(.3, -8.25, -8.25, 3.0);
-                moveThatBopper(robot.wallTouch + robot.beaconDepth);
-                moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
-            }
+            moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
+            //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
+        }
+        else{ //if beacon is NOT red then move to the next one, which is red
+            moveThatRobot(.3, -8.25, -8.25, 3.0);
+            moveThatBopper(robot.wallTouch - robot.beaconDepth);
+            moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
+            //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+        }
 
 
     }
@@ -309,7 +292,7 @@ public class TestAutoBeacon extends LinearOpMode{
     public void moveThatBopper(int target){
         robot.buttonBopper.setTargetPosition(target);
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.buttonBopper.setPower(.5);
+        robot.buttonBopper.setPower(.5); //value is absolute, opmode will negate it if it needs to go backwards eg blue auto
 
         while (opModeIsActive() && robot.buttonBopper.isBusy()){
         }
@@ -325,8 +308,6 @@ public class TestAutoBeacon extends LinearOpMode{
 
 
 }
-
-
 
 
 

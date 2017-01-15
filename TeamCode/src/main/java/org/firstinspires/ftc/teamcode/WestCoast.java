@@ -175,48 +175,48 @@ public class WestCoast extends LinearOpMode {
 
             //COWCATCHER CONTROL
             //open both
-            if (gamepad2.dpad_left || gamepad1.dpad_left){
+            if (gamepad2.dpad_left || gamepad1.left_bumper){
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightOpen);
             }
             //close both
-            if (gamepad2.dpad_right || gamepad1.dpad_right){
+            if (gamepad2.dpad_right || gamepad1.right_bumper){
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightClose);
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftClose);
             }
 
             //open right cc
-            if (! GoldilocksHardware.rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper)) {
+            if (! GoldilocksHardware.rightOpen && gamepad2.right_bumper) {
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightOpen);
                 sleep(100);
                 GoldilocksHardware.rightOpen = true;
             }
             //close right cc
-            else if (GoldilocksHardware.rightOpen && (gamepad1.right_bumper || gamepad2.right_bumper) ){
+            else if (GoldilocksHardware.rightOpen && gamepad2.right_bumper){
                 robot.ccRight.setPosition(GoldilocksHardware.ccRightClose);
                 sleep(100);
                 GoldilocksHardware.rightOpen = false;
             }
 
             //open left cc
-            if (! GoldilocksHardware.leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper)) {
+            if (! GoldilocksHardware.leftOpen && gamepad2.left_bumper) {
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
                 sleep(100);
                 GoldilocksHardware.leftOpen = true;
             }
             //close right cc
-            else if (GoldilocksHardware.leftOpen && (gamepad1.left_bumper || gamepad2.left_bumper) ){
+            else if (GoldilocksHardware.leftOpen && gamepad2.left_bumper){
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftClose);
                 sleep(100);
                 GoldilocksHardware.leftOpen = false;
             }
 
             //BUTTON BOPPER CONTROL
-            if (gamepad1.x && (robot.buttonBopper.getCurrentPosition() < robot.maxBop)){
+            if (gamepad1.x){
                 robot.buttonBopper.setPower(.5);
 
             }
-            else if (gamepad1.b && (robot.buttonBopper.getCurrentPosition() > -(robot.maxBop))){
+            else if (gamepad1.b){
                 robot.buttonBopper.setPower(-.5);
             }
             else {
@@ -224,6 +224,7 @@ public class WestCoast extends LinearOpMode {
             }
 
             //stop them once they reach a certain encoder value (maxBop)
+            // && (robot.buttonBopper.getCurrentPosition() > -(robot.maxBop))
 
 
 

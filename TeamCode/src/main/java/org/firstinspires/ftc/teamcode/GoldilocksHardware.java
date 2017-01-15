@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -13,6 +15,11 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 
 /**
  * Created by Techno Team_PC_III on 12/23/2016.
@@ -34,9 +41,10 @@ public class GoldilocksHardware {
     public TouchSensor touchBlue = null;
     public TouchSensor touchRed = null;
     public LightSensor whiteLineSensorOne = null;
-    public LightSensor whiteLineSensorTwo = null;
+    //public LightSensor whiteLineSensorTwo = null;
     public ColorSensor colorBlue = null;
     public ColorSensor colorRed = null;
+    public BNO055IMU gyro = null;
 
     //SENSORS STILL UNDER TEST
     DeviceInterfaceModule cdim;
@@ -54,11 +62,11 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;                            //have we touched the wall
-    public static final int beaconDepth = 500;
+    public static final int beaconDepth = 750;
     public static final int beaconClearance = 1750;
     public static double driveCorrect;
 
-    public static final int maxBop = 2500;
+    public static final int maxBop = 3300;
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
@@ -101,6 +109,8 @@ public class GoldilocksHardware {
         touchBlue = hwMap.touchSensor.get("touch right");
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
+        gyro = hwMap.get(BNO055IMU.class, "imu");
+
 
         //set direction
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -131,18 +141,27 @@ public class GoldilocksHardware {
         rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
+        //encoder setup
+        //leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+        //reset encoders
+        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
-        //encoder setup
-        leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        //reset encoders
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+//        parameters.loggingEnabled      = true;
+//        parameters.loggingTag          = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        gyro.initialize(parameters);
 
     }
 
@@ -171,4 +190,14 @@ public class GoldilocksHardware {
         return hsvValues [0];
     }
 
+    public float getHeading(){
+        Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        float angle = angles.firstAngle;
+        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
+        //return angles.firstAngle;
+    }
+
+    public int inchToEncoder(double inches){
+     return (int)(inches * GoldilocksHardware.COUNTS_PER_INCH);
+    }
 }
