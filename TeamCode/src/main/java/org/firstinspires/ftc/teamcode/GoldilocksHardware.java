@@ -4,6 +4,7 @@ import android.graphics.Color;
 
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -72,6 +73,7 @@ public class GoldilocksHardware {
     public static final double blueHue = 234.;
     public static final double midHue = (blueHue + redHue)/2;
     public static final double lineLight = .350;
+    public static final double shooterIncrement = .01;
 
 
     //auto constants
@@ -89,10 +91,11 @@ public class GoldilocksHardware {
     // local OpMode members
     HardwareMap hwMap           =  null;
     private ElapsedTime period  = new ElapsedTime();
+    LinearOpMode opMode = null;
 
     // Constructor
-    public GoldilocksHardware(){
-
+    public GoldilocksHardware(LinearOpMode _opMode){
+        opMode = _opMode;
     }
 
     //BASE INIT METHOD
@@ -204,5 +207,33 @@ public class GoldilocksHardware {
     public void stopDriveMotors(){
         leftMotor.setPower(0);
         rightMotor.setPower(0);
+    }
+
+    public void runShooter(double t){
+        double s = 0.;
+        while (s < t) {
+            s = s + shooterIncrement;
+            shooter.setPower(s);
+            sleep(20);
+        }
+        sleep(1500); //sleep for a moment just to make sure the shooter is up to speed
+
+        particleLift.setPosition(particleLiftUp); //190
+        sleep(1000);     // pause for servos to move
+        particleLift.setPosition(particleLiftDown);
+        sleep(1500);     // pause for servos to move
+        particleLift.setPosition(particleLiftUp);
+        sleep(500);     // pause for servos to move
+
+        while (s > 0.) {
+            s = s - shooterIncrement;
+            shooter.setPower(Math.abs(s));
+            sleep(20);
+        }
+        shooter.setPower(0.);
+    }
+
+    private void sleep(long ms){
+        opMode.sleep(ms);
     }
 }

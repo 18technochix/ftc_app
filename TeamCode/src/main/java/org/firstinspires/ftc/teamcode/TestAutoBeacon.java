@@ -36,8 +36,7 @@ public class TestAutoBeacon extends LinearOpMode{
      private ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    GoldilocksHardware robot   = new GoldilocksHardware();   // Use a Pushbot's hardware
-    //private ElapsedTime     runtime = new ElapsedTime();
+    GoldilocksHardware robot   = new GoldilocksHardware(this);   // Use a Pushbot's hardware
 
     public void runOpMode() {
         telemetry.addData("Status", "Resetting Encoders");
@@ -46,25 +45,8 @@ public class TestAutoBeacon extends LinearOpMode{
         robot.autoInit(hardwareMap);
 
         waitForStart();
-/*
-        double p = 0;
-        while (p < 0.45) {
-            p += .01;
-            robot.shooter.setPower(p);
-            sleep(20);
-        }
-        sleep(2500); //sleep for a second just to make sure the shooter is up to speed
 
-        robot.particleLift.setPosition(190. / 255.);
-        sleep(1000);     // pause for servos to move
-        robot.particleLift.setPosition(250. / 255.);
-        sleep(1500);     // pause for servos to move
-        robot.particleLift.setPosition(190. / 255.);
-        sleep(500);     // pause for servos to move*/
-
-        //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 26, 26, 3.0);        //drive forward from wall to get closer to beacons
-        //sleep(150);
-        //telemetry.addLine("Move completed");
+        //robot.runShooter(.45);
 
         double p = 0.5;
         int startPosition = robot.leftMotor.getCurrentPosition();
@@ -72,7 +54,7 @@ public class TestAutoBeacon extends LinearOpMode{
         robot.rightMotor.setPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(26.5)){
         }
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         float targetAngle = -45;
         robot.leftMotor.setPower(p*.4);
@@ -85,7 +67,7 @@ public class TestAutoBeacon extends LinearOpMode{
             sleep(20);
             idle();
         } while ( h >= targetAngle && opModeIsActive());
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
  /*
         while (robot.getHeading() > targetAngle){
             sleep(20);
@@ -117,13 +99,13 @@ public class TestAutoBeacon extends LinearOpMode{
             idle();
         } while ( h <= targetAngle && opModeIsActive()); //counterclockwise
         robot.stopDriveMotors();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
 
         wallDistanceTest();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         //BEACON 1
         float beaconHeading = robot.getHeading();
@@ -139,15 +121,15 @@ public class TestAutoBeacon extends LinearOpMode{
         }
 
         robot.stopDriveMotors();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         bBeacon1();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
         wallDistanceTest();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
 
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -158,10 +140,10 @@ public class TestAutoBeacon extends LinearOpMode{
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())){
         }
         robot.stopDriveMotors();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         bBeacon1();
-        if (!opModeIsActive()){return;}
+        checkOpModeActive();
 
         //moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
         //^from old code, moves robot forward to base
@@ -295,19 +277,19 @@ public class TestAutoBeacon extends LinearOpMode{
     public void bBeacon1(){
 
             moveThatRobot(.2, -2, -2, 1.5);
-            if (!opModeIsActive()){return;}
+            checkOpModeActive();
             sleep(250);
             idle();
             if (robot.getBlueHue() < robot.midHue){
                 moveThatRobot(.3, -2.0, -2.0, 1.5);
-                if (!opModeIsActive()){return;}
+                checkOpModeActive();
                 moveThatBopper(robot.wallTouch + robot.beaconDepth);
                 moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
                 //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
             }
             else{ //if beacon is NOT blue then move to the next one, which is blue
                 moveThatRobot(.3, -8.25, -8.25, 3.0);
-                if (!opModeIsActive()){return;}
+                checkOpModeActive();
                 moveThatBopper(robot.wallTouch + robot.beaconDepth);
                 moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
                 //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
@@ -332,6 +314,11 @@ public class TestAutoBeacon extends LinearOpMode{
     public void distanceCorrect(){
         robot.driveCorrect = Math.abs(robot.wallTouch - 3500) / Math.sin(10);
     }
+
+    public void checkOpModeActive(){
+        if (!opModeIsActive()){return;}
+    }
+
 
 
 }

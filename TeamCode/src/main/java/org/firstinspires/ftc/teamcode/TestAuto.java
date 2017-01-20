@@ -30,14 +30,13 @@ import java.util.prefs.AbstractPreferences;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="TestAuto", group="Autonomous")
+@Autonomous(name="Shoot & Drive", group="Autonomous")
 //@Disabled
 public class TestAuto extends LinearOpMode{
     private ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    GoldilocksHardware robot   = new GoldilocksHardware();   // Use a Pushbot's hardware
-    //private ElapsedTime     runtime = new ElapsedTime();
+    GoldilocksHardware robot   = new GoldilocksHardware(this);   // Use a Pushbot's hardware
 
     public void runOpMode() {
         telemetry.addData("Status", "Resetting Encoders");
@@ -47,36 +46,9 @@ public class TestAuto extends LinearOpMode{
 
         waitForStart();
 
-        double p = 0;
-        while (p < 0.45) {
-            p += .01;
-            robot.shooter.setPower(p);
-            sleep(20);
-        }
-        sleep(2500); //sleep for a second just to make sure the shooter is up to speed
+        robot.runShooter(.45);
 
-        robot.particleLift.setPosition(190. / 255.);
-        sleep(500);     // pause for servos to move
-        robot.particleLift.setPosition(250. / 255.);
-        sleep(1500);     // pause for servos to move
-        robot.particleLift.setPosition(190. / 255.);
-        sleep(500);     // pause for servos to move
-
-        //shooter does not increase to full power, time between lifts is too short
-
-        // Step through each leg of the path,
-        // Note: Reverse movement is obtained by setting a negative distance (not speed)
         moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
-        //moveThatRobot(TURN_SPEED,   12, -12, 4.0);  // S2: Turn Right 12 Inches with 4 Sec timeout
-        //moveThatRobot(DRIVE_SPEED, -24, -24, 4.0);  // S3: Reverse 24 Inches with 4 Sec timeout
-
-
-        while ( p > 0.) {
-            p -= .01;
-            robot.shooter.setPower(Math.abs(p));
-            sleep(20);
-        }
-        robot.shooter.setPower(0.);
     }
 
 
@@ -135,16 +107,10 @@ public class TestAuto extends LinearOpMode{
 
 
 
-        }
-            /*else if (gamepad2.a){
-                if (p < .2) {
-                    p = p + motorIncrement;
-                }
-                else if (p >= .2) {
-                    p = .2;
-                }*/
+    }
 
-        }
+
+}
 
 
 
