@@ -47,9 +47,6 @@ public class GoldilocksHardware {
     public ColorSensor colorRed = null;
     public BNO055IMU gyro = null;
 
-    //SENSORS STILL UNDER TEST
-    DeviceInterfaceModule cdim;
-
     //declare variables & give values if necessary
     public static final double ccLeftClose = (2./255.);        //cowcatcher open/close values
     public static final double ccRightClose = (220./255.);

@@ -58,7 +58,7 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 @TeleOp(name="WestCoast OpMode", group="Linear Opmode")
 public class WestCoast extends LinearOpMode {
     //connect hardware code with teleop code
-    GoldilocksHardware robot           = new GoldilocksHardware();
+    GoldilocksHardware robot           = new GoldilocksHardware(this);
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
