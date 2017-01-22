@@ -204,6 +204,14 @@ public class GoldilocksHardware {
      return (int)(inches * GoldilocksHardware.COUNTS_PER_INCH);
     }
 
+    public void setLeftPower(double p){
+        leftMotor.setPower(p);
+    }
+
+    public void setRightPower(double p){
+        rightMotor.setPower(p * .95);
+    }
+
     public void stopDriveMotors(){
         leftMotor.setPower(0);
         rightMotor.setPower(0);
