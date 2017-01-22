@@ -64,11 +64,11 @@ public class GoldilocksHardware {
     public static final int beaconClearance = 1750;
     public static double driveCorrect;
 
-    public static final int maxBop = 3300;
+    public static final int maxBop = 3300; //
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
-    public static final double midHue = (blueHue + redHue)/2;
+    public static final double midHue = (blueHue + redHue)/2.;
     public static final double lineLight = .350;
     public static final double shooterIncrement = .01;
 

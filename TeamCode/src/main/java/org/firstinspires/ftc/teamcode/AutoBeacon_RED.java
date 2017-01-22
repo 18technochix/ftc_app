@@ -15,7 +15,7 @@ public class AutoBeacon_RED extends LinearOpMode{
     private ElapsedTime runtime = new ElapsedTime();
 
     /* Declare OpMode members. */
-    GoldilocksHardware robot   = new GoldilocksHardware();   // Use a Pushbot's hardware
+    GoldilocksHardware robot   = new GoldilocksHardware(this);   // Use a Pushbot's hardware
     //private ElapsedTime     runtime = new ElapsedTime();
 
     public void runOpMode() {

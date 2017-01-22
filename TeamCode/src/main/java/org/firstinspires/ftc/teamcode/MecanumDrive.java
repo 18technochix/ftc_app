@@ -2,6 +2,7 @@
 
 package com.qualcomm.ftcrobotcontroller.opmodes;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -20,7 +21,10 @@ rr = ly - rx + lx
 
 
 // after class, replace "TeleOpTemplate" with your class/"program" name.
+
+
 @TeleOp(name="MecanumDrive", group="Linear Opmode")
+@Disabled
 public class MecanumDrive extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 

@@ -48,7 +48,7 @@ public class TestAuto extends LinearOpMode{
 
         robot.runShooter(.45);
 
-        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
+        moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout 50
     }
 
 
