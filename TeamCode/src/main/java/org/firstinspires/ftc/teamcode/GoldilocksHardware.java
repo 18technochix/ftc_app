@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 
+import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
@@ -87,12 +88,14 @@ public class GoldilocksHardware {
 
     // local OpMode members
     HardwareMap hwMap           =  null;
-    private ElapsedTime period  = new ElapsedTime();
+    public /*private*/ ElapsedTime runtime  = new ElapsedTime();
     LinearOpMode opMode = null;
+    private Telemetry telemetry = null;
 
     // Constructor
     public GoldilocksHardware(LinearOpMode _opMode){
         opMode = _opMode;
+        telemetry = _opMode.telemetry;
     }
 
     //BASE INIT METHOD
@@ -233,4 +236,83 @@ public class GoldilocksHardware {
     private void sleep(long ms){
         opMode.sleep(ms);
     }
+
+    private boolean opModeIsActive(){return opMode.opModeIsActive();}
+
+    private void idle(){opMode.idle();}
+
+    public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout){
+        int newLeftTarget;
+        int newRightTarget;
+        int lCurrent;
+        int rCurrent;
+        int lPercent;
+        int rPercent;
+
+        //are we still running? good. if so:
+        if (opModeIsActive()) {
+            leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            //now, where do we go? let's set the target position.
+            newLeftTarget = leftMotor.getCurrentPosition() + (int)(leftInches * GoldilocksHardware.COUNTS_PER_INCH);
+            newRightTarget = rightMotor.getCurrentPosition() + (int)(rightInches * GoldilocksHardware.COUNTS_PER_INCH);
+            leftMotor.setTargetPosition(newLeftTarget);
+            rightMotor.setTargetPosition(newRightTarget);
+
+            //now you gotta make sure they know what to do with this info. give the motor a runmode.
+            leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            leftMotor.setPower(Math.abs(speed));
+            rightMotor.setPower(Math.abs(speed));
+
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeout) &&
+                    (leftMotor.isBusy() || rightMotor.isBusy())) {
+
+                // Display it for the driver.
+                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData("Path2",  "Running at %7d :%7d",
+                        leftMotor.getCurrentPosition(),
+                        rightMotor.getCurrentPosition());
+                telemetry.update();
+
+                    /*lCurrent = leftMotor.getCurrentPosition();
+                    rCurrent = rightMotor.getCurrentPosition();
+
+                    lPercent = lCurrent / newLeftTarget;
+                    rPercent = rCurrent / newRightTarget;
+
+                    //slowly ramp down the speed once 90% of target is reached
+                    if ((lPercent > .75) || (rPercent > .75)){
+                        speed = (speed/4);
+                        if (speed < .1){
+                            speed = .1;
+                        }
+                    }
+
+                    // reset the timeout time and start motion.
+                    runtime.reset();
+                    leftMotor.setPower(Math.abs(speed));
+                    rightMotor.setPower(Math.abs(speed));*/
+
+                idle();
+            }
+
+            // Stop all motion;
+            leftMotor.setPower(0.);
+            rightMotor.setPower(0.);
+
+            // Turn off RUN_TO_POSITION
+            leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        }
+    }
+
 }
