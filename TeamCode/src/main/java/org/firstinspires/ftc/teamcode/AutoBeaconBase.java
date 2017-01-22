@@ -47,6 +47,8 @@ public class AutoBeaconBase extends LinearOpMode{
         return red == false;
     }
 
+    double multiplier = 0;
+
     /* Declare OpMode members. */
     GoldilocksHardware robot   = new GoldilocksHardware(this);   // Use Goldilocks' hardware
 
@@ -58,6 +60,8 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.autoInit(hardwareMap);
 
         waitForStart();
+
+        multiplier = isRed() ? -1. : 1.;
 
         //robot.runShooter(.45);
 
@@ -203,12 +207,7 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.update();
         RobotLog.ii("technochix", "wall = %d", robot.wallTouch);
 
-        if (isBlue()) {
-            moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-        }
-        else{
-            moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
-        }
+        moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
 
       /*  //FAR
         if (3500 > robot.wallTouch){
@@ -226,45 +225,25 @@ public class AutoBeaconBase extends LinearOpMode{
 
     public void bBeacon1(){
 
-            robot.moveThatRobot(.2, -2, -2, 1.5);
+        robot.moveThatRobot(.2, -2, -2, 1.5);
+        checkOpModeActive();
+        sleep(250);
+        idle();
+
+
+        if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
+            robot.moveThatRobot(.3, -2.0, -2.0, 1.5);
             checkOpModeActive();
-            sleep(250);
-            idle();
-
-            if(isBlue()) {
-                if (robot.getBlueHue() < robot.midHue) {
-                    robot.moveThatRobot(.3, -2.0, -2.0, 1.5);
-                    checkOpModeActive();
-                    moveThatBopper(robot.wallTouch + robot.beaconDepth);
-                    moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
-                } else { //if beacon is NOT blue then move to the next one, which is blue
-                    robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
-                    checkOpModeActive();
-                    moveThatBopper(robot.wallTouch + robot.beaconDepth);
-                    moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
-                }
-            }
-            else {
-                if (robot.getBlueHue() > robot.midHue){
-                    robot.moveThatRobot(.3, -2.75, -2.75, 1.5);
-                    if (!opModeIsActive()){return;}
-                    moveThatBopper(robot.wallTouch - robot.beaconDepth);
-
-                    moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
-                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
-                }
-                else{ //if beacon is NOT red then move to the next one, which is red
-                    robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
-                    if (!opModeIsActive()){return;}
-                    moveThatBopper(robot.wallTouch - robot.beaconDepth);
-                    moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
-                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
-                }
-            }
-
-
+            moveThatBopper(robot.wallTouch + (int)(multiplier * robot.beaconDepth));
+            moveThatBopper(robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance)));
+            //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
+        } else { //if beacon is NOT blue then move to the next one, which is blue
+            robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
+            checkOpModeActive();
+            moveThatBopper(robot.wallTouch + (int) (multiplier * robot.beaconDepth));
+            moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
+            //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+        }
     }
 
     public void moveThatBopper(int target){
