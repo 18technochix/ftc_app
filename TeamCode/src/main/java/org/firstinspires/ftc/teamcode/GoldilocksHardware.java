@@ -209,7 +209,8 @@ public class GoldilocksHardware {
     }
 
     public void setRightPower(double p){
-        rightMotor.setPower(p * .95);
+        rightMotor.setPower(p * .92
+        );
     }
 
     public void stopDriveMotors(){

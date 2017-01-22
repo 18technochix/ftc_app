@@ -65,7 +65,7 @@ public class AutoBeaconBase extends LinearOpMode{
         int startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(26.5)){
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(20)){
         }
         checkOpModeActive();
 
@@ -94,7 +94,7 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(42)){
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(41)){//42
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -113,7 +113,7 @@ public class AutoBeaconBase extends LinearOpMode{
             sleep(20);
             idle();
             if (isBlue()){
-                hitAngle = h >= 7;
+                hitAngle = h >= 0;
             }
             else {
                 hitAngle = h <= 0;
@@ -124,144 +124,73 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
-        if (true){
-            return;}
-        else {
-            wallDistanceTest();
-            checkOpModeActive();
 
-            //BEACON 1
-            float beaconHeading = robot.getHeading();
-            //moveThatRobot(.2, 25, 25, 5.0);
-            robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.setLeftPower(.2);
-            robot.setRightPower(.2);
+        wallDistanceTest();
+        checkOpModeActive();
 
-            //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
+        //BEACON 1
+        float beaconHeading = robot.getHeading();
+        //robot.moveThatRobot(.2, 25, 25, 5.0);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setLeftPower(.2);
+        robot.setRightPower(.2);
 
-            while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
-            }
+        //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
-            robot.stopDriveMotors();
-            checkOpModeActive();
+        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
+        }
 
-            bBeacon1();
-            checkOpModeActive();
+        robot.stopDriveMotors();
+        checkOpModeActive();
 
-            moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
-            checkOpModeActive();
-            wallDistanceTest();
-            checkOpModeActive();
+        bBeacon1();
+        checkOpModeActive();
+
+        robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
+        checkOpModeActive();
+        wallDistanceTest();
+        checkOpModeActive();
 
 
-            robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            robot.setLeftPower(-.2);
-            robot.setRightPower(-.2);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setLeftPower(-.2);
+        robot.setRightPower(-.2);
 
-            while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {
-            }
-            robot.stopDriveMotors();
-            checkOpModeActive();
+        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {
+        }
+        robot.stopDriveMotors();
+        checkOpModeActive();
 
-            bBeacon1();
-            checkOpModeActive();
+        bBeacon1();
+        checkOpModeActive();
 
-            //moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
-            //^from old code, moves robot forward to base
+        //robot.moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
+        //^from old code, moves robot forward to base
 
-            //decrease shooter speed (disabled for testing)
+        //decrease shooter speed (disabled for testing)
        /* while ( p > 0.) {
             p -= .01;
             shooter.setPower(Math.abs(p));
             sleep(20);
         }
         shooter.setPower(0.);*/
-        }
+
     }
 
-    public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout){
-            int newLeftTarget;
-            int newRightTarget;
-            int lCurrent;
-            int rCurrent;
-            int lPercent;
-            int rPercent;
-
-            //are we still running? good. if so:
-            if (opModeIsActive()) {
-                robot.leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                robot.rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-                //now, where do we go? let's set the target position.
-                newLeftTarget = robot.leftMotor.getCurrentPosition() + (int)(leftInches * GoldilocksHardware.COUNTS_PER_INCH);
-                newRightTarget = robot.rightMotor.getCurrentPosition() + (int)(rightInches * GoldilocksHardware.COUNTS_PER_INCH);
-                robot.leftMotor.setTargetPosition(newLeftTarget);
-                robot.rightMotor.setTargetPosition(newRightTarget);
-
-                //now you gotta make sure they know what to do with this info. give the motor a runmode.
-                robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-                // reset the timeout time and start motion.
-                robot.runtime.reset();
-                robot.setLeftPower(Math.abs(speed));
-                robot.setRightPower(Math.abs(speed));
-
-
-                // keep looping while we are still active, and there is time left, and both motors are running.
-                while (opModeIsActive() &&
-                        (robot.runtime.seconds() < timeout) &&
-                        (robot.leftMotor.isBusy() || robot.rightMotor.isBusy())) {
-
-                    // Display it for the driver.
-                    telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                    telemetry.addData("Path2",  "Running at %7d :%7d",
-                            robot.leftMotor.getCurrentPosition(),
-                            robot.rightMotor.getCurrentPosition());
-                    telemetry.update();
-
-                    /*lCurrent = robot.leftMotor.getCurrentPosition();
-                    rCurrent = robot.rightMotor.getCurrentPosition();
-
-                    lPercent = lCurrent / newLeftTarget;
-                    rPercent = rCurrent / newRightTarget;
-
-                    //slowly ramp down the speed once 90% of target is reached
-                    if ((lPercent > .75) || (rPercent > .75)){
-                        speed = (speed/4);
-                        if (speed < .1){
-                            speed = .1;
-                        }
-                    }
-
-                    // reset the timeout time and start motion.
-                    runtime.reset();
-                    robot.setLeftPower(Math.abs(speed));
-                    robot.setRightPower(Math.abs(speed));*/
-
-                    idle();
-                }
-
-                // Stop all motion;
-                robot.setLeftPower(0.);
-                robot.setRightPower(0.);
-
-                // Turn off RUN_TO_POSITION
-                robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-                robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-            }
-    }
 
     //METHODS
     public void wallDistanceTest(){
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (opModeIsActive()) {
-            robot.buttonBopper.setPower(-.5);
+            robot.buttonBopper.setPower(isBlue() ? -.5 : .5);
         }
-        while (!robot.touchBlue.isPressed()&& (robot.buttonBopper.getCurrentPosition()>-3700)&& opModeIsActive()){
+        if (isBlue()) {
+            while (!robot.touchBlue.isPressed() && (robot.buttonBopper.getCurrentPosition() > -robot.maxBop) && opModeIsActive()) {}
+        }
+        else{
+            while (!robot.touchRed.isPressed() && (robot.buttonBopper.getCurrentPosition() < robot.maxBop) && opModeIsActive()) {}
         }
 
         robot.buttonBopper.setPower(0.);
@@ -274,41 +203,65 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.update();
         RobotLog.ii("technochix", "wall = %d", robot.wallTouch);
 
-        moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
+        if (isBlue()) {
+            moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
+        }
+        else{
+            moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
+        }
 
       /*  //FAR
         if (3500 > robot.wallTouch){
-            moveThatRobot(robot.TURN_SPEED, (.33 * Math.PI), -(.33 * Math.PI), 2.0);
+            robot.moveThatRobot(robot.TURN_SPEED, (.33 * Math.PI), -(.33 * Math.PI), 2.0);
             distanceCorrect();
-            moveThatRobot(robot.TURN_SPEED, -(.33 * Math.PI), (.33 * Math.PI), 2.0);
+            robot.moveThatRobot(robot.TURN_SPEED, -(.33 * Math.PI), (.33 * Math.PI), 2.0);
         }
         //CLOSE
         else if (robot.wallTouch > 3500){
-            moveThatRobot(robot.TURN_SPEED, -(.33 * Math.PI), (.33 * Math.PI), 2.0);
+            robot.moveThatRobot(robot.TURN_SPEED, -(.33 * Math.PI), (.33 * Math.PI), 2.0);
             distanceCorrect();
-            moveThatRobot(robot.TURN_SPEED, (.33 * Math.PI), -(.33 * Math.PI), 2.0);
+            robot.moveThatRobot(robot.TURN_SPEED, (.33 * Math.PI), -(.33 * Math.PI), 2.0);
         }*/
     }
 
     public void bBeacon1(){
 
-            moveThatRobot(.2, -2, -2, 1.5);
+            robot.moveThatRobot(.2, -2, -2, 1.5);
             checkOpModeActive();
             sleep(250);
             idle();
-            if (robot.getBlueHue() < robot.midHue){
-                moveThatRobot(.3, -2.0, -2.0, 1.5);
-                checkOpModeActive();
-                moveThatBopper(robot.wallTouch + robot.beaconDepth);
-                moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
+
+            if(isBlue()) {
+                if (robot.getBlueHue() < robot.midHue) {
+                    robot.moveThatRobot(.3, -2.0, -2.0, 1.5);
+                    checkOpModeActive();
+                    moveThatBopper(robot.wallTouch + robot.beaconDepth);
+                    moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
+                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
+                } else { //if beacon is NOT blue then move to the next one, which is blue
+                    robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
+                    checkOpModeActive();
+                    moveThatBopper(robot.wallTouch + robot.beaconDepth);
+                    moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
+                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+                }
             }
-            else{ //if beacon is NOT blue then move to the next one, which is blue
-                moveThatRobot(.3, -8.25, -8.25, 3.0);
-                checkOpModeActive();
-                moveThatBopper(robot.wallTouch + robot.beaconDepth);
-                moveThatBopper(robot.wallTouch + robot.beaconDepth + robot.beaconClearance);
-                //moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+            else {
+                if (robot.getBlueHue() > robot.midHue){
+                    robot.moveThatRobot(.3, -2.75, -2.75, 1.5);
+                    if (!opModeIsActive()){return;}
+                    moveThatBopper(robot.wallTouch - robot.beaconDepth);
+
+                    moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
+                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
+                }
+                else{ //if beacon is NOT red then move to the next one, which is red
+                    robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
+                    if (!opModeIsActive()){return;}
+                    moveThatBopper(robot.wallTouch - robot.beaconDepth);
+                    moveThatBopper(robot.wallTouch - robot.beaconDepth - robot.beaconClearance);
+                    //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
+                }
             }
 
 

@@ -89,8 +89,8 @@ public class WestCoast extends LinearOpMode {
 
 
             //DRIVE CONTROL
-            double rp = gamepad1.left_stick_y;          //direct relationship: joystick-motor
-            double lp = gamepad1.right_stick_y;
+            double rp = (double) gamepad1.left_stick_y;          //direct relationship: joystick-motor
+            double lp = (double) gamepad1.right_stick_y;
 
             if (gamepad1.right_trigger > .5){           //scale down drive speed for control
                 lp = lp / 2;
@@ -106,8 +106,11 @@ public class WestCoast extends LinearOpMode {
             }
 
 
+            //robot.setLeftPower(lp);               //set drive motor power
+            //robot.setRightPower(rp);
             robot.leftMotor.setPower(lp);               //set drive motor power
             robot.rightMotor.setPower(rp);
+
 
 
             //SHOOTER
