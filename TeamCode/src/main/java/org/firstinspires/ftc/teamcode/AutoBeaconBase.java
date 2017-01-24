@@ -128,6 +128,8 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
+        sleep(2000);
+        turnToAngleIMU(0.);
 
         wallDistanceTest();
         checkOpModeActive();
@@ -267,6 +269,33 @@ public class AutoBeaconBase extends LinearOpMode{
         if (!opModeIsActive()){return;}
     }
 
+    public void turnToAngleIMU(double targetAngle){
+        float currentAngle = robot.getHeading();
+        boolean turnRight = currentAngle-targetAngle > 0;
+
+        robot.setLeftPower((.2)*(turnRight ? 1.0 : -1.0));
+        robot.setRightPower((.2)*(turnRight ? -1.0 : 1.0));
+        boolean hitAngle = false;
+        do {
+            currentAngle = robot.getHeading();
+            telemetry.addData("current heading: ", "%f", currentAngle);
+            telemetry.update();
+            sleep(100); //20
+            idle();
+            if (turnRight){
+                hitAngle = currentAngle <= targetAngle;
+            }
+            else {
+                hitAngle = currentAngle >= targetAngle;
+            }
+        } while ( !hitAngle && opModeIsActive());
+        robot.stopDriveMotors();
+        checkOpModeActive();
+        sleep(5000);
+        telemetry.addData("final heading:", robot.getHeading());
+        telemetry.update();
+        sleep(15000);
+    }
 
 
 }
