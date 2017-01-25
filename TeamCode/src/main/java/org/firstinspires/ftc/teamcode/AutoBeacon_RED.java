@@ -56,7 +56,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         float targetAngle = 45;
         robot.rightMotor.setPower(p*.4);
         robot.leftMotor.setPower((p*.4)*.1);
-        float h;
+        double h;
         do {
             h = robot.getHeading();
             telemetry.addData("heading: ", "%f", h);
@@ -105,7 +105,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         if (!opModeIsActive()){return;}
 
         //BEACON 1
-        float beaconHeading = robot.getHeading();
+        double beaconHeading = robot.getHeading();
         //moveThatRobot(.2, 25, 25, 5.0);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

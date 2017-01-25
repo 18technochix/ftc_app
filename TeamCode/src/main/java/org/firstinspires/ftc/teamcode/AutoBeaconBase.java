@@ -17,6 +17,7 @@ import com.qualcomm.robotcore.util.RobotLog;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -64,19 +65,23 @@ public class AutoBeaconBase extends LinearOpMode{
         multiplier = isRed() ? -1. : 1.;
 
         //robot.runShooter(.45);
+        Position position = robot.getPosition();
+        telemetry.addData("Starting position:", "(%.3f, %.3f)", position.x, position.y);
+        telemetry.update();
+
 
         double p = 0.5;
         int startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(20)){
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(22)){
         }
         checkOpModeActive();
 
         boolean hitAngle = false;
         robot.setLeftPower((p*.4)* (isRed() ? .1 : 1.0));
         robot.setRightPower((p*.4)* (isBlue() ? .1 : 1.0));
-        float h;
+        double h;
         do {
             h = robot.getHeading();
             telemetry.addData("heading: ", "%f", h);
@@ -98,7 +103,7 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(41)){//42
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)){//42
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -129,13 +134,17 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.update();
 
         sleep(2000);
-        turnToAngleIMU(0.);
+        turnToAngleEncoder(0.);
+        position = robot.getPosition();
+        telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
+        telemetry.update();
+        //sleep(10000);
 
         wallDistanceTest();
         checkOpModeActive();
 
         //BEACON 1
-        float beaconHeading = robot.getHeading();
+        double beaconHeading = robot.getHeading();
         //robot.moveThatRobot(.2, 25, 25, 5.0);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -199,17 +208,20 @@ public class AutoBeaconBase extends LinearOpMode{
             while (!robot.touchRed.isPressed() && (robot.buttonBopper.getCurrentPosition() < robot.maxBop) && opModeIsActive()) {}
         }
 
+        robot.wallTouch = robot.buttonBopper.getCurrentPosition();
+
         robot.buttonBopper.setPower(0.);
-        robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (!opModeIsActive()){
             return;
         }
-        robot.wallTouch = robot.buttonBopper.getCurrentPosition();
-        telemetry.addLine("variable accounted for");
-        telemetry.update();
-        RobotLog.ii("technochix", "wall = %d", robot.wallTouch);
 
-        moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
+        int bopperMove = robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance));
+        telemetry.addData("bopper move:", "%d -> %d", robot.wallTouch, bopperMove);
+        telemetry.update();
+        moveThatBopper(bopperMove);
+        // moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
+
 
       /*  //FAR
         if (3500 > robot.wallTouch){
@@ -270,7 +282,7 @@ public class AutoBeaconBase extends LinearOpMode{
     }
 
     public void turnToAngleIMU(double targetAngle){
-        float currentAngle = robot.getHeading();
+        double currentAngle = robot.getHeading();
         boolean turnRight = currentAngle-targetAngle > 0;
 
         robot.setLeftPower((.2)*(turnRight ? 1.0 : -1.0));
@@ -295,6 +307,23 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("final heading:", robot.getHeading());
         telemetry.update();
         sleep(15000);
+    }
+
+    public void turnToAngleEncoder(double targetAngle){
+        double currentAngle = robot.getHeading();
+        double deltaAngle = targetAngle-currentAngle;
+        telemetry.addData("current heading:", currentAngle);
+        telemetry.update();
+
+        double distance = (12*Math.PI)*(deltaAngle/360.);
+
+        robot.moveThatRobot(.2, -distance, distance, 1.5);
+
+        checkOpModeActive();
+       /* sleep(500);
+        telemetry.addData("final heading:", robot.getHeading());
+        telemetry.update();*/
+        //sleep(15000);
     }
 
 
