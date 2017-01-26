@@ -22,6 +22,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 /**
  * Created by Techno Team_PC_III on 12/23/2016.
@@ -193,11 +194,15 @@ public class GoldilocksHardware {
         return hsvValues [0];
     }
 
-    public float getHeading(){
+    public double getHeading(){
         Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        float angle = angles.firstAngle;
+        double angle = angles.firstAngle;
         return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
         //return angles.firstAngle;
+    }
+
+    public Position getPosition(){
+        return gyro.getPosition();
     }
 
     public int inchToEncoder(double inches){
@@ -209,8 +214,8 @@ public class GoldilocksHardware {
     }
 
     public void setRightPower(double p){
-        rightMotor.setPower(p * .92
-        );
+        rightMotor.setPower(p * .95
+        ); //.92
     }
 
     public void stopDriveMotors(){
