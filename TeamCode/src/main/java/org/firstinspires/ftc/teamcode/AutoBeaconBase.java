@@ -133,7 +133,6 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
-        sleep(2000);
         turnToAngleEncoder(0.);
         position = robot.getPosition();
         telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
@@ -154,6 +153,10 @@ public class AutoBeaconBase extends LinearOpMode{
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
+            double angle = robot.getHeading();
+
+            robot.setLeftPower((.2)* (angle < 0 ? .9 : 1.0));
+            robot.setRightPower((.2)*(angle < 0 ? 1.0 : .9));
         }
 
         robot.stopDriveMotors();
@@ -164,6 +167,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         checkOpModeActive();
+        turnToAngleEncoder(0.);
         wallDistanceTest();
         checkOpModeActive();
 
@@ -173,7 +177,11 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(-.2);
         robot.setRightPower(-.2);
 
-        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {
+        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
+            angle = robot.getHeading();
+
+            robot.setLeftPower((-.2)* (angle < 0 ? 1.0 : .9));
+            robot.setRightPower((-.2)*(angle < 0 ? .9 : 1.0));
         }
         robot.stopDriveMotors();
         checkOpModeActive();
@@ -252,7 +260,7 @@ public class AutoBeaconBase extends LinearOpMode{
             moveThatBopper(robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance)));
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
-            robot.moveThatRobot(.3, -8.25, -8.25, 3.0);
+            robot.moveThatRobot(.3, -7.75, -7.75, 3.0); //8.25
             checkOpModeActive();
             moveThatBopper(robot.wallTouch + (int) (multiplier * robot.beaconDepth));
             moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
@@ -310,6 +318,7 @@ public class AutoBeaconBase extends LinearOpMode{
     }
 
     public void turnToAngleEncoder(double targetAngle){
+        sleep(200);
         double currentAngle = robot.getHeading();
         double deltaAngle = targetAngle-currentAngle;
         telemetry.addData("current heading:", currentAngle);
