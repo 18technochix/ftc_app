@@ -230,7 +230,7 @@ public class GoldilocksHardware {
             shooter.setPower(s);
             sleep(20);
         }
-        sleep(1500); //sleep for a moment just to make sure the shooter is up to speed
+        sleep(2000); //sleep for a moment just to make sure the shooter is up to speed (1500)abd
 
         particleLift.setPosition(particleLiftUp); //190
         sleep(1000);     // pause for servos to move
