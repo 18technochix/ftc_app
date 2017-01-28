@@ -289,6 +289,11 @@ public class GoldilocksHardware {
                     (runtime.seconds() < timeout) &&
                     (leftMotor.isBusy() || rightMotor.isBusy())) {
 
+                /*double currentAngle = getHeading();
+
+                leftMotor.setPower((.2)* (currentAngle < targetAngle ? .9 : 1.0));
+                rightMotor.setPower((.2)*(currentAngle < targetAngle ? 1.0 : .9));*/
+
                 // Display it for the driver.
                 telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
                 telemetry.addData("Path2",  "Running at %7d :%7d",

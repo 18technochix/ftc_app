@@ -75,6 +75,7 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(p);
         robot.setRightPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(22)){
+            driveAngleCompensation(0, p);
         }
         checkOpModeActive();
 
@@ -103,7 +104,8 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)){//42
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)){
+            driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -153,10 +155,7 @@ public class AutoBeaconBase extends LinearOpMode{
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
-            double angle = robot.getHeading();
-
-            robot.setLeftPower((.2)* (angle < 0 ? .9 : 1.0));
-            robot.setRightPower((.2)*(angle < 0 ? 1.0 : .9));
+            driveAngleCompensation(0, .2);
         }
 
         robot.stopDriveMotors();
@@ -178,10 +177,7 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setRightPower(-.2);
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
-            angle = robot.getHeading();
-
-            robot.setLeftPower((-.2)* (angle < 0 ? 1.0 : .9));
-            robot.setRightPower((-.2)*(angle < 0 ? .9 : 1.0));
+            driveAngleCompensation(0, -.2);
         }
         robot.stopDriveMotors();
         checkOpModeActive();
@@ -333,6 +329,14 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("final heading:", robot.getHeading());
         telemetry.update();*/
         //sleep(15000);
+    }
+
+    public void driveAngleCompensation(double targetAngle, double power){
+        double currentAngle = robot.getHeading();
+        double deltaAngle = currentAngle-targetAngle;
+
+        robot.setLeftPower((power)* ((deltaAngle < 0)^(power < 0) ? .9 : 1.0));
+        robot.setRightPower((power)*((deltaAngle < 0)^(power < 0) ? 1.0 : .9));
     }
 
 
