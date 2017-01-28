@@ -104,7 +104,7 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)){
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(46.5)){
             driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
@@ -335,8 +335,11 @@ public class AutoBeaconBase extends LinearOpMode{
         double currentAngle = robot.getHeading();
         double deltaAngle = currentAngle-targetAngle;
 
-        robot.setLeftPower((power)* ((deltaAngle < 0)^(power < 0) ? .9 : 1.0));
-        robot.setRightPower((power)*((deltaAngle < 0)^(power < 0) ? 1.0 : .9));
+        telemetry.addData("HEADING: ", "cur: %f, delt: %f", currentAngle, deltaAngle );
+        telemetry.update();
+
+        robot.setLeftPower((power)* ((deltaAngle < 0)^(power < 0) ? .6 : 1.0)); //.9
+        robot.setRightPower((power)*((deltaAngle < 0)^(power < 0) ? 1.0 : .8));
     }
 
 
