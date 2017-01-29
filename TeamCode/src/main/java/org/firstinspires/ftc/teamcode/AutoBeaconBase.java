@@ -65,9 +65,9 @@ public class AutoBeaconBase extends LinearOpMode{
         multiplier = isRed() ? -1. : 1.;
 
         //robot.runShooter(.45);
-        Position position = robot.getPosition();
-        telemetry.addData("Starting position:", "(%.3f, %.3f)", position.x, position.y);
-        telemetry.update();
+//        Position position = robot.getPosition();
+//        telemetry.addData("Starting position:", "(%.3f, %.3f)", position.x, position.y);
+//        telemetry.update();
 
 
         double p = 0.5;
@@ -104,11 +104,9 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)&& isBlue()){
+        if (isBlue())
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(isBlue() ? 40.5 : 42.75)){
            // driveAngleCompensation(isBlue() ? -45 : 45, p);
-        }
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(42.75)&& isRed()){
-            // driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -139,9 +137,9 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.update();
 
         turnToAngleEncoder(0.);
-        position = robot.getPosition();
-        telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
-        telemetry.update();
+//        position = robot.getPosition();
+//        telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
+//        telemetry.update();
         //sleep(10000);
 
         wallDistanceTest();
