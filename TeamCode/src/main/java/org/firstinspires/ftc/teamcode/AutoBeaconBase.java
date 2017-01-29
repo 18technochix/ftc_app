@@ -75,7 +75,7 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(p);
         robot.setRightPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(22)){
-            driveAngleCompensation(0, p);
+            //driveAngleCompensation(0, p);
         }
         checkOpModeActive();
 
@@ -104,8 +104,11 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(46.5)){
-            driveAngleCompensation(isBlue() ? -45 : 45, p);
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(40.5)&& isBlue()){
+           // driveAngleCompensation(isBlue() ? -45 : 45, p);
+        }
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(42.75)&& isRed()){
+            // driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -322,7 +325,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         double distance = (12*Math.PI)*(deltaAngle/360.);
 
-        robot.moveThatRobot(.2, -distance, distance, 1.5);
+        robot.moveThatRobot(.2, -distance, distance, 1.8);//1.5
 
         checkOpModeActive();
        /* sleep(500);
@@ -338,7 +341,7 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("HEADING: ", "cur: %f, delt: %f", currentAngle, deltaAngle );
         telemetry.update();
 
-        robot.setLeftPower((power)* ((deltaAngle < 0)^(power < 0) ? .6 : 1.0)); //.9
+        robot.setLeftPower((power)* ((deltaAngle < 0)^(power < 0) ? .7 : 1.0)); //.9
         robot.setRightPower((power)*((deltaAngle < 0)^(power < 0) ? 1.0 : .8));
     }
 
