@@ -169,8 +169,8 @@ public class AutoBeaconBase extends LinearOpMode{
 
         robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         checkOpModeActive();
-        turnToAngleEncoder(0.);
-        wallDistanceTest();
+        //turnToAngleEncoder(0.);
+        //wallDistanceTest();
         checkOpModeActive();
 
 
