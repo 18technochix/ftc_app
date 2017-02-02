@@ -142,7 +142,8 @@ public class AutoBeaconBase extends LinearOpMode{
 //        telemetry.update();
         //sleep(10000);
 
-        wallDistanceTest();
+        //wallDistanceTest();
+        findWall();
         checkOpModeActive();
 
         //BEACON 1
@@ -201,7 +202,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
 
     //METHODS
-    public void wallDistanceTest(){
+    public boolean wallDistanceTest(){
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (opModeIsActive()) {
             robot.buttonBopper.setPower(isBlue() ? -.5 : .5);
@@ -213,18 +214,22 @@ public class AutoBeaconBase extends LinearOpMode{
             while (!robot.touchRed.isPressed() && (robot.buttonBopper.getCurrentPosition() < robot.maxBop) && opModeIsActive()) {}
         }
 
+        robot.buttonBopper.setPower(0.);
+
+        boolean foundWall = (robot.touchBlue.isPressed() || robot.touchRed.isPressed());
+
         robot.wallTouch = robot.buttonBopper.getCurrentPosition();
 
-        robot.buttonBopper.setPower(0.);
         //robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (!opModeIsActive()){
-            return;
+            return false;
         }
 
         int bopperMove = robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance));
         telemetry.addData("bopper move:", "%d -> %d", robot.wallTouch, bopperMove);
         telemetry.update();
-        moveThatBopper(bopperMove);
+        moveThatBopper(foundWall ? bopperMove : 0);
+        return foundWall;
         // moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
 
 
@@ -257,7 +262,7 @@ public class AutoBeaconBase extends LinearOpMode{
             moveThatBopper(robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance)));
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
-            robot.moveThatRobot(.3, -7.75, -7.75, 3.0); //8.25
+            robot.moveThatRobot(.3, -7.25, -7.25, 3.0); //8.25
             checkOpModeActive();
             moveThatBopper(robot.wallTouch + (int) (multiplier * robot.beaconDepth));
             moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
@@ -343,6 +348,25 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setRightPower((power)*((deltaAngle < 0)^(power < 0) ? 1.0 : .8));
     }
 
+    public boolean findWall(){
+        final int swing = 6;
+        while (!wallDistanceTest()){
+            if (isBlue()) {
+                robot.moveThatRobot(.2, swing, 0, 1.5);
+                robot.moveThatRobot(.2, 0, swing, 1.5);
+            }
+            else{
+                robot.moveThatRobot(.2, 0, swing, 1.5);
+                robot.moveThatRobot(.2, swing, 0, 1.5);
+            }
+            turnToAngleEncoder(0);
+            if (!opModeIsActive()){
+                return false;
+            }
+        }
+
+        return true;
+    }
 
 }
 
