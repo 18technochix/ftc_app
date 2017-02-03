@@ -104,9 +104,9 @@ public class AutoBeaconBase extends LinearOpMode{
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
-        if (isBlue())
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(isBlue() ? 40.5 : 42.75)){
-           // driveAngleCompensation(isBlue() ? -45 : 45, p);
+
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(isBlue() ? 40.5 : 42.75)) {
+            // driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
             robot.stopDriveMotors();
@@ -147,17 +147,34 @@ public class AutoBeaconBase extends LinearOpMode{
         checkOpModeActive();
 
         //BEACON 1
+        double creepySpeed = .25;
         double beaconHeading = robot.getHeading();
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        robot.setLeftPower(-creepySpeed);
+        robot.setRightPower(-creepySpeed);
+
+        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
+            driveAngleCompensation(0, -creepySpeed);
+        }
+        robot.stopDriveMotors();
+        checkOpModeActive();
+
+        bBeacon1();
+        checkOpModeActive();
+
+        //BEACON 2
         //robot.moveThatRobot(.2, 25, 25, 5.0);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.setLeftPower(.2);
-        robot.setRightPower(.2);
+        robot.setLeftPower(creepySpeed);
+        robot.setRightPower(creepySpeed);
+        sleep(2000);
 
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
-            driveAngleCompensation(0, .2);
+            driveAngleCompensation(0, creepySpeed);
         }
 
         robot.stopDriveMotors();
@@ -166,29 +183,11 @@ public class AutoBeaconBase extends LinearOpMode{
         bBeacon1();
         checkOpModeActive();
 
-        robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
+        //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         checkOpModeActive();
         //turnToAngleEncoder(0.);
         //wallDistanceTest();
         checkOpModeActive();
-
-
-        robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.setLeftPower(-.2);
-        robot.setRightPower(-.2);
-
-        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
-            driveAngleCompensation(0, -.2);
-        }
-        robot.stopDriveMotors();
-        checkOpModeActive();
-
-        bBeacon1();
-        checkOpModeActive();
-
-        //robot.moveThatRobot(DRIVE_SPEED, 48, 48, 4.0);  // S1: Forward 10 Inches with 30 Sec timeout
-        //^from old code, moves robot forward to base
 
         //decrease shooter speed (disabled for testing)
        /* while ( p > 0.) {
@@ -249,9 +248,9 @@ public class AutoBeaconBase extends LinearOpMode{
 
     public void bBeacon1(){
 
-        robot.moveThatRobot(.2, -2, -2, 1.5);
+        robot.moveThatRobot(.2, -1.5, -1.5, 1.5);//2.0
         checkOpModeActive();
-        sleep(250);
+        sleep(250);//250
         idle();
 
 
@@ -262,7 +261,7 @@ public class AutoBeaconBase extends LinearOpMode{
             moveThatBopper(robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance)));
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
-            robot.moveThatRobot(.3, -7.25, -7.25, 3.0); //8.25
+            robot.moveThatRobot(.3, -7.25, -7.25, 1.5); //8.25 & 3.0
             checkOpModeActive();
             moveThatBopper(robot.wallTouch + (int) (multiplier * robot.beaconDepth));
             moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
@@ -273,7 +272,7 @@ public class AutoBeaconBase extends LinearOpMode{
     public void moveThatBopper(int target){
         robot.buttonBopper.setTargetPosition(target);
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.buttonBopper.setPower(.5);
+        robot.buttonBopper.setPower(.7);
 
         while (opModeIsActive() && robot.buttonBopper.isBusy()){
         }
@@ -328,7 +327,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         double distance = (12*Math.PI)*(deltaAngle/360.);
 
-        robot.moveThatRobot(.2, -distance, distance, 1.8);//1.5
+        robot.moveThatRobot(.2, -distance, distance, .5);//1.5
 
         checkOpModeActive();
        /* sleep(500);
@@ -350,14 +349,15 @@ public class AutoBeaconBase extends LinearOpMode{
 
     public boolean findWall(){
         final int swing = 6;
+        final double speed = .3;
         while (!wallDistanceTest()){
             if (isBlue()) {
-                robot.moveThatRobot(.2, swing, 0, 1.5);
-                robot.moveThatRobot(.2, 0, swing, 1.5);
+                robot.moveThatRobot(speed, swing, 0, 1.);
+                robot.moveThatRobot(speed, 0, swing, 1.);
             }
             else{
-                robot.moveThatRobot(.2, 0, swing, 1.5);
-                robot.moveThatRobot(.2, swing, 0, 1.5);
+                robot.moveThatRobot(speed, 0, swing, 1.);
+                robot.moveThatRobot(speed, swing, 0, 1.);
             }
             turnToAngleEncoder(0);
             if (!opModeIsActive()){

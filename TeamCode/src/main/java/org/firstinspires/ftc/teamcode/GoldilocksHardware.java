@@ -62,7 +62,7 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;                            //have we touched the wall
-    public static final int beaconDepth = 750;
+    public static final int beaconDepth = 725; //750
     public static final int beaconClearance = 1750;
     public static double driveCorrect;
 
@@ -155,6 +155,7 @@ public class GoldilocksHardware {
 
         leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        buttonBopper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         buttonBopper.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
 
