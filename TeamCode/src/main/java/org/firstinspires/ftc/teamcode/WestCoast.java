@@ -117,11 +117,11 @@ public class WestCoast extends LinearOpMode {
             double motorIncrement= .01;
 
             if (gamepad2.y){                    //12
-                if (p < .8) {
+                if (p < .7) {
                     p = p + motorIncrement;
                 }
-                else if (p >= .8) {
-                    p = .8;
+                else if (p >= .7) {
+                    p = .7;
                 }
             }
             else if (gamepad2.b){               //3
