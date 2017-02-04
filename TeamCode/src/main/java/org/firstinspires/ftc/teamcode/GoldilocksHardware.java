@@ -62,7 +62,7 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;                            //have we touched the wall
-    public static final int beaconDepth = 725; //750
+    public static final int beaconDepth = 650; //750, 725, 700
     public static final int beaconClearance = 1750;
     public static double driveCorrect;
 
@@ -256,7 +256,7 @@ public class GoldilocksHardware {
 
     private void idle(){opMode.idle();}
 
-    public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout){
+    public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout, String tag){
         int newLeftTarget;
         int newRightTarget;
         int lCurrent;
@@ -296,8 +296,8 @@ public class GoldilocksHardware {
                 rightMotor.setPower((.2)*(currentAngle < targetAngle ? 1.0 : .9));*/
 
                 // Display it for the driver.
-                telemetry.addData("Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData("Path2",  "Running at %7d :%7d",
+                telemetry.addData(tag +": Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
+                telemetry.addData(tag +": Path2",  "Running at %7d :%7d",
                         leftMotor.getCurrentPosition(),
                         rightMotor.getCurrentPosition());
                 telemetry.update();

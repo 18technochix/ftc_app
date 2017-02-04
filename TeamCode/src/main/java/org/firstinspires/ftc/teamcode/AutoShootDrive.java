@@ -16,7 +16,7 @@ public class AutoShootDrive extends AutoShoot{
     public void runOpMode() {
         super.runOpMode();
 
-        robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0);
+        robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0, "vortex base");
     }
 }
 

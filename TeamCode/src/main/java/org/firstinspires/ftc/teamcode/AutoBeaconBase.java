@@ -38,6 +38,10 @@ public class AutoBeaconBase extends LinearOpMode{
     // Constructor
     public AutoBeaconBase(){}
 
+    private ElapsedTime runtime = new ElapsedTime();
+
+    public enum BeaconButton { BB_NEAR, BB_FAR }
+
     protected boolean red = true;
 
     public boolean isRed(){
@@ -90,7 +94,7 @@ public class AutoBeaconBase extends LinearOpMode{
             sleep(20);
             idle();
             if (isBlue()){
-                hitAngle = h <= -45;
+                hitAngle = h <= -43;
             }
             else {
                 hitAngle = h >= 45;
@@ -136,7 +140,7 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
-        turnToAngleEncoder(0.);
+        turnToAngleEncoder(isBlue() ? 0. : 2.);
 //        position = robot.getPosition();
 //        telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
 //        telemetry.update();
@@ -160,16 +164,20 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.stopDriveMotors();
         checkOpModeActive();
 
-        bBeacon1();
+        BeaconButton bb = bBeacon1();
         checkOpModeActive();
 
         //BEACON 2
         //robot.moveThatRobot(.2, 25, 25, 5.0);
+        turnToAngleEncoder(0);
+        robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        double distance = 48 + 1.5 +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);
+        robot.moveThatRobot(.65, distance, distance*(isBlue() ? 1. : .96), 6.0, "fast run");
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.setLeftPower(creepySpeed);
-        robot.setRightPower(creepySpeed);
-        sleep(2000);
+        robot.setLeftPower(-creepySpeed);
+        robot.setRightPower(-creepySpeed);
 
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
@@ -179,6 +187,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         robot.stopDriveMotors();
         checkOpModeActive();
+        turnToAngleEncoder(0);
 
         bBeacon1();
         checkOpModeActive();
@@ -227,7 +236,7 @@ public class AutoBeaconBase extends LinearOpMode{
         int bopperMove = robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance));
         telemetry.addData("bopper move:", "%d -> %d", robot.wallTouch, bopperMove);
         telemetry.update();
-        moveThatBopper(foundWall ? bopperMove : 0);
+        moveThatBopper((foundWall ? bopperMove : 0), 1.5);
         return foundWall;
         // moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
 
@@ -246,35 +255,47 @@ public class AutoBeaconBase extends LinearOpMode{
         }*/
     }
 
-    public void bBeacon1(){
-
-        robot.moveThatRobot(.2, -1.5, -1.5, 1.5);//2.0
+    public BeaconButton bBeacon1(){
+        BeaconButton bb;
+        int bopperPush = robot.wallTouch + (int)(multiplier * robot.beaconDepth);
+        if (isRed()){
+            bopperPush += 800;
+        }
+        int bopperRetract = robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance));
+        robot.moveThatRobot(.2, -1.5, -1.5, 1.5, "detect");//2.0
         checkOpModeActive();
-        sleep(250);//250
+        sleep(250);
         idle();
 
-
         if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
-            robot.moveThatRobot(.3, -2.0, -2.0, 1.5);
+            bb = BeaconButton.BB_NEAR;
+            robot.moveThatRobot(.3, -2.0, -2.0, 1.5, "bb_near");
             checkOpModeActive();
-            moveThatBopper(robot.wallTouch + (int)(multiplier * robot.beaconDepth));
-            moveThatBopper(robot.wallTouch + (int)(multiplier * (robot.beaconDepth + robot.beaconClearance)));
+
+            moveThatBopper(bopperPush, 1.5);
+            moveThatBopper(bopperRetract, 1.5);
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
-            robot.moveThatRobot(.3, -7.25, -7.25, 1.5); //8.25 & 3.0
+            double backup = isBlue() ? -7.25 : -8.25;
+            bb = BeaconButton.BB_FAR;
+            robot.moveThatRobot(.3, backup, backup, 1.5, "bb_far"); //8.25 & 3.0
             checkOpModeActive();
-            moveThatBopper(robot.wallTouch + (int) (multiplier * robot.beaconDepth));
-            moveThatBopper(robot.wallTouch + (int) (multiplier * (robot.beaconDepth + robot.beaconClearance)));
+            moveThatBopper(bopperPush, 1.5);
+            moveThatBopper(bopperRetract, 1.5);
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 25, 25, 8.0);
         }
+
+        return bb;
     }
 
-    public void moveThatBopper(int target){
+    public void moveThatBopper(int target, double timeout){
         robot.buttonBopper.setTargetPosition(target);
         robot.buttonBopper.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.buttonBopper.setPower(.7);
 
-        while (opModeIsActive() && robot.buttonBopper.isBusy()){
+        runtime.reset();
+
+        while (opModeIsActive() && robot.buttonBopper.isBusy() && (runtime.seconds() < timeout)){
         }
         robot.buttonBopper.setPower(0);
         if (!opModeIsActive()){
@@ -327,7 +348,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         double distance = (12*Math.PI)*(deltaAngle/360.);
 
-        robot.moveThatRobot(.2, -distance, distance, .5);//1.5
+        robot.moveThatRobot(.2, -distance, distance, .5, "angle");//1.5
 
         checkOpModeActive();
        /* sleep(500);
@@ -350,19 +371,36 @@ public class AutoBeaconBase extends LinearOpMode{
     public boolean findWall(){
         final int swing = 6;
         final double speed = .3;
+        int startPosition = 0;
         while (!wallDistanceTest()){
             if (isBlue()) {
-                robot.moveThatRobot(speed, swing, 0, 1.);
-                robot.moveThatRobot(speed, 0, swing, 1.);
+                startPosition = robot.leftMotor.getCurrentPosition();
+                robot.setLeftPower(speed);
+                robot.setRightPower(0);
+                while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                if (!opModeIsActive()){return false;}
+                startPosition = robot.rightMotor.getCurrentPosition();
+                robot.setLeftPower(0);
+                robot.setRightPower(speed);
+                while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                robot.stopDriveMotors();
+                if (!opModeIsActive()){return false;}
             }
             else{
-                robot.moveThatRobot(speed, 0, swing, 1.);
-                robot.moveThatRobot(speed, swing, 0, 1.);
+                startPosition = robot.rightMotor.getCurrentPosition();
+                robot.setLeftPower(0);
+                robot.setRightPower(speed);
+                while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                if (!opModeIsActive()){return false;}
+                startPosition = robot.leftMotor.getCurrentPosition();
+                robot.setLeftPower(speed);
+                robot.setRightPower(0);
+                while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                robot.stopDriveMotors();
+                if (!opModeIsActive()){return false;}
             }
             turnToAngleEncoder(0);
-            if (!opModeIsActive()){
-                return false;
-            }
+            if (!opModeIsActive()){return false;}
         }
 
         return true;
