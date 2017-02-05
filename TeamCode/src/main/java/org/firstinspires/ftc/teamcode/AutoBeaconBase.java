@@ -81,7 +81,7 @@ public class AutoBeaconBase extends LinearOpMode{
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(22)){
             //driveAngleCompensation(0, p);
         }
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         boolean hitAngle = false;
         robot.setLeftPower((p*.4)* (isRed() ? .1 : 1.0));
@@ -100,7 +100,7 @@ public class AutoBeaconBase extends LinearOpMode{
                 hitAngle = h >= 45;
             }
         } while ( !hitAngle && opModeIsActive());
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
@@ -136,7 +136,7 @@ public class AutoBeaconBase extends LinearOpMode{
             }
         } while ( !hitAngle && opModeIsActive());
         robot.stopDriveMotors();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
@@ -148,7 +148,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         //wallDistanceTest();
         findWall();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         //BEACON 1
         double creepySpeed = .25;
@@ -162,10 +162,10 @@ public class AutoBeaconBase extends LinearOpMode{
             driveAngleCompensation(0, -creepySpeed);
         }
         robot.stopDriveMotors();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         BeaconButton bb = bBeacon1();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         //BEACON 2
         //robot.moveThatRobot(.2, 25, 25, 5.0);
@@ -186,17 +186,17 @@ public class AutoBeaconBase extends LinearOpMode{
         }
 
         robot.stopDriveMotors();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
         turnToAngleEncoder(0);
 
         bBeacon1();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
         //turnToAngleEncoder(0.);
         //wallDistanceTest();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
 
         //decrease shooter speed (disabled for testing)
        /* while ( p > 0.) {
@@ -332,7 +332,7 @@ public class AutoBeaconBase extends LinearOpMode{
             }
         } while ( !hitAngle && opModeIsActive());
         robot.stopDriveMotors();
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
         sleep(5000);
         telemetry.addData("final heading:", robot.getHeading());
         telemetry.update();
@@ -350,7 +350,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         robot.moveThatRobot(.2, -distance, distance, .5, "angle");//1.5
 
-        checkOpModeActive();
+        if (!opModeIsActive()){return;}
        /* sleep(500);
         telemetry.addData("final heading:", robot.getHeading());
         telemetry.update();*/
