@@ -9,11 +9,14 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.LightSensor;
+import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
+import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 
@@ -48,6 +51,9 @@ public class GoldilocksHardware {
     public ColorSensor colorBlue = null;
     public ColorSensor colorRed = null;
     public BNO055IMU gyro = null;
+    //public OpticalDistanceSensor ods = null;
+    public UltrasonicSensor lds1 = null;
+    public UltrasonicSensor lds2 = null;
 
     //declare variables & give values if necessary
     public static final double ccLeftClose = (2./255.);        //cowcatcher open/close values
@@ -114,6 +120,10 @@ public class GoldilocksHardware {
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
+        //ods = hwMap.opticalDistanceSensor.get("ods");
+        lds1 = hwMap.ultrasonicSensor.get("lds1");
+        lds2 = hwMap.ultrasonicSensor.get("lds2");
+
 
 
         //set direction
@@ -215,8 +225,7 @@ public class GoldilocksHardware {
     }
 
     public void setRightPower(double p){
-        rightMotor.setPower(p * .95
-        ); //.92
+        rightMotor.setPower(p * .95); //.92
     }
 
     public void stopDriveMotors(){
@@ -234,7 +243,7 @@ public class GoldilocksHardware {
         sleep(2000); //sleep for a moment just to make sure the shooter is up to speed (1500)abd
 
         particleLift.setPosition(particleLiftUp); //190
-        sleep(1000);     // pause for servos to move
+        sleep(500);     // pause for servos to move
         particleLift.setPosition(particleLiftDown);
         sleep(1500);     // pause for servos to move
         particleLift.setPosition(particleLiftUp);
@@ -257,6 +266,10 @@ public class GoldilocksHardware {
     private void idle(){opMode.idle();}
 
     public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout, String tag){
+        moveThatRobot(speed, speed, leftInches, rightInches, timeout, tag);
+    }
+
+    public void moveThatRobot(double leftSpeed, double rightSpeed, double leftInches, double rightInches, double timeout, String tag){
         int newLeftTarget;
         int newRightTarget;
         int lCurrent;
@@ -281,8 +294,8 @@ public class GoldilocksHardware {
 
             // reset the timeout time and start motion.
             runtime.reset();
-            leftMotor.setPower(Math.abs(speed));
-            rightMotor.setPower(Math.abs(speed));
+            leftMotor.setPower(Math.abs(leftSpeed));
+            rightMotor.setPower(Math.abs(rightSpeed));
 
 
             // keep looping while we are still active, and there is time left, and both motors are running.

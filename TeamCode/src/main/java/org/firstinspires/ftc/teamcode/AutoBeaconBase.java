@@ -173,7 +173,7 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         double distance = 48 + 1.5 +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);
-        robot.moveThatRobot(.65, distance, distance*(isBlue() ? 1. : .96), 6.0, "fast run");
+        robot.moveThatRobot(.65, .65*(isBlue() ? 1. : .98), distance, distance, 6.0, "fast run");
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.setLeftPower(-creepySpeed);
@@ -228,7 +228,6 @@ public class AutoBeaconBase extends LinearOpMode{
 
         robot.wallTouch = robot.buttonBopper.getCurrentPosition();
 
-        //robot.buttonBopper.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         if (!opModeIsActive()){
             return false;
         }
