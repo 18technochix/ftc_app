@@ -68,12 +68,6 @@ public class AutoBeaconBase extends LinearOpMode{
 
         multiplier = isRed() ? -1. : 1.;
 
-        //robot.runShooter(.45);
-//        Position position = robot.getPosition();
-//        telemetry.addData("Starting position:", "(%.3f, %.3f)", position.x, position.y);
-//        telemetry.update();
-
-
         double p = 0.5;
         int startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
@@ -159,9 +153,11 @@ public class AutoBeaconBase extends LinearOpMode{
         robot.setRightPower(-creepySpeed);
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
-            driveAngleCompensation(0, -creepySpeed);
+            //driveAngleCompensation(0, -creepySpeed);
+            ultrasonicDriveCorrect(robot.wallGap, -creepySpeed, .9);
         }
         robot.stopDriveMotors();
+        turnToAngleEncoder(0);
         if (!opModeIsActive()){return;}
 
         BeaconButton bb = bBeacon1();
@@ -182,7 +178,8 @@ public class AutoBeaconBase extends LinearOpMode{
         //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
-            driveAngleCompensation(0, creepySpeed);
+            //driveAngleCompensation(0, creepySpeed);
+            ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
         }
 
         robot.stopDriveMotors();
@@ -368,6 +365,11 @@ public class AutoBeaconBase extends LinearOpMode{
     }
 
     public boolean findWall(){
+        robot.wallTouch = isBlue() ? -2500 : 2500;
+        return true;
+    }
+
+    public boolean findWallOld(){
         final int swing = 6;
         final double speed = .3;
         int startPosition = 0;
@@ -403,6 +405,31 @@ public class AutoBeaconBase extends LinearOpMode{
         }
 
         return true;
+    }
+
+    public void ultrasonicDriveCorrect(double targetDistance, double p, double multiplier) {
+        ultrasonicDriveCorrect(targetDistance, p, p, multiplier);
+    }
+
+    public void ultrasonicDriveCorrect(double targetDistance, double lp, double rp, double multiplier){
+        double lpr = lp * multiplier;
+        double rpr = lp * multiplier;
+
+        double distance = robot.getDistance(isBlue());
+
+        if(distance > targetDistance){
+            robot.setLeftPower(isBlue() ? lp : lpr);
+            robot.setRightPower(isBlue() ? rpr : rp);
+        }
+        else if(distance < targetDistance){
+            robot.setLeftPower(isBlue() ? lpr : lp);
+            robot.setRightPower(isBlue() ? rp : rpr);
+        }
+        else{
+            robot.setLeftPower(lp);
+            robot.setRightPower(rp);
+        }
+
     }
 
 }

@@ -52,8 +52,8 @@ public class GoldilocksHardware {
     public ColorSensor colorRed = null;
     public BNO055IMU gyro = null;
     //public OpticalDistanceSensor ods = null;
-    public UltrasonicSensor lds1 = null;
-    public UltrasonicSensor lds2 = null;
+    public UltrasonicSensor ldsBlue = null;
+    public UltrasonicSensor ldsRed = null;
 
     //declare variables & give values if necessary
     public static final double ccLeftClose = (2./255.);        //cowcatcher open/close values
@@ -70,6 +70,7 @@ public class GoldilocksHardware {
     public static int wallTouch;                            //have we touched the wall
     public static final int beaconDepth = 650; //750, 725, 700
     public static final int beaconClearance = 1750;
+    public static final double wallGap = 10;
     public static double driveCorrect;
 
     public static final int maxBop = 3300;
@@ -121,8 +122,8 @@ public class GoldilocksHardware {
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
         //ods = hwMap.opticalDistanceSensor.get("ods");
-        lds1 = hwMap.ultrasonicSensor.get("lds1");
-        lds2 = hwMap.ultrasonicSensor.get("lds2");
+        ldsRed = hwMap.ultrasonicSensor.get("lds left");
+        ldsBlue = hwMap.ultrasonicSensor.get("lds right");
 
 
 
@@ -216,6 +217,10 @@ public class GoldilocksHardware {
         return gyro.getPosition();
     }
 
+    public double getDistance(boolean blue){
+        return blue ? ldsBlue.getUltrasonicLevel() : ldsRed.getUltrasonicLevel();
+    }
+
     public int inchToEncoder(double inches){
      return (int)(inches * GoldilocksHardware.COUNTS_PER_INCH);
     }
@@ -302,11 +307,7 @@ public class GoldilocksHardware {
             while (opModeIsActive() &&
                     (runtime.seconds() < timeout) &&
                     (leftMotor.isBusy() || rightMotor.isBusy())) {
-
-                /*double currentAngle = getHeading();
-
-                leftMotor.setPower((.2)* (currentAngle < targetAngle ? .9 : 1.0));
-                rightMotor.setPower((.2)*(currentAngle < targetAngle ? 1.0 : .9));*/
+                ((AutoBeaconBase)opMode).ultrasonicDriveCorrect(wallGap, leftSpeed, rightSpeed, .9);
 
                 // Display it for the driver.
                 telemetry.addData(tag +": Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
@@ -347,5 +348,6 @@ public class GoldilocksHardware {
 
         }
     }
+
 
 }
