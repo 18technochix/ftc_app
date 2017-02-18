@@ -4,20 +4,11 @@ package org.firstinspires.ftc.teamcode;
  * Created by Techno Team_PC_III on 11/13/2016.
  */
 
-import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.RobotLog;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -70,18 +61,18 @@ public class AutoBeaconBase extends LinearOpMode{
 
         double p = 0.5;
         int startPosition = robot.leftMotor.getCurrentPosition();
-        robot.setLeftPower(p);
+        /*robot.setLeftPower(p);
         robot.setRightPower(p);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(22)){
             //driveAngleCompensation(0, p);
-        }
+        }*/
         if (!opModeIsActive()){return;}
 
         boolean hitAngle = false;
-        robot.setLeftPower((p*.4)* (isRed() ? .1 : 1.0));
-        robot.setRightPower((p*.4)* (isBlue() ? .1 : 1.0));
+        /*robot.setLeftPower((p*.4)* (isRed() ? .1 : 1.0));
+        robot.setRightPower((p*.4)* (isBlue() ? .1 : 1.0));*/
         double h;
-        do {
+        /*do {
             h = robot.getHeading();
             telemetry.addData("heading: ", "%f", h);
             telemetry.update();
@@ -91,19 +82,21 @@ public class AutoBeaconBase extends LinearOpMode{
                 hitAngle = h <= -43;
             }
             else {
-                hitAngle = h >= 45;
+                hitAngle = h >= 41;
             }
         } while ( !hitAngle && opModeIsActive());
         if (!opModeIsActive()){return;}
 
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
+*/
+        swingToAngleEncoder(isBlue()? -45 : 45, 1.5);
 
         startPosition = robot.leftMotor.getCurrentPosition();
         robot.setLeftPower(p);
         robot.setRightPower(p);
 
-        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(isBlue() ? 40.5 : 42.75)) {
+        while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(isBlue() ? 40.5 : 46)) {
             // driveAngleCompensation(isBlue() ? -45 : 45, p);
         }
         if (!opModeIsActive()){
@@ -134,7 +127,7 @@ public class AutoBeaconBase extends LinearOpMode{
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
-        turnToAngleEncoder(isBlue() ? 0. : 2., .5);
+        pivotToAngleEncoder(isBlue() ? 0. : 2., .5);
 //        position = robot.getPosition();
 //        telemetry.addData("Ending position:", "(%.3f, %.3f)", position.x, position.y);
 //        telemetry.update();
@@ -149,25 +142,25 @@ public class AutoBeaconBase extends LinearOpMode{
         double beaconHeading = robot.getHeading();
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        robot.setLeftPower(-creepySpeed);
-        robot.setRightPower(-creepySpeed);
+        robot.setLeftPower(creepySpeed);
+        robot.setRightPower(creepySpeed);
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
             //driveAngleCompensation(0, -creepySpeed);
-            ultrasonicDriveCorrect(robot.wallGap, -creepySpeed, .9);
+            //ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
         }
         robot.stopDriveMotors();
-        turnToAngleEncoder(0, .5);
+        pivotToAngleEncoder(0, .5);
         if (!opModeIsActive()){return;}
 
         BeaconButton bb = bBeacon1();
         if (!opModeIsActive() || BeaconButton.BB_NONE == bb){return;}
 
         //BEACON 2
-        turnToAngleEncoder(0, .5);
+        pivotToAngleEncoder(0, .5);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        double distance = 48 + 1.5 +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);
+        double distance = 50 + 1.5 +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);//48
         robot.moveThatRobot(.55*(isBlue() ? 1. : 1.), .55*(isBlue() ? 1. : 1.), distance, distance, 6.0, "fast run");//speed was .65
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -178,22 +171,22 @@ public class AutoBeaconBase extends LinearOpMode{
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
             //driveAngleCompensation(0, creepySpeed);
-            ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
+            ultrasonicDriveCorrect(robot.wallGap, -creepySpeed, .9);
         }
 
         robot.stopDriveMotors();
         if (!opModeIsActive()){return;}
         robot.shooter.setPower(robot.shooterPower = .2);
-        turnToAngleEncoder(0, .5);
+        pivotToAngleEncoder(0, .5);
 
         robot.shooter.setPower(robot.shooterPower = .4);
         bb = bBeacon1();
-        robot.shooter.setPower(.55);
+        robot.shooter.setPower(.5);
         if (!opModeIsActive() || BeaconButton.BB_NONE == bb){return;}
 
         //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         if (!opModeIsActive()){return;}
-        //turnToAngleEncoder(0.);
+        //pivotToAngleEncoder(0.);
         //wallDistanceTest();
 
         turnShootDrive();
@@ -258,7 +251,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
             bb = BeaconButton.BB_NEAR;
-            robot.moveThatRobot(.3, -2.0, -2.0, 1.5, "bb_near");
+            robot.moveThatRobot(.3, -2.75, -2.75, 1.5, "bb_near");//2
             checkOpModeActive();
             if(robot.getDistance(isBlue())>25.){return BeaconButton.BB_NONE;}
 
@@ -272,7 +265,7 @@ public class AutoBeaconBase extends LinearOpMode{
             moveThatBopper(bopperRetract, 1.5);
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
-            double backup = isBlue() ? -7.25 : -8.25;
+            double backup = isBlue() ? -7.25 : -8.75;//8.25r
             bb = BeaconButton.BB_FAR;
             robot.moveThatRobot(.3, backup, backup, 1.5, "bb_far"); //8.25 & 3.0
             checkOpModeActive();
@@ -343,7 +336,25 @@ public class AutoBeaconBase extends LinearOpMode{
         sleep(15000);
     }
 
-    public void turnToAngleEncoder(double targetAngle, double timeout){
+    public void swingToAngleEncoder(double targetAngle, double timeout){
+        sleep(200);
+        double currentAngle = robot.getHeading();
+        double deltaAngle = targetAngle-currentAngle;
+        telemetry.addData("current heading:", currentAngle);
+        telemetry.update();
+
+        double distance = (24*Math.PI)*(deltaAngle/360.);
+
+        if(distance > 0) {
+            robot.moveThatRobot(.2, 0, distance, timeout, "angle");
+        }
+        else{
+            robot.moveThatRobot(.2, -distance, 0, timeout, "angle");
+        }
+        if (!opModeIsActive()){return;}
+    }
+
+    public void pivotToAngleEncoder(double targetAngle, double timeout){
         sleep(200);
         double currentAngle = robot.getHeading();
         double deltaAngle = targetAngle-currentAngle;
@@ -408,7 +419,7 @@ public class AutoBeaconBase extends LinearOpMode{
                 robot.stopDriveMotors();
                 if (!opModeIsActive()){return false;}
             }
-            turnToAngleEncoder(0, .5);
+            pivotToAngleEncoder(0, .5);
             if (!opModeIsActive()){return false;}
         }
 
@@ -445,7 +456,7 @@ public class AutoBeaconBase extends LinearOpMode{
     }
 
     public void turnShootDrive(){
-        turnToAngleEncoder(isBlue() ? 135: -135, 2.5);
+        pivotToAngleEncoder(isBlue() ? 135: -135, 2.5);
         robot.doubleShot();
         robot.shooter.setPower(robot.shooterPower = .0);
         robot.moveThatRobot(.5, 62., 62., 5.0, "FINISH THE CAP BALLLLLL");
