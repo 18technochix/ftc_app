@@ -17,6 +17,11 @@ public class AutoShootDrive extends AutoShoot{
         super.runOpMode();
 
         robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, 50, 50, 4.0, "vortex base");
+
+        while (robot.leftMotor.isBusy()){
+            //if (robot.leftMotor.getCurrentPosition() > )
+            //how do we know the robot is 80% to its target position
+        }
     }
 }
 

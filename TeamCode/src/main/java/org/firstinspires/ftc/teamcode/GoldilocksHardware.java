@@ -67,10 +67,11 @@ public class GoldilocksHardware {
     public static boolean leftOpen;                             //individual cowcatcher control
     public static boolean rightOpen;
 
-    public static int wallTouch;                            //have we touched the wall
-    public static final int beaconDepth = 650; //750, 725, 700
+    public static int wallTouch;
+    public static final int encoderConvert = 965;                          //have we touched the wall
+    public static final int beaconDepth = (int)(1.4*(double)encoderConvert); //750, 725, 700, 650
     public static final int beaconClearance = 1750;
-    public static final double wallGap = 10;
+    public static final double wallGap = 8;
     public static double driveCorrect;
 
     public static final int maxBop = 3300;
@@ -80,6 +81,7 @@ public class GoldilocksHardware {
     public static final double midHue = (blueHue + redHue)/2.;
     public static final double lineLight = .350;
     public static final double shooterIncrement = .01;
+    public double shooterPower = 0;
 
 
     //auto constants
@@ -238,14 +240,18 @@ public class GoldilocksHardware {
         rightMotor.setPower(0);
     }
 
-    public void runShooter(double t){
-        double s = 0.;
-        while (s < t) {
-            s = s + shooterIncrement;
-            shooter.setPower(s);
+    public void rampUpShooter(double t) {
+        shooterPower = 0.;
+        while (shooterPower < t) {
+            shooterPower = shooterPower + shooterIncrement;
+            shooter.setPower(shooterPower);
             sleep(20);
         }
+
         sleep(2000); //sleep for a moment just to make sure the shooter is up to speed (1500)abd
+    }
+
+    public void doubleShot() {
 
         particleLift.setPosition(particleLiftUp); //190
         sleep(500);     // pause for servos to move
@@ -253,15 +259,22 @@ public class GoldilocksHardware {
         sleep(1500);     // pause for servos to move
         particleLift.setPosition(particleLiftUp);
         sleep(500);     // pause for servos to move
+    }
 
-        while (s > 0.) {
-            s = s - shooterIncrement;
-            shooter.setPower(Math.abs(s));
+    public void rampDownShooter(){
+        while (shooterPower > 0.) {
+            shooterPower = shooterPower - shooterIncrement;
+            shooter.setPower(Math.abs(shooterPower));
             sleep(20);
         }
         shooter.setPower(0.);
     }
 
+    public void runShooter(double t){
+        rampUpShooter(t);
+        doubleShot();
+        rampDownShooter();
+    }
     private void sleep(long ms){
         opMode.sleep(ms);
     }
@@ -307,7 +320,7 @@ public class GoldilocksHardware {
             while (opModeIsActive() &&
                     (runtime.seconds() < timeout) &&
                     (leftMotor.isBusy() || rightMotor.isBusy())) {
-                ((AutoBeaconBase)opMode).ultrasonicDriveCorrect(wallGap, leftSpeed, rightSpeed, .9);
+                //((AutoBeaconBase)opMode).ultrasonicDriveCorrect(wallGap, leftSpeed, rightSpeed, .9);
 
                 // Display it for the driver.
                 telemetry.addData(tag +": Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
