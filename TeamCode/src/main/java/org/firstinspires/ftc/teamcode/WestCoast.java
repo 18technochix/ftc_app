@@ -81,9 +81,8 @@ public class WestCoast extends LinearOpMode {
             Double tp = p;
             telemetry.addData("Shooter:", tp.toString());
             telemetry.update();
-            telemetry.addData("Bopper:", "enc: %d, left: %b, right: %b, line: %.3f",
+            telemetry.addData("Bopper:", "enc: %d, line: %.3f",
                     robot.buttonBopper.getCurrentPosition(),
-                    robot.touchBlue.isPressed(), robot.touchRed.isPressed(),
                     robot.whiteLineSensorOne.getLightDetected());
             telemetry.update();
 

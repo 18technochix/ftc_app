@@ -44,16 +44,12 @@ public class GoldilocksHardware {
     public Servo       ccLeft          = null;
     public Servo       ccRight         = null;
 
-    public TouchSensor touchBlue = null;
-    public TouchSensor touchRed = null;
     public LightSensor whiteLineSensorOne = null;
     //public LightSensor whiteLineSensorTwo = null;
     public ColorSensor colorBlue = null;
     public ColorSensor colorRed = null;
     public BNO055IMU gyro = null;
-    //public OpticalDistanceSensor ods = null;
-    public UltrasonicSensor ldsBlue = null;
-    public UltrasonicSensor ldsRed = null;
+    public UltrasonicSensor lds = null;
 
     //declare variables & give values if necessary
     public static final double ccLeftClose = (2./255.);        //cowcatcher open/close values
@@ -75,6 +71,7 @@ public class GoldilocksHardware {
     public static double driveCorrect;
 
     public static final int maxBop = 3300;
+    public static final int bopperSensorSpace = 35;
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
@@ -118,14 +115,9 @@ public class GoldilocksHardware {
         shooter = hwMap.dcMotor.get("shooter");
         buttonBopper = hwMap.dcMotor.get("button bopper");
         collector = hwMap.dcMotor.get("collector");
-        touchRed = hwMap.touchSensor.get("touch left");
-        touchBlue = hwMap.touchSensor.get("touch right");
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
-        //ods = hwMap.opticalDistanceSensor.get("ods");
-        ldsRed = hwMap.ultrasonicSensor.get("lds left");
-        ldsBlue = hwMap.ultrasonicSensor.get("lds right");
 
 
 
@@ -153,8 +145,16 @@ public class GoldilocksHardware {
     }
 
     //AUTONOMOUS INIT
-    public void autoInit(HardwareMap someHwMap){
+    public void autoInit(HardwareMap someHwMap, boolean isBlue ){
         init(someHwMap);
+
+        if (isBlue) {
+            lds = hwMap.ultrasonicSensor.get("lds right");
+        } else {
+            lds = hwMap.ultrasonicSensor.get("lds left");
+        }
+
+
         rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
 
@@ -219,8 +219,8 @@ public class GoldilocksHardware {
         return gyro.getPosition();
     }
 
-    public double getDistance(boolean blue){
-        return blue ? ldsBlue.getUltrasonicLevel() : ldsRed.getUltrasonicLevel();
+    public double getDistance(){
+        return lds.getUltrasonicLevel();
     }
 
     public int inchToEncoder(double inches){

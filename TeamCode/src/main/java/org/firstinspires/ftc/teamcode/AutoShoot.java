@@ -20,7 +20,8 @@ public class AutoShoot extends LinearOpMode{
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        robot.autoInit(hardwareMap);
+        // arbitrarily do blue autoInit (isBlue == true)
+        robot.autoInit(hardwareMap, true);
 
         waitForStart();
 

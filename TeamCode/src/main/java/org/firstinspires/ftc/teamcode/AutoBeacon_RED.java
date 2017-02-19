@@ -24,7 +24,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        robot.autoInit(hardwareMap);
+        robot.autoInit(hardwareMap, false);
 
         waitForStart();
 /*
@@ -245,7 +245,7 @@ public class AutoBeacon_RED extends LinearOpMode{
         if (opModeIsActive()) {
             robot.buttonBopper.setPower(.5);
         }
-        while (!robot.touchRed.isPressed()&& (robot.buttonBopper.getCurrentPosition()<robot.maxBop)&& opModeIsActive()){
+        while ((robot.buttonBopper.getCurrentPosition()<robot.maxBop)&& opModeIsActive()){
         }
 
         robot.buttonBopper.setPower(0.);
