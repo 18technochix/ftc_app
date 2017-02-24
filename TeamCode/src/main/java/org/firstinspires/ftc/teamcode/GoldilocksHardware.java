@@ -72,6 +72,7 @@ public class GoldilocksHardware {
 
     public static final int maxBop = 3300;
     public static final int bopperSensorSpace = 35;
+    public static final int bopperOvershoot = 20;
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
@@ -292,8 +293,10 @@ public class GoldilocksHardware {
         int newRightTarget;
         int lCurrent;
         int rCurrent;
-        int lPercent;
-        int rPercent;
+        double lComplete;
+        double rComplete;
+        double lSlowdown;
+        double rSlowdown;
 
         //are we still running? good. if so:
         if (opModeIsActive()) {
@@ -314,7 +317,7 @@ public class GoldilocksHardware {
             runtime.reset();
             leftMotor.setPower(Math.abs(leftSpeed));
             rightMotor.setPower(Math.abs(rightSpeed));
-
+            double lastSpeedSetTime = runtime.seconds();
 
             // keep looping while we are still active, and there is time left, and both motors are running.
             while (opModeIsActive() &&
@@ -322,31 +325,35 @@ public class GoldilocksHardware {
                     (leftMotor.isBusy() || rightMotor.isBusy())) {
                 //((AutoBeaconBase)opMode).ultrasonicDriveCorrect(wallGap, leftSpeed, rightSpeed, .9);
 
+                lCurrent = leftMotor.getCurrentPosition();
+                rCurrent = rightMotor.getCurrentPosition();
+
                 // Display it for the driver.
-                telemetry.addData(tag +": Path1",  "Running to %7d :%7d", newLeftTarget,  newRightTarget);
-                telemetry.addData(tag +": Path2",  "Running at %7d :%7d",
-                        leftMotor.getCurrentPosition(),
-                        rightMotor.getCurrentPosition());
+                telemetry.addData(tag + ": Path1", "Running to %7d :%7d", newLeftTarget, newRightTarget);
+                telemetry.addData(tag + ": Path2", "Running at %7d :%7d", lCurrent, rCurrent);
                 telemetry.update();
 
-                    /*lCurrent = leftMotor.getCurrentPosition();
-                    rCurrent = rightMotor.getCurrentPosition();
+                lComplete = (double) lCurrent / (double) newLeftTarget;
+                rComplete = (double) rCurrent / (double) newRightTarget;
 
-                    lPercent = lCurrent / newLeftTarget;
-                    rPercent = rCurrent / newRightTarget;
+                lSlowdown = 1.0;
+                if (lComplete > 0.9) {
+                    lSlowdown = 0.5;
+                } else if (lComplete > 0.8) {
+                    lSlowdown = 0.8;
+                }
+                rSlowdown = 1.0;
+                if (rComplete > 0.9) {
+                    rSlowdown = 0.5;
+                } else if (rComplete > 0.8) {
+                    rSlowdown = 0.8;
+                }
 
-                    //slowly ramp down the speed once 90% of target is reached
-                    if ((lPercent > .75) || (rPercent > .75)){
-                        speed = (speed/4);
-                        if (speed < .1){
-                            speed = .1;
-                        }
-                    }
-
-                    // reset the timeout time and start motion.
-                    runtime.reset();
-                    leftMotor.setPower(Math.abs(speed));
-                    rightMotor.setPower(Math.abs(speed));*/
+                if ((runtime.seconds() - lastSpeedSetTime) > 0.04) {
+                    leftMotor.setPower(lSlowdown * Math.abs(leftSpeed));
+                    rightMotor.setPower(rSlowdown * Math.abs(rightSpeed));
+                    lastSpeedSetTime = runtime.seconds();
+                }
 
                 idle();
             }
