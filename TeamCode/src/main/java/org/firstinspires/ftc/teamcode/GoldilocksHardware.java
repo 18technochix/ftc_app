@@ -64,15 +64,14 @@ public class GoldilocksHardware {
     public static boolean rightOpen;
 
     public static int wallTouch;
-    public static final int encoderConvert = 965;                          //have we touched the wall
-    public static final int beaconDepth = (int)(1.4*(double)encoderConvert); //750, 725, 700, 650
-    public static final int beaconClearance = 1750;
+    public static final int encoderPerInch = 940;      // encoder counts per inch
+    public static final int beaconDepth = (int)(1.5*(double)encoderPerInch); //750, 725, 700, 650
     public static final double wallGap = 8;
     public static double driveCorrect;
 
-    public static final int maxBop = 3300;
-    public static final int bopperSensorSpace = 35;
-    public static final int bopperOvershoot = 20;
+    public static final int maxBop = 3500;
+    public static final int bopperSensorSpace = (int)(1.0*(double)encoderPerInch);
+    public static final int bopperOvershoot = (int)(0.15*(double)encoderPerInch);
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
@@ -337,15 +336,15 @@ public class GoldilocksHardware {
                 rComplete = (double) rCurrent / (double) newRightTarget;
 
                 lSlowdown = 1.0;
-                if (lComplete > 0.9) {
+                if (lComplete > 0.92) {
                     lSlowdown = 0.5;
-                } else if (lComplete > 0.8) {
+                } else if (lComplete > 0.85) {
                     lSlowdown = 0.8;
                 }
                 rSlowdown = 1.0;
-                if (rComplete > 0.9) {
+                if (rComplete > 0.92) {
                     rSlowdown = 0.5;
-                } else if (rComplete > 0.8) {
+                } else if (rComplete > 0.85) {
                     rSlowdown = 0.8;
                 }
 
