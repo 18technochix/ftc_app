@@ -239,7 +239,7 @@ public class AutoBeaconBase extends LinearOpMode{
             //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -30, -30, 8.0);// distance to get close to the second beacon
         } else { //if beacon is NOT blue then move to the next one, which is blue
             bb = BeaconButton.BB_FAR;
-            backup = isBlue() ? -8.75 : -8.75;
+            backup = isBlue() ? -8.75 : -8.5;
             robot.moveThatRobot(.3, backup, backup, 1.5, "bb_far");
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
