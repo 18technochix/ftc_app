@@ -222,7 +222,7 @@ public class AutoBeaconBase extends LinearOpMode{
 
         if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
             bb = BeaconButton.BB_NEAR;
-            backup = isBlue() ? -3.25 : -3.25;
+            backup = isBlue() ? -3.25 : -2.8;
             robot.moveThatRobot(.3, backup, backup, 1.5, "bb_near");//2
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
