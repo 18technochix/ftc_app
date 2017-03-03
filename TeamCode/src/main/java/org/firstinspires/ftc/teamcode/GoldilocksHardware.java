@@ -72,11 +72,12 @@ public class GoldilocksHardware {
     public static final int maxBop = 3500;
     public static final int bopperSensorSpace = (int)(1.0*(double)encoderPerInch);
     public static final int bopperOvershoot = (int)(0.15*(double)encoderPerInch);
+    static final int bopperRetract = (int)(.75*(double)encoderPerInch);
 
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
     public static final double midHue = (blueHue + redHue)/2.;
-    public static final double lineLight = .350;
+    public static final double lineLight = .3;
     public static final double shooterIncrement = .01;
     public double shooterPower = 0;
 
@@ -120,10 +121,12 @@ public class GoldilocksHardware {
         gyro = hwMap.get(BNO055IMU.class, "imu");
 
 
-
         //set direction
+        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
+        rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
         shooter.setDirection(DcMotorSimple.Direction.REVERSE);
-        collector.setDirection(DcMotor.Direction.REVERSE);
+        collector.setDirection(DcMotorSimple.Direction.REVERSE);
+        buttonBopper.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
         //set power
         leftMotor.setPower(0.);
@@ -145,7 +148,7 @@ public class GoldilocksHardware {
     }
 
     //AUTONOMOUS INIT
-    public void autoInit(HardwareMap someHwMap, boolean isBlue ){
+    void autoInit(HardwareMap someHwMap, boolean isBlue){
         init(someHwMap);
 
         if (isBlue) {
@@ -153,14 +156,6 @@ public class GoldilocksHardware {
         } else {
             lds = hwMap.ultrasonicSensor.get("lds left");
         }
-
-
-        rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        //encoder setup
-        //leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         //reset encoders
         leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -186,15 +181,12 @@ public class GoldilocksHardware {
     //TELEOP INIT
     public void teleInit(HardwareMap someHwMap) {
         init(someHwMap);
-        leftMotor.setDirection(DcMotorSimple.Direction.REVERSE);
-        rightMotor.setDirection(DcMotorSimple.Direction.FORWARD);
 
         //run without encoders
         leftMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //buttonBopper.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //individual cowcatcher control booleans
         leftOpen = false;
@@ -212,7 +204,6 @@ public class GoldilocksHardware {
         Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         double angle = angles.firstAngle;
         return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
-        //return angles.firstAngle;
     }
 
     public Position getPosition(){

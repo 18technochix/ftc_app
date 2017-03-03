@@ -77,21 +77,22 @@ public class WestCoast extends LinearOpMode {
 
        // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
+
+            //DRIVE CONTROL
+            double lp = (double) gamepad1.left_stick_y;          //direct relationship: joystick-motor
+            double rp = (double) gamepad1.right_stick_y;
+
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             Double tp = p;
             telemetry.addData("Shooter:", tp.toString());
-            telemetry.update();
             telemetry.addData("Bopper:", "enc: %d, line: %.3f",
                     robot.buttonBopper.getCurrentPosition(),
                     robot.whiteLineSensorOne.getLightDetected());
+            telemetry.addData("Joysticks:", "left: %.2f, right: %.2f", lp, rp);
             telemetry.update();
 
 
-            //DRIVE CONTROL
-            double rp = (double) gamepad1.left_stick_y;          //direct relationship: joystick-motor
-            double lp = (double) gamepad1.right_stick_y;
-
-            if (gamepad1.right_trigger > .5){           //scale down drive speed for control
+            if (gamepad1.right_trigger > .5){                   //scale down drive speed for control
                 lp = lp / 2;
                 rp = rp / 2;
             }
@@ -104,11 +105,8 @@ public class WestCoast extends LinearOpMode {
                 rp = (.2);
             }
 
-
-            //robot.setLeftPower(lp);               //set drive motor power
-            //robot.setRightPower(rp);
-            robot.leftMotor.setPower(lp);               //set drive motor power
-            robot.rightMotor.setPower(rp);
+            robot.leftMotor.setPower(-lp);               //set drive motor power
+            robot.rightMotor.setPower(-rp);
 
 
 
@@ -215,11 +213,11 @@ public class WestCoast extends LinearOpMode {
 
             //BUTTON BOPPER CONTROL
             if (gamepad1.x){
-                robot.buttonBopper.setPower(.5);
+                robot.buttonBopper.setPower(-.5);
 
             }
             else if (gamepad1.b){
-                robot.buttonBopper.setPower(-.5);
+                robot.buttonBopper.setPower(.5);
             }
             else {
                 robot.buttonBopper.setPower(0);
