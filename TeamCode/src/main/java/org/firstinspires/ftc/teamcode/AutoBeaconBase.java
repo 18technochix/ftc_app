@@ -31,7 +31,7 @@ class AutoBeaconBase extends LinearOpMode{
 
     private ElapsedTime runtime = new ElapsedTime();
 
-    private enum BeaconButton { BB_NEAR, BB_FAR, BB_NONE }
+    private enum BeaconButton { BB_NEAR, BB_FAR, BB_NONE, BB_FALSE }
 
     protected boolean red = true;
 
@@ -117,7 +117,6 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setRightPower(creepySpeed);
 
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
-            //driveAngleCompensation(0, -creepySpeed);
             //ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
         }
         robot.stopDriveMotors();
@@ -131,10 +130,15 @@ class AutoBeaconBase extends LinearOpMode{
             telemetry.update();
             return;
         }
+        else if (BeaconButton.BB_FALSE == bb){
+            telemetry.addData("continuing:", "COLOR SENSOR OFF");
+            telemetry.update();
+        }
 
 
         //BEACON 2
         pivotToAngleEncoder(0, .5);
+        robot.collector.setPower(-.5);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         double distance = 36.; //53. +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);//48
@@ -144,10 +148,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(creepySpeed);
         robot.setRightPower(creepySpeed);
 
-        //(robot.leftMotor.isBusy() && robot.rightMotor.isBusy()) &&
-
         while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
-            //driveAngleCompensation(0, creepySpeed);
             //ultrasonicDriveCorrect(robot.wallGap, -creepySpeed, .9);
         }
 
@@ -187,6 +188,9 @@ class AutoBeaconBase extends LinearOpMode{
 
         moveThatBopper(-multiplier * robot.bopperRetract, 1.5);
 
+        //in case sensors are off
+        if (robot.getBlueHue() == 0){return BeaconButton.BB_FALSE;}
+
 
         robot.moveThatRobot(.2, move, move, 1.5, "detect");//2.0
         checkOpModeActive();
@@ -195,29 +199,29 @@ class AutoBeaconBase extends LinearOpMode{
 
         if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
             bb = BeaconButton.BB_NEAR;
-            move = isBlue() ? 3. : -2.8;
+            move = isBlue() ? 3. : 3;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_near");//2
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
-            bopperPush = robot.wallTouch - robot.beaconDepth - robot.bopperSensorSpace + robot.bopperOvershoot;
-            bopperPush = Math.min(bopperPush,robot.maxBop) ;
+            bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
+            bopperPush = Math.min(bopperPush,robot.maxBop);
 
-            telemetry.addData("distance:", "%d", robot.wallTouch);
+            telemetry.addData("distance:", "%d", bopperPush);
             telemetry.update();
 
             moveThatBopper(multiplier * bopperPush, 1.5);
             moveThatBopper(-multiplier * robot.bopperRetract, 1.5);
         } else { //if beacon is NOT blue then move to the next one, which is blue
             bb = BeaconButton.BB_FAR;
-            move = isBlue() ? 8.75 : -8.5;
+            move = isBlue() ? 8.75 : 8.75;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_far");
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
-            bopperPush = robot.wallTouch - robot.beaconDepth - robot.bopperSensorSpace + robot.bopperOvershoot;
+            bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
             bopperPush = Math.min(bopperPush,robot.maxBop) ;
 
             telemetry.addData("distance:", "%d", robot.wallTouch);
@@ -359,7 +363,6 @@ class AutoBeaconBase extends LinearOpMode{
 
     public void turnShootDrive(){
         pivotToAngleEncoder(isBlue() ? -45: 45, 2.5);
-//        swingToAngleEncoder(isBlue() ? 135: -135, 4.);
         robot.doubleShot();
         robot.shooter.setPower(robot.shooterPower = .0);
         robot.moveThatRobot(.5, -62., -62., 5.0, "FINISH THE CAP BALLLLLL");
