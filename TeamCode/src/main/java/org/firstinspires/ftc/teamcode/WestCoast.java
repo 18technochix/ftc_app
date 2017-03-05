@@ -173,7 +173,7 @@ public class WestCoast extends LinearOpMode {
             robot.collector.setPower(gamepad2.right_trigger-gamepad2.left_trigger);
 
 
-            //COWCATCHER CONTROL
+           /* //COWCATCHER CONTROL
             //open both
             if (gamepad2.dpad_left || gamepad1.left_bumper){
                 robot.ccLeft.setPosition(GoldilocksHardware.ccLeftOpen);
@@ -210,7 +210,7 @@ public class WestCoast extends LinearOpMode {
                 sleep(100);
                 GoldilocksHardware.leftOpen = false;
             }
-
+*/
             //BUTTON BOPPER CONTROL
             if (gamepad1.x){
                 robot.buttonBopper.setPower(-.5);
@@ -226,6 +226,15 @@ public class WestCoast extends LinearOpMode {
             //stop them once they reach a certain encoder value (maxBop)
             // && (robot.buttonBopper.getCurrentPosition() > -(robot.maxBop))
 
+            if(gamepad1.left_bumper || gamepad2.left_bumper){
+                robot.gatherer.setPower(1);
+            }
+            else if (gamepad1.right_bumper || gamepad2.right_bumper){
+                robot.gatherer.setPower(-1);
+            }
+            else {
+                robot.gatherer.setPower(0);
+            }
 
 
             idle(); // Always call idle() at the bottom of your while(opModeIsActive()) loop

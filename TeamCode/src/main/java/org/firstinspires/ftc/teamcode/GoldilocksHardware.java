@@ -39,6 +39,7 @@ public class GoldilocksHardware {
     public DcMotor     shooter         = null;
     public DcMotor     collector       = null;
     public DcMotor     buttonBopper    = null;
+    public DcMotor     gatherer        = null;
 
     public Servo       particleLift    = null;
     public Servo       ccLeft          = null;
@@ -117,6 +118,7 @@ public class GoldilocksHardware {
         shooter = hwMap.dcMotor.get("shooter");
         buttonBopper = hwMap.dcMotor.get("button bopper");
         collector = hwMap.dcMotor.get("collector");
+        gatherer = hwMap.dcMotor.get("gatherer");
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
