@@ -77,7 +77,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(p);
         robot.setRightPower(p);
 
-        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 44.5);
+        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 46.);//44.5
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< targetPosition) {
         }
         if (!opModeIsActive()){
@@ -132,9 +132,9 @@ class AutoBeaconBase extends LinearOpMode{
 
         if (!opModeIsActive()){return;}
         if (BeaconButton.BB_NONE == bb){
-            telemetry.addData("stopping:", "first beacon not found");
+            telemetry.addData("correcting:", "first beacon not found");
             telemetry.update();
-            return;
+            findWall();
         }
         else if (BeaconButton.BB_FALSE == bb){
             telemetry.addData("continuing:", "COLOR SENSOR OFF");
@@ -148,7 +148,9 @@ class AutoBeaconBase extends LinearOpMode{
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         double distance = 36.; //53. +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);//48
-        robot.moveThatRobot(.55*(isBlue() ? 1. : 1.), .55*(isBlue() ? 1. : 1.), distance, distance, 6.0, "fast run");//speed was .65
+        robot.moveThatRobot(.55*(isBlue() ? 1. : 1.), .55*(isBlue() ? 1. : 1.),
+                distance * (isBlue() ? 1. : .98), distance * (isBlue() ? 1. : 1.),
+                6.0, "fast run");//speed was .65
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.setLeftPower(creepySpeed);
@@ -376,6 +378,45 @@ class AutoBeaconBase extends LinearOpMode{
         robot.moveThatRobot(.5, -65., -65., 5.0, "FINISH THE CAP BALLLLLL");//62
         robot.rampDownShooter();
     }
+
+    public void findWall(){
+        final int swing = 6;
+        final double speed = .3;
+        int startPosition = 0;
+        while (robot.getDistance() > 25.){
+            if (isBlue()) {
+                startPosition = robot.leftMotor.getCurrentPosition();
+                robot.setLeftPower(speed);
+                robot.setRightPower(0);
+                while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                if (!opModeIsActive()){return;}
+                startPosition = robot.rightMotor.getCurrentPosition();
+                robot.setLeftPower(0);
+                robot.setRightPower(speed);
+                while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                robot.stopDriveMotors();
+                if (!opModeIsActive()){return;}
+            }
+            else{
+                startPosition = robot.rightMotor.getCurrentPosition();
+                robot.setLeftPower(0);
+                robot.setRightPower(speed);
+                while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                if (!opModeIsActive()){return;}
+                startPosition = robot.leftMotor.getCurrentPosition();
+                robot.setLeftPower(speed);
+                robot.setRightPower(0);
+                while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
+                robot.stopDriveMotors();
+                if (!opModeIsActive()){return;}
+            }
+            swingToAngleEncoder(0, 1.);
+            if (!opModeIsActive()){return;}
+        }
+
+        return;
+    }
+
 
 }
 
