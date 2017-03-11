@@ -32,15 +32,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 package org.firstinspires.ftc.teamcode;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -227,13 +221,23 @@ public class WestCoast extends LinearOpMode {
             // && (robot.buttonBopper.getCurrentPosition() > -(robot.maxBop))
 
             if(gamepad1.left_bumper || gamepad2.left_bumper){
-                robot.gatherer.setPower(1);
+                robot.gathererSpinner.setPower(1);
             }
             else if (gamepad1.right_bumper || gamepad2.right_bumper){
-                robot.gatherer.setPower(-1);
+                robot.gathererSpinner.setPower(-1);
             }
             else {
-                robot.gatherer.setPower(0);
+                robot.gathererSpinner.setPower(0);
+            }
+
+            if (gamepad1.dpad_left){
+                robot.gathererArm.setPower(.2);
+            }
+            else if (gamepad1.dpad_right){
+                robot.gathererArm.setPower(-.2);
+            }
+            else{
+                robot.gathererArm.setPower(0);
             }
 
 

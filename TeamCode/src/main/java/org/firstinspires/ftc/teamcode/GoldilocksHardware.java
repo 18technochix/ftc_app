@@ -8,17 +8,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LegacyModule;
 import com.qualcomm.robotcore.hardware.LightSensor;
-import com.qualcomm.robotcore.hardware.OpticalDistanceSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -39,7 +33,8 @@ public class GoldilocksHardware {
     public DcMotor     shooter         = null;
     public DcMotor     collector       = null;
     public DcMotor     buttonBopper    = null;
-    public DcMotor     gatherer        = null;
+    public DcMotor     gathererSpinner = null;
+    public DcMotor     gathererArm     = null;
 
     public Servo       particleLift    = null;
     public Servo       ccLeft          = null;
@@ -118,7 +113,8 @@ public class GoldilocksHardware {
         shooter = hwMap.dcMotor.get("shooter");
         buttonBopper = hwMap.dcMotor.get("button bopper");
         collector = hwMap.dcMotor.get("collector");
-        gatherer = hwMap.dcMotor.get("gatherer");
+        gathererSpinner = hwMap.dcMotor.get("gatherer spinner");
+        gathererArm = hwMap.dcMotor.get("gatherer arm");
         colorBlue = hwMap.colorSensor.get("color sensor left");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
