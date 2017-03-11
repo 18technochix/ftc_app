@@ -37,8 +37,6 @@ public class GoldilocksHardware {
     public DcMotor     gathererArm     = null;
 
     public Servo       particleLift    = null;
-    public Servo       ccLeft          = null;
-    public Servo       ccRight         = null;
 
     public LightSensor whiteLineSensorOne = null;
     //public LightSensor whiteLineSensorTwo = null;
@@ -48,13 +46,8 @@ public class GoldilocksHardware {
     public UltrasonicSensor lds = null;
 
     //declare variables & give values if necessary
-    public static final double ccLeftClose = (2./255.);        //cowcatcher open/close values
-    public static final double ccRightClose = (220./255.);
-    public static final double ccLeftOpen = (200./255.);
-    public static final double ccRightOpen = (50./255.);
-
     public static final double particleLiftUp = (175./255.);    //up/down particleLift positions
-    public static final double particleLiftDown = (250./255.);
+    public static final double particleLiftDown = (240./255.);
 
     public static boolean leftOpen;                             //individual cowcatcher control
     public static boolean rightOpen;
@@ -115,7 +108,7 @@ public class GoldilocksHardware {
         collector = hwMap.dcMotor.get("collector");
         gathererSpinner = hwMap.dcMotor.get("gatherer spinner");
         gathererArm = hwMap.dcMotor.get("gatherer arm");
-        colorBlue = hwMap.colorSensor.get("color sensor left");
+        colorBlue = hwMap.colorSensor.get("color sensor");
         whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
 
@@ -135,13 +128,9 @@ public class GoldilocksHardware {
         collector.setPower(0);
 
         //name the servos
-        ccLeft = hwMap.servo.get("cc left");
-        ccRight = hwMap.servo.get("cc right");
         particleLift = hwMap.servo.get("particle lift");
         //set position
         particleLift.setPosition(particleLiftDown);
-        ccRight.setPosition(ccRightClose);
-        ccLeft.setPosition(ccLeftClose);
 
        whiteLineSensorOne.enableLed(true);
     }

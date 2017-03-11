@@ -1,0 +1,30 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes' ?>
+<Robot type="FirstInspires-FTC">
+    <ServoController name="Servo Controller 1" serialNumber="AI02QTIN">
+        <Servo name="particle lift" port="1" />
+    </ServoController>
+    <MotorController name="Drive Controller " serialNumber="AL00YCWT">
+        <Motor name="left motor" port="2" />
+        <Motor name="right motor" port="1" />
+    </MotorController>
+    <MotorController name="Bopper/Collector Controller" serialNumber="AL00VEA0">
+        <Motor name="button bopper" port="1" />
+        <Motor name="collector" port="2" />
+    </MotorController>
+    <LegacyModuleController name="Legacy Module" serialNumber="AL00VGXZ">
+        <LightSensor name="line sensor" port="3" />
+        <UltraSonicSensor name="lds right" port="4" />
+        <UltraSonicSensor name="lds left" port="5" />
+    </LegacyModuleController>
+    <MotorController name="Shooter Controller " serialNumber="AH00QJBO">
+        <Motor name="shooter" port="2" />
+    </MotorController>
+    <MotorController name="Gatherer Controller " serialNumber="AL00VE17">
+        <Motor name="gatherer arm" port="1" />
+        <Motor name="gatherer spinner" port="2" />
+    </MotorController>
+    <DeviceInterfaceModule name="Device Interface Module" serialNumber="AL00VC8K">
+        <AdafruitColorSensor name="color sensor" port="0" />
+        <AdafruitBNO055IMU name="imu" port="1" />
+    </DeviceInterfaceModule>
+</Robot>
