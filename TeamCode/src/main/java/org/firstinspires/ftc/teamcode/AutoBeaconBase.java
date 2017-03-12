@@ -120,7 +120,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower(creepySpeed);
         robot.setRightPower(creepySpeed);
 
-        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
+        while ((robot.whiteLineSensor.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
             //ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
         }
         robot.stopDriveMotors();
@@ -131,6 +131,7 @@ class AutoBeaconBase extends LinearOpMode{
         moveThatBopperGo(-multiplier * robot.bopperRetract);
 
         if (!opModeIsActive()){return;}
+/*
         if (BeaconButton.BB_NONE == bb){
             telemetry.addData("correcting:", "first beacon not found");
             telemetry.update();
@@ -140,6 +141,8 @@ class AutoBeaconBase extends LinearOpMode{
             telemetry.addData("continuing:", "COLOR SENSOR OFF");
             telemetry.update();
         }
+*/
+
 
 
         //BEACON 2
@@ -149,14 +152,14 @@ class AutoBeaconBase extends LinearOpMode{
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         double distance = 36.; //53. +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);//48
         robot.moveThatRobot(.55*(isBlue() ? 1. : 1.), .55*(isBlue() ? 1. : 1.),
-                distance * (isBlue() ? 1. : .98), distance * (isBlue() ? 1. : 1.),
+                distance * (isBlue() ? 1. : 1.), distance * (isBlue() ? 1. : 1.),
                 6.0, "fast run");//speed was .65
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.setLeftPower(creepySpeed);
         robot.setRightPower(creepySpeed);
 
-        while ((robot.whiteLineSensorOne.getLightDetected() < robot.lineLight) && opModeIsActive()) {
+        while ((robot.whiteLineSensor.getLightDetected() < robot.lineLight) && opModeIsActive()) {
             //ultrasonicDriveCorrect(robot.wallGap, -creepySpeed, .9);
         }
 
@@ -197,15 +200,21 @@ class AutoBeaconBase extends LinearOpMode{
         double move = isBlue() ? 2 : 2;
 
         //in case sensors are off
-        if (robot.getBlueHue() == 0){return BeaconButton.BB_FALSE;}
-
 
         robot.moveThatRobot(.2, move, move, 1.5, "detect");//2.0
         checkOpModeActive();
         sleep(250);
         idle();
+        double hue = robot.getHue(isBlue());
+        telemetry.addData("hue:", hue);
+        telemetry.update();
+        if(robot.senseColor(hue) == GoldilocksHardware.ColorSensorResult.CS_UNKNOWN){
+            sleep(2000);
+            return BeaconButton.BB_FALSE;
+        }
 
-        if (isBlue() ? (robot.getBlueHue() < robot.midHue) : (robot.getBlueHue() > robot.midHue)) {
+        if (isBlue() ? (robot.senseColor(hue) == GoldilocksHardware.ColorSensorResult.CS_BLUE) :
+                (robot.senseColor(hue) == GoldilocksHardware.ColorSensorResult.CS_RED)) {
             bb = BeaconButton.BB_NEAR;
             move = isBlue() ? 3. : 3;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_near");
@@ -220,7 +229,8 @@ class AutoBeaconBase extends LinearOpMode{
             telemetry.update();
 
             moveThatBopperWait(multiplier * bopperPush, 1.5);
-        } else { //if beacon is NOT blue then move to the next one, which is blue
+        }
+        else { //if beacon is NOT blue then move to the next one, which is blue
             bb = BeaconButton.BB_FAR;
             move = isBlue() ? 8.5 : 8.25;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_far");

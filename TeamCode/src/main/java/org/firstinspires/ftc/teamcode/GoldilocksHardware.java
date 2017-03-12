@@ -5,7 +5,6 @@ import android.graphics.Color;
 import com.qualcomm.hardware.adafruit.BNO055IMU;
 import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -38,10 +37,8 @@ public class GoldilocksHardware {
 
     public Servo       particleLift    = null;
 
-    public LightSensor whiteLineSensorOne = null;
-    //public LightSensor whiteLineSensorTwo = null;
-    public ColorSensor colorBlue = null;
-    public ColorSensor colorRed = null;
+    public LightSensor whiteLineSensor = null;
+    public MultiplexColorSensor color = null;
     public BNO055IMU gyro = null;
     public UltrasonicSensor lds = null;
 
@@ -64,6 +61,10 @@ public class GoldilocksHardware {
     static final int bopperRetract = (int)(.75*(double)encoderPerInch);
     static final int bopperWidth = (int)(17.25*(double)encoderPerInch);
 
+    static enum ColorSensorResult {CS_RED, CS_BLUE, CS_UNKNOWN}
+    static final int PORT_BLUE = 2;
+    static final int PORT_RED = 7;
+    static final int colorSampleMilliseconds = 48;
     public static final double redHue = 346.;
     public static final double blueHue = 234.;
     public static final double midHue = (blueHue + redHue)/2.;
@@ -108,8 +109,7 @@ public class GoldilocksHardware {
         collector = hwMap.dcMotor.get("collector");
         gathererSpinner = hwMap.dcMotor.get("gatherer spinner");
         gathererArm = hwMap.dcMotor.get("gatherer arm");
-        colorBlue = hwMap.colorSensor.get("color sensor");
-        whiteLineSensorOne = hwMap.lightSensor.get("line sensor");
+        whiteLineSensor = hwMap.lightSensor.get("line sensor");
         gyro = hwMap.get(BNO055IMU.class, "imu");
 
 
@@ -132,12 +132,16 @@ public class GoldilocksHardware {
         //set position
         particleLift.setPosition(particleLiftDown);
 
-       whiteLineSensorOne.enableLed(true);
+       whiteLineSensor.enableLed(true);
     }
 
     //AUTONOMOUS INIT
     void autoInit(HardwareMap someHwMap, boolean isBlue){
         init(someHwMap);
+
+        int[] ports = {PORT_BLUE, PORT_RED};
+        color = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
+                MultiplexColorSensor.GAIN_16X);
 
         if (isBlue) {
             lds = hwMap.ultrasonicSensor.get("lds right");
@@ -182,10 +186,17 @@ public class GoldilocksHardware {
 
     }
 
-    public float getBlueHue(){
-        float hsvValues[] = {0F,0F,0F};
-        Color.RGBToHSV((colorBlue.red() * 255) / 800, (colorBlue.green() * 255) / 800, (colorBlue.blue() * 255) / 800, hsvValues);
-        return hsvValues [0];
+    public double getHue(boolean isBlue){
+        return color.getHue(isBlue ? PORT_BLUE : PORT_RED);
+    }
+
+    ColorSensorResult senseColor(double hue){
+        if(hue > 250. || hue < 5.)
+            return ColorSensorResult.CS_RED;
+        else if(hue > 200. && hue < 240.)
+            return ColorSensorResult.CS_BLUE;
+        else
+            return ColorSensorResult.CS_UNKNOWN;
     }
 
     public double getHeading(){
@@ -238,6 +249,7 @@ public class GoldilocksHardware {
         sleep(1500);     // pause for servos to move
         particleLift.setPosition(particleLiftUp);
         sleep(500);     // pause for servos to move
+        particleLift.setPosition(particleLiftDown);
     }
 
     public void rampDownShooter(){

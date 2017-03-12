@@ -24,7 +24,8 @@
         <Motor name="gatherer spinner" port="2" />
     </MotorController>
     <DeviceInterfaceModule name="Device Interface Module" serialNumber="AL00VC8K">
-        <AdafruitColorSensor name="color sensor" port="0" />
+        <I2cDevice name="color sensor" port="0" />
+        <I2cDevice name="mux" port="2" />
         <AdafruitBNO055IMU name="imu" port="1" />
     </DeviceInterfaceModule>
 </Robot>

@@ -19,12 +19,7 @@ public class AdafruitRGB extends LinearOpMode {
     GoldilocksHardware robot           = new GoldilocksHardware(this);
 
     public void runOpMode(){
-        robot.teleInit(hardwareMap);
-        // hsvValues is an array that will hold the hue, saturation, and value information.
-        float hsvValues[] = {0F,0F,0F};
-
-        // values is a reference to the hsvValues array.
-        final float values[] = hsvValues;
+        robot.autoInit(hardwareMap, true);
 
         // get a reference to our DeviceInterfaceModule object.
         // set the digital channel to output mode.
@@ -35,16 +30,16 @@ public class AdafruitRGB extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
+            int[] crgb_blue = robot.color.getCRGB(robot.PORT_BLUE);
+            int[] crgb_red = robot.color.getCRGB(robot.PORT_RED);
 
-            // convert the RGB values to HSV values.
-            Color.RGBToHSV((robot.colorBlue.red() * 255) / 800, (robot.colorBlue.green() * 255) / 800, (robot.colorBlue.blue() * 255) / 800, hsvValues);
 
             // send the info back to driver station using telemetry function.
-            telemetry.addData("Clear", robot.colorBlue.alpha());
-            telemetry.addData("Red  ", robot.colorBlue.red());
-            telemetry.addData("Green", robot.colorBlue.green());
-            telemetry.addData("Blue ", robot.colorBlue.blue());
-            telemetry.addData("Hue", hsvValues[0]);
+            telemetry.addData("Clear", "r:%d b:%d", crgb_red[0], crgb_blue[0]);
+            telemetry.addData("  Red", "r:%d b:%d", crgb_red[1], crgb_blue[1]);
+            telemetry.addData("Green", "r:%d b:%d", crgb_red[2], crgb_blue[2]);
+            telemetry.addData(" Blue", "r:%d b:%d", crgb_red[3], crgb_blue[3]);
+            telemetry.addData("Hue", "r:%3f b:%3f", robot.color.getHue(robot.PORT_RED), robot.color.getHue(robot.PORT_BLUE));
 
             telemetry.update();
         }
