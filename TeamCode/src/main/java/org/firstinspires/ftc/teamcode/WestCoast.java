@@ -230,10 +230,10 @@ public class WestCoast extends LinearOpMode {
                 robot.gathererSpinner.setPower(0);
             }
 
-            if (gamepad1.dpad_left){
+            if (gamepad2.dpad_left){
                 robot.gathererArm.setPower(.2);
             }
-            else if (gamepad1.dpad_right){
+            else if (gamepad2.dpad_right){
                 robot.gathererArm.setPower(-.2);
             }
             else{
