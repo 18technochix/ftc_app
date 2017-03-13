@@ -55,7 +55,11 @@ class AutoBeaconBase extends LinearOpMode{
 
         robot.autoInit(hardwareMap, isBlue());
 
-        waitForStart();
+        while(!isStarted()){
+            boolean even = (((int)(runtime.milliseconds()/250.) & 0x01) == 0);
+            robot.setLED(isBlue(), even);
+        }
+        robot.setLED(isBlue(), true);
 
         //FIRST TURN
         multiplier = isBlue() ? -1 : 1;
@@ -70,12 +74,12 @@ class AutoBeaconBase extends LinearOpMode{
 
         moveThatBopperGo(-multiplier * robot.bopperRetract);
 
-        swingToAngleEncoder(isBlue()? -45 : 47, 1.5);
+        swingToAngleEncoder(isBlue()? -45 : 45, 1.5);
 
         //SECOND TURN
         startPosition = robot.leftMotor.getCurrentPosition();
-        robot.setLeftPower(p);
-        robot.setRightPower(p);
+        robot.leftMotor.setPower(p);
+        robot.rightMotor.setPower(p);
 
         int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 46.);//44.5
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< targetPosition) {
@@ -143,16 +147,14 @@ class AutoBeaconBase extends LinearOpMode{
         }
 */
 
-
-
         //BEACON 2
         pivotToAngleEncoder(0, .5);
         robot.collector.setPower(-.5);
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         double distance = 36.; //53. +((bb == BeaconButton.BB_NEAR) ? 2. : 7.25);//48
-        robot.moveThatRobot(.55*(isBlue() ? 1. : 1.), .55*(isBlue() ? 1. : 1.),
-                distance * (isBlue() ? 1. : 1.), distance * (isBlue() ? 1. : 1.),
+        robot.moveThatRobot(.55*(isBlue() ? 1. : .95), .55*(isBlue() ? 1. : 1.),
+                distance * (isBlue() ? 1. : .97), distance * (isBlue() ? 1. : 1.),
                 6.0, "fast run");//speed was .65
         robot.leftMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         robot.rightMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -179,7 +181,7 @@ class AutoBeaconBase extends LinearOpMode{
             return;
         }
 
-        robot.shooter.setPower(.475);
+        robot.shooter.setPower(.8);
         if (!opModeIsActive() || BeaconButton.BB_NONE == bb){return;}
 
         //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
@@ -197,9 +199,7 @@ class AutoBeaconBase extends LinearOpMode{
     BeaconButton hitBeacon(){
         BeaconButton bb;
         int bopperPush;
-        double move = isBlue() ? 2 : 2;
-
-        //in case sensors are off
+        double move = isBlue() ? 2 : 1.75;
 
         robot.moveThatRobot(.2, move, move, 1.5, "detect");//2.0
         checkOpModeActive();
@@ -216,7 +216,7 @@ class AutoBeaconBase extends LinearOpMode{
         if (isBlue() ? (robot.senseColor(hue) == GoldilocksHardware.ColorSensorResult.CS_BLUE) :
                 (robot.senseColor(hue) == GoldilocksHardware.ColorSensorResult.CS_RED)) {
             bb = BeaconButton.BB_NEAR;
-            move = isBlue() ? 3. : 3;
+            move = isBlue() ? 3. : 2.75;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_near");
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
@@ -232,7 +232,7 @@ class AutoBeaconBase extends LinearOpMode{
         }
         else { //if beacon is NOT blue then move to the next one, which is blue
             bb = BeaconButton.BB_FAR;
-            move = isBlue() ? 8.5 : 8.25;
+            move = isBlue() ? 8.5 : 8.;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_far");
             checkOpModeActive();
             if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
@@ -383,6 +383,7 @@ class AutoBeaconBase extends LinearOpMode{
 
     public void turnShootDrive(){
         pivotToAngleEncoder(isBlue() ? -45: 45, 2.5);
+        robot.collector.setPower(0);
         robot.doubleShot();
         robot.shooter.setPower(robot.shooterPower = .0);
         robot.moveThatRobot(.5, -65., -65., 5.0, "FINISH THE CAP BALLLLLL");//62

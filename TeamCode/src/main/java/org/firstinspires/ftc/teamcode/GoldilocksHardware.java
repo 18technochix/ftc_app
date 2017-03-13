@@ -7,6 +7,7 @@ import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -41,13 +42,14 @@ public class GoldilocksHardware {
     public MultiplexColorSensor color = null;
     public BNO055IMU gyro = null;
     public UltrasonicSensor lds = null;
+    DeviceInterfaceModule dim = null;
+    static final int    BLUE_LED    = 0;     // Blue LED channel on DIM
+    static final int    RED_LED     = 1;     // Red LED Channel on DIM
+
 
     //declare variables & give values if necessary
     public static final double particleLiftUp = (175./255.);    //up/down particleLift positions
-    public static final double particleLiftDown = (240./255.);
-
-    public static boolean leftOpen;                             //individual cowcatcher control
-    public static boolean rightOpen;
+    public static final double particleLiftDown = (250./255.);
 
     public static int wallTouch;
     public static final int encoderPerInch = 940;      // encoder counts per inch
@@ -109,8 +111,6 @@ public class GoldilocksHardware {
         collector = hwMap.dcMotor.get("collector");
         gathererSpinner = hwMap.dcMotor.get("gatherer spinner");
         gathererArm = hwMap.dcMotor.get("gatherer arm");
-        whiteLineSensor = hwMap.lightSensor.get("line sensor");
-        gyro = hwMap.get(BNO055IMU.class, "imu");
 
 
         //set direction
@@ -120,6 +120,7 @@ public class GoldilocksHardware {
         collector.setDirection(DcMotorSimple.Direction.REVERSE);
         buttonBopper.setDirection(DcMotorSimple.Direction.REVERSE);
         shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
         //set power
         leftMotor.setPower(0.);
         rightMotor.setPower(0.);
@@ -131,13 +132,20 @@ public class GoldilocksHardware {
         particleLift = hwMap.servo.get("particle lift");
         //set position
         particleLift.setPosition(particleLiftDown);
-
-       whiteLineSensor.enableLed(true);
     }
 
     //AUTONOMOUS INIT
     void autoInit(HardwareMap someHwMap, boolean isBlue){
         init(someHwMap);
+
+        whiteLineSensor = hwMap.lightSensor.get("line sensor");
+        whiteLineSensor.enableLed(true);
+
+        gyro = hwMap.get(BNO055IMU.class, "imu");
+
+        dim = hwMap.deviceInterfaceModule.get("Device Interface Module");
+        setLED(isBlue, true);
+        setLED(!isBlue, false);
 
         int[] ports = {PORT_BLUE, PORT_RED};
         color = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
@@ -179,11 +187,6 @@ public class GoldilocksHardware {
         rightMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
-        //individual cowcatcher control booleans
-        leftOpen = false;
-        rightOpen = false;
-
     }
 
     public double getHue(boolean isBlue){
@@ -191,22 +194,16 @@ public class GoldilocksHardware {
     }
 
     ColorSensorResult senseColor(double hue){
-        if(hue > 250. || hue < 5.)
-            return ColorSensorResult.CS_RED;
-        else if(hue > 200. && hue < 240.)
+       if(hue > 200. && hue < 250.)
             return ColorSensorResult.CS_BLUE;
-        else
-            return ColorSensorResult.CS_UNKNOWN;
+       else
+            return ColorSensorResult.CS_RED;
     }
 
     public double getHeading(){
         Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         double angle = angles.firstAngle;
         return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
-    }
-
-    public Position getPosition(){
-        return gyro.getPosition();
     }
 
     public double getDistance(){
@@ -359,5 +356,7 @@ public class GoldilocksHardware {
         }
     }
 
-
+    void setLED(boolean isBlue, boolean enabled){
+        dim.setLED(isBlue ? BLUE_LED : RED_LED, enabled);
+    }
 }
