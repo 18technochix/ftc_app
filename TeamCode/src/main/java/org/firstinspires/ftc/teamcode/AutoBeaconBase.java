@@ -386,7 +386,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.collector.setPower(0);
         robot.doubleShot();
         robot.shooter.setPower(robot.shooterPower = .0);
-        robot.moveThatRobot(.5, -65., -65., 5.0, "FINISH THE CAP BALLLLLL");//62
+        robot.moveThatRobot(.7, -65., -65., 5.0, "FINISH THE CAP BALLLLLL");//62
         robot.rampDownShooter();
     }
 
