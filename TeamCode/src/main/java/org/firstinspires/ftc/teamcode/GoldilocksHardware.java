@@ -58,7 +58,7 @@ public class GoldilocksHardware {
     public static double driveCorrect;
 
     public static final int maxBop = 3680;
-    public static final int bopperSensorSpace = (int)(7.5*(double)encoderPerInch);
+    public static final int bopperSensorSpace = (int)(6.125*(double)encoderPerInch);
     public static final int bopperOvershoot = (int)(0.15*(double)encoderPerInch);
     static final int bopperRetract = (int)(.75*(double)encoderPerInch);
     static final int bopperWidth = (int)(17.25*(double)encoderPerInch);
