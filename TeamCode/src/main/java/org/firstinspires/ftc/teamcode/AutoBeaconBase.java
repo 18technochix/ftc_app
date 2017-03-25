@@ -81,7 +81,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.leftMotor.setPower(p);
         robot.rightMotor.setPower(p);
 
-        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 46.);//44.5
+        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 46.);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< targetPosition) {
         }
         if (!opModeIsActive()){
@@ -125,7 +125,6 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setRightPower(creepySpeed);
 
         while ((robot.whiteLineSensor.getLightDetected() < robot.lineLight) && (opModeIsActive())) {double angle = robot.getHeading();
-            //ultrasonicDriveCorrect(robot.wallGap, creepySpeed, .9);
         }
         robot.stopDriveMotors();
         pivotToAngleEncoder(0, .5);
