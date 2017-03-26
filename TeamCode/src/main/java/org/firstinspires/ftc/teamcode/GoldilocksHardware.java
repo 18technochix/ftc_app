@@ -53,7 +53,7 @@ public class GoldilocksHardware {
 
     public static int wallTouch;
     public static final int encoderPerInch = 940;      // encoder counts per inch
-    public static final int beaconDepth = (int)(1.5*(double)encoderPerInch); //750, 725, 700, 650
+    public static final int beaconDepth = (int)(1.5*(double)encoderPerInch);
     public static final double wallGap = 8;
     public static double driveCorrect;
 
@@ -208,6 +208,14 @@ public class GoldilocksHardware {
 
     public double getDistance(){
         return lds.getUltrasonicLevel();
+    }
+
+    public double getDistance2(){
+        double distance = lds.getUltrasonicLevel();
+
+        //if(distance )
+
+        return distance;
     }
 
     public int inchToEncoder(double inches){
