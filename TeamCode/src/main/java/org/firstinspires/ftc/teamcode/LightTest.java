@@ -40,6 +40,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DigitalChannelController;
+import com.qualcomm.robotcore.hardware.LED;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
@@ -63,7 +64,8 @@ public class LightTest extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
 
     DeviceInterfaceModule dim;                  // Device Object
-    DigitalChannel        ledOut;               // Device Object
+    //DigitalChannel        dcLedOut;               // Device Object
+    LED                   ledOut;
     AnalogInput           photoR;
 
 
@@ -73,10 +75,11 @@ public class LightTest extends LinearOpMode {
         telemetry.update();
 
         dim = hardwareMap.get(DeviceInterfaceModule.class, "dim");   //  Use generic form of device mapping
-        ledOut  = hardwareMap.get(DigitalChannel.class, "led out");     //  Use generic form of device mapping
+        //dcLedOut  = hardwareMap.get(DigitalChannel.class, "led out");     //  Use generic form of device mapping
+        ledOut = hardwareMap.get(LED.class, "led out");
         photoR = hardwareMap.get(AnalogInput.class, "photo resistor");
 
-        ledOut.setMode(DigitalChannelController.Mode.OUTPUT);
+        //dcLedOut.setMode(DigitalChannelController.Mode.OUTPUT);
 
 
         // Wait for the game to start (driver presses PLAY)
@@ -88,7 +91,8 @@ public class LightTest extends LinearOpMode {
             telemetry.addData("voltage: ", "%.3f", photoR.getVoltage() );
             telemetry.update();
 
-            ledOut.setState(!(photoR.getVoltage()<.9));
+            //dcLedOut.setState(!(photoR.getVoltage()<.9));
+            ledOut.enable(!(photoR.getVoltage()<.9));
 
         }
     }
