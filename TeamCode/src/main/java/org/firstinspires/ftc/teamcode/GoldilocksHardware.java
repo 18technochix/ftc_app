@@ -210,7 +210,7 @@ public class GoldilocksHardware {
         return lds.getUltrasonicLevel();
     }
 
-    public double getDistance2(){
+    public double getDistanceB(){
         double distance = lds.getUltrasonicLevel();
 
         //if(distance )

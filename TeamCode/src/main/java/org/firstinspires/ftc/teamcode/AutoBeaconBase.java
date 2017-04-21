@@ -317,7 +317,7 @@ class AutoBeaconBase extends LinearOpMode{
             robot.moveThatRobot(.2, 0, distance, timeout, "angle");
         }
         else{
-            robot.moveThatRobot(.2, -distance, 0, timeout, "angle");
+            robot.moveThatRobot(.2, -distance, 0, timeout, "angle"); //COULD THIS CAUSE AN ERROR IF DISTANCE = 0?
         }
         if (!opModeIsActive()){return;}
     }
@@ -393,7 +393,9 @@ class AutoBeaconBase extends LinearOpMode{
         final int swing = 6;
         final double speed = .3;
         int startPosition = 0;
-        while (robot.getDistance() > 25.){
+        double distance = robot.getDistance();
+
+        while (distance > 30.){
             if (isBlue()) {
                 startPosition = robot.leftMotor.getCurrentPosition();
                 robot.setLeftPower(speed);
@@ -406,6 +408,7 @@ class AutoBeaconBase extends LinearOpMode{
                 while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
                 robot.stopDriveMotors();
                 if (!opModeIsActive()){return;}
+                distance = robot.getDistance();
             }
             else{
                 startPosition = robot.rightMotor.getCurrentPosition();
@@ -419,6 +422,7 @@ class AutoBeaconBase extends LinearOpMode{
                 while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
                 robot.stopDriveMotors();
                 if (!opModeIsActive()){return;}
+                distance = robot.getDistance();
             }
             swingToAngleEncoder(0, 1.);
             if (!opModeIsActive()){return;}
@@ -426,7 +430,6 @@ class AutoBeaconBase extends LinearOpMode{
 
         return;
     }
-
 
 }
 

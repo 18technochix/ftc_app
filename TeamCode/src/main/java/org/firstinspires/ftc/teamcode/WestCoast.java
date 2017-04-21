@@ -49,6 +49,22 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
+/*
+
+                   .---.
+            .---. '     \ _
+          /`     `    o  |<         TECHNO CHIX 2016-2017!
+     , _.' _.---.       / `
+     `\  `\         ;.-'
+       \   '._.'    /
+        '.        .'
+          \_/--;`
+           |   _\_
+         --;--.  \`--
+            '.    `
+
+ */
+
 @TeleOp(name="WestCoast OpMode", group="Linear Opmode")
 public class WestCoast extends LinearOpMode {
     //connect hardware code with teleop code
