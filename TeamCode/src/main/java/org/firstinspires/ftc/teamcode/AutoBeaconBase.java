@@ -218,7 +218,7 @@ class AutoBeaconBase extends LinearOpMode{
             move = isBlue() ? 3. : 2.75;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_near");
             checkOpModeActive();
-            if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
+            if(robot.getDistance()>30.){findWall();}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
             bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
@@ -234,7 +234,7 @@ class AutoBeaconBase extends LinearOpMode{
             move = isBlue() ? 8.5 : 8.;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_far");
             checkOpModeActive();
-            if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
+            if(robot.getDistance()>30.){findWall();}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
             bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
@@ -395,7 +395,7 @@ class AutoBeaconBase extends LinearOpMode{
         int startPosition = 0;
         double distance = robot.getDistance();
 
-        while (distance > 30.){
+        do {
             if (isBlue()) {
                 startPosition = robot.leftMotor.getCurrentPosition();
                 robot.setLeftPower(speed);
@@ -426,7 +426,7 @@ class AutoBeaconBase extends LinearOpMode{
             }
             swingToAngleEncoder(0, 1.);
             if (!opModeIsActive()){return;}
-        }
+        }while(distance > 30.);
 
         return;
     }

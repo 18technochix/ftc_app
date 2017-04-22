@@ -211,6 +211,10 @@ public class GoldilocksHardware {
     }
 
     public double getDistanceB(){
+        int[] distanceSamples = new int[3];
+        //YO LOL DO THIS LATER
+
+
         double distance = lds.getUltrasonicLevel();
 
         //if(distance )

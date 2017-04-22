@@ -65,7 +65,14 @@ public class LightTest extends LinearOpMode {
 
     DeviceInterfaceModule dim;                  // Device Object
     //DigitalChannel        dcLedOut;               // Device Object
-    LED                   ledOut;
+    LED                   led1;
+    LED                   led2;
+    LED                   led3;
+    LED                   led4;
+    LED                   led5;
+    LED                   led6;
+    LED                   led7;
+
     AnalogInput           photoR;
 
 
@@ -75,8 +82,14 @@ public class LightTest extends LinearOpMode {
         telemetry.update();
 
         dim = hardwareMap.get(DeviceInterfaceModule.class, "dim");   //  Use generic form of device mapping
-        //dcLedOut  = hardwareMap.get(DigitalChannel.class, "led out");     //  Use generic form of device mapping
-        ledOut = hardwareMap.get(LED.class, "led out");
+        led1 = hardwareMap.get(LED.class, "led 1");
+        led2 = hardwareMap.get(LED.class, "led 2");
+        led3 = hardwareMap.get(LED.class, "led 3");
+        led4 = hardwareMap.get(LED.class, "led 4");
+        led5 = hardwareMap.get(LED.class, "led 5");
+        led6 = hardwareMap.get(LED.class, "led 6");
+        led7 = hardwareMap.get(LED.class, "led 7");
+
         photoR = hardwareMap.get(AnalogInput.class, "photo resistor");
 
         //dcLedOut.setMode(DigitalChannelController.Mode.OUTPUT);
@@ -86,14 +99,41 @@ public class LightTest extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
+        boolean b1 = true;
+        boolean b2 = false;
+        boolean b3 = true;
+        boolean b4 = false;
+        boolean b5 = true;
+        boolean b6 = false;
+        boolean b7 = true;
+
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("voltage: ", "%.3f", photoR.getVoltage() );
             telemetry.update();
 
-            //dcLedOut.setState(!(photoR.getVoltage()<.9));
-            ledOut.enable(!(photoR.getVoltage()<.9));
+            led1.enable(b1);
+            led2.enable(b2);
+            led3.enable(b3);
+            led4.enable(b4);
+            led5.enable(b5);
+            led6.enable(b6);
+            led7.enable(b7);
 
+            b1 = !b1;
+            b2 = !b2;
+            b3 = !b3;
+            b4 = !b4;
+            b5 = !b5;
+            b6 = !b6;
+            b7 = !b7;
+
+            sleep(250);
+
+
+        /*    //dcLedOut.setState(!(photoR.getVoltage()<.9));
+            ledOut.enable(!(photoR.getVoltage()<.9));
+*/
         }
     }
 }
