@@ -166,10 +166,10 @@ class AutoBeaconBase extends LinearOpMode{
 
         robot.stopDriveMotors();
         if (!opModeIsActive()){return;}
-        robot.shooter.setPower(robot.shooterPower = .2);
+        robot.setShooterPower(robot.shooterPower = .2);
         pivotToAngleEncoder(0, .5);
 
-        robot.shooter.setPower(robot.shooterPower = .4);
+        robot.setShooterPower(robot.shooterPower = .4);
         bb = hitBeacon();
         moveThatBopperGo(0);
 
@@ -180,7 +180,7 @@ class AutoBeaconBase extends LinearOpMode{
             return;
         }
 
-        robot.shooter.setPower(.8);
+        robot.setShooterPower(.8);
         if (!opModeIsActive() || BeaconButton.BB_NONE == bb){return;}
 
         //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
@@ -384,7 +384,7 @@ class AutoBeaconBase extends LinearOpMode{
         pivotToAngleEncoder(isBlue() ? -45: 45, 2.5);
         robot.collector.setPower(0);
         robot.doubleShot();
-        robot.shooter.setPower(robot.shooterPower = .0);
+        robot.setShooterPower(robot.shooterPower = .0);
         robot.moveThatRobot(.7, -65., -65., 5.0, "FINISH THE CAP BALLLLLL");//62
         robot.rampDownShooter();
     }
@@ -430,6 +430,7 @@ class AutoBeaconBase extends LinearOpMode{
 
         return;
     }
+
 
 }
 

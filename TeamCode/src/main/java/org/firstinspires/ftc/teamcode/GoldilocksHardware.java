@@ -35,6 +35,7 @@ public class GoldilocksHardware {
     public DcMotor     buttonBopper    = null;
     public DcMotor     gathererSpinner = null;
     public DcMotor     gathererArm     = null;
+    public DcMotor     lights          = null;
 
     public Servo       particleLift    = null;
 
@@ -45,6 +46,8 @@ public class GoldilocksHardware {
     DeviceInterfaceModule dim = null;
     static final int    BLUE_LED    = 0;     // Blue LED channel on DIM
     static final int    RED_LED     = 1;     // Red LED Channel on DIM
+
+    public LedControl   ledControl = null;
 
 
     //declare variables & give values if necessary
@@ -73,6 +76,11 @@ public class GoldilocksHardware {
     public static final double lineLight = .3;
     public static final double shooterIncrement = .01;
     public double shooterPower = 0;
+
+    double startTime = 0.;
+    double interval = .1;
+    int lastInterval = -1;
+
 
 
     //auto constants
@@ -111,6 +119,7 @@ public class GoldilocksHardware {
         collector = hwMap.dcMotor.get("collector");
         gathererSpinner = hwMap.dcMotor.get("gatherer spinner");
         gathererArm = hwMap.dcMotor.get("gatherer arm");
+        lights = hwMap.dcMotor.get("lights");
 
 
         //set direction
@@ -243,7 +252,7 @@ public class GoldilocksHardware {
         shooterPower = 0.;
         while (shooterPower < t) {
             shooterPower = shooterPower + shooterIncrement;
-            shooter.setPower(shooterPower);
+            setShooterPower(shooterPower);
             sleep(20);
         }
 
@@ -264,10 +273,10 @@ public class GoldilocksHardware {
     public void rampDownShooter(){
         while (shooterPower > 0.) {
             shooterPower = shooterPower - shooterIncrement;
-            shooter.setPower(Math.abs(shooterPower));
+            setShooterPower(Math.abs(shooterPower));
             sleep(20);
         }
-        shooter.setPower(0.);
+        setShooterPower(0.);
     }
 
     public void runShooter(double t){
@@ -370,5 +379,19 @@ public class GoldilocksHardware {
 
     void setLED(boolean isBlue, boolean enabled){
         dim.setLED(isBlue ? BLUE_LED : RED_LED, enabled);
+    }
+
+    void setShooterPower(double p){
+        shooter.setPower(p);
+        lights.setPower(p);
+    }
+
+    void updateLights(double currentTime){
+        int currentInterval = (int)((currentTime - startTime)/interval);
+        if(currentInterval != lastInterval) {
+            int step = currentInterval % 8;
+            lastInterval = currentInterval;
+            lights.setPower(((double)step)/8.);
+        }
     }
 }

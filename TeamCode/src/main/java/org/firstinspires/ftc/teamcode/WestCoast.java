@@ -81,8 +81,14 @@ public class WestCoast extends LinearOpMode {
 
         robot.teleInit(hardwareMap);
 
+        runtime.reset();
+        robot.startTime = runtime.time();
         // Wait for the game to start (driver presses PLAY)
-        waitForStart();
+        while (!isStarted()){
+            robot.updateLights(runtime.time());
+        }
+        robot.lights.setPower(0.);
+
         runtime.reset();
 
        // run until the end of the match (driver presses STOP)
@@ -164,7 +170,7 @@ public class WestCoast extends LinearOpMode {
                 }
             }
 
-            robot.shooter.setPower(p);          //set shooter power
+            robot.setShooterPower(p);          //set shooter power
 
 
             //PARTICLE LIFT CONTROL
