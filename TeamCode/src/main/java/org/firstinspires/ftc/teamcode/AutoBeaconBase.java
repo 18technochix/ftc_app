@@ -218,7 +218,7 @@ class AutoBeaconBase extends LinearOpMode{
             move = isBlue() ? 3. : 2.75;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_near");
             checkOpModeActive();
-            if(robot.getDistance()>30.){findWall();}
+            if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
             bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
@@ -234,7 +234,7 @@ class AutoBeaconBase extends LinearOpMode{
             move = isBlue() ? 8.5 : 8.;
             robot.moveThatRobot(.3, move, move, 1.5, "bb_far");
             checkOpModeActive();
-            if(robot.getDistance()>30.){findWall();}
+            if(robot.getDistance()>25.){return BeaconButton.BB_NONE;}
 
             robot.wallTouch = (int)((cmToIn(robot.getDistance()))*(double)robot.encoderPerInch);
             bopperPush = robot.wallTouch - robot.beaconDepth + robot.bopperSensorSpace + robot.bopperOvershoot - (robot.bopperWidth/2);
@@ -393,9 +393,7 @@ class AutoBeaconBase extends LinearOpMode{
         final int swing = 6;
         final double speed = .3;
         int startPosition = 0;
-        double distance = robot.getDistance();
-
-        do {
+        while (robot.getDistance() > 25.){
             if (isBlue()) {
                 startPosition = robot.leftMotor.getCurrentPosition();
                 robot.setLeftPower(speed);
@@ -408,7 +406,6 @@ class AutoBeaconBase extends LinearOpMode{
                 while (opModeIsActive() && robot.rightMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
                 robot.stopDriveMotors();
                 if (!opModeIsActive()){return;}
-                distance = robot.getDistance();
             }
             else{
                 startPosition = robot.rightMotor.getCurrentPosition();
@@ -422,11 +419,10 @@ class AutoBeaconBase extends LinearOpMode{
                 while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< startPosition + robot.inchToEncoder(swing)){}
                 robot.stopDriveMotors();
                 if (!opModeIsActive()){return;}
-                distance = robot.getDistance();
             }
             swingToAngleEncoder(0, 1.);
             if (!opModeIsActive()){return;}
-        }while(distance > 30.);
+        }
 
         return;
     }
