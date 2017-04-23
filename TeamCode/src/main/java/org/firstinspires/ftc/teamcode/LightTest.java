@@ -57,7 +57,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="LED Test", group="Linear Opmode")  // @Autonomous(...) is the other common choice
-
+@Disabled
 public class LightTest extends LinearOpMode {
 
     /* Declare OpMode members. */
@@ -98,28 +98,157 @@ public class LightTest extends LinearOpMode {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         runtime.reset();
+        double startTime = runtime.time();
+        double interval = .1;
+        int lastInterval = -1;
 
-        boolean b1 = true;
+        boolean b1 = false;
         boolean b2 = false;
-        boolean b3 = true;
+        boolean b3 = false;
         boolean b4 = false;
-        boolean b5 = true;
+        boolean b5 = false;
         boolean b6 = false;
-        boolean b7 = true;
+        boolean b7 = false;
+
+        final boolean X = true;
+        final boolean o = false;
+
+        boolean patterns[][][] = {
+                {
+                        {o, o, o, o, o, o, o},
+                        {X, o, o, o, o, o, X},
+                        {X, X, o, o, o, X, X},
+                        {X, X, X, o, X, X, X},
+                        {X, X, X, X, X, X, X},
+                        {X, X, X, o, X, X, X},
+                        {X, X, o, o, o, X, X},
+                        {X, o, o, o, o, o, X}
+                },
+
+                {
+                        {o, o, o, o, o, o, o},
+                        {X, o, X, o, X, o, X},
+                        {o, X, o, X, o, X, o}
+                },
+
+                {
+                        {o, o, o, o, o, o, o},
+                        {X, o, o, o, o, o, o},
+                        {X, X, o, o, o, o, o},
+                        {X, X, X, o, o, o, o},
+                        {X, X, X, X, o, o, o},
+                        {X, X, X, X, X, o, o},
+                        {X, X, X, X, X, X, o},
+                        {X, X, X, X, X, X, X},
+                        {X, X, X, X, X, X, o},
+                        {X, X, X, X, X, o, o},
+                        {X, X, X, X, o, o, o},
+                        {X, X, X, o, o, o, o},
+                        {X, X, o, o, o, o, o},
+                        {X, o, o, o, o, o, o},
+                },
+
+                {
+                        {o, o, o, o, o, o, o},
+                        {X, o, o, o, o, o, o},
+                        {o, X, o, o, o, o, o},
+                        {o, o, X, o, o, o, o},
+                        {o, o, o, X, o, o, o},
+                        {o, o, o, o, X, o, o},
+                        {o, o, o, o, o, X, o},
+                        {o, o, o, o, o, o, X},
+                },
+
+        };
+
+    double intervals[] = {.1, .1, .05, .075};
+
+    int pattNum = 3;
+
+//        byte b = (byte) 0b10101010;
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
             telemetry.addData("voltage: ", "%.3f", photoR.getVoltage() );
+            telemetry.addData("interval:", "%.3f", intervals[pattNum]);
             telemetry.update();
 
-            led1.enable(b1);
+            int currentInterval = (int)((runtime.time() - startTime)/intervals[pattNum]);
+            if(currentInterval != lastInterval) {
+                int step = currentInterval % patterns[pattNum].length; //8;
+                lastInterval = currentInterval;
+                displayPattern(patterns[pattNum][step]);
+/*
+                switch (step) {
+                    case 0:
+                        b1 = !b1;
+                        b7 = !b7;
+                        led1.enable(b1);
+                        led7.enable(b7);
+                        break;
+                    case 1:
+                        b2 = !b2;
+                        b6 = !b6;
+                        led2.enable(b2);
+                        led6.enable(b6);
+                        break;
+                    case 2:
+                        b3 = !b3;
+                        b5 = !b5;
+                        led3.enable(b3);
+                        led5.enable(b5);
+                        break;
+                    case 3:
+                        b4 = !b4;
+                        led4.enable(b4);
+                        break;
+                    case 4:
+                        b4 = !b4;
+                        led4.enable(b4);
+                        break;
+                    case 5:
+                        b3 = !b3;
+                        b5 = !b5;
+                        led3.enable(b3);
+                        led5.enable(b5);
+                        break;
+                    case 6:
+                        b2 = !b2;
+                        b6 = !b6;
+                        led2.enable(b2);
+                        led6.enable(b6);
+                        break;
+                    case 7:
+                        b1 = !b1;
+                        b7 = !b7;
+                        led1.enable(b1);
+                        led7.enable(b2);
+                        break;
+                }
+ */
+            }
+
+
+//            led1.enable( b & (byte) 0b00000010 );
+//            led2.enable( b & (byte) 0b00000100 );
+//            led3.enable( b & (byte) 0b00001000 );
+//            led4.enable( b & 0b00010000 );
+//            led5.enable( b & 0b00100000 );
+//            led6.enable( b & 0b01000000 );
+//            led7.enable( b & 0b10000000 );
+//
+//            b = (byte) ~b;
+
+            /*led1.enable(b1);
             led2.enable(b2);
             led3.enable(b3);
             led4.enable(b4);
             led5.enable(b5);
             led6.enable(b6);
-            led7.enable(b7);
+            led7.enable(b7);*/
 
+
+/*
             b1 = !b1;
             b2 = !b2;
             b3 = !b3;
@@ -128,12 +257,29 @@ public class LightTest extends LinearOpMode {
             b6 = !b6;
             b7 = !b7;
 
-            sleep(250);
+            sleep(250);*/
 
 
-        /*    //dcLedOut.setState(!(photoR.getVoltage()<.9));
+
+
+            /*dcLedOut.setState(!(photoR.getVoltage()<.9));
             ledOut.enable(!(photoR.getVoltage()<.9));
-*/
+            */
+
+
+
         }
+
+
+    }
+
+    void displayPattern(boolean[] b) {
+        led1.enable(b[0]);
+        led2.enable(b[1]);
+        led3.enable(b[2]);
+        led4.enable(b[3]);
+        led5.enable(b[4]);
+        led6.enable(b[5]);
+        led7.enable(b[6]);
     }
 }
