@@ -81,7 +81,7 @@ class AutoBeaconBase extends LinearOpMode{
         robot.leftMotor.setPower(p);
         robot.rightMotor.setPower(p);
 
-        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 46.);
+        int targetPosition = startPosition + robot.inchToEncoder(isBlue() ? 40.0 : 45.5);
         while (opModeIsActive() && robot.leftMotor.getCurrentPosition()< targetPosition) {
         }
         if (!opModeIsActive()){
@@ -177,11 +177,11 @@ class AutoBeaconBase extends LinearOpMode{
         if (BeaconButton.BB_NONE == bb) {
             telemetry.addData("stopping:", "second beacon not found");
             telemetry.update();
-            return;
+
         }
 
         robot.setShooterPower(.8);
-        if (!opModeIsActive() || BeaconButton.BB_NONE == bb){return;}
+        if (!opModeIsActive()){return;}
 
         //robot.moveThatRobot(GoldilocksHardware.DRIVE_SPEED, -15, -15, 4.0);
         if (!opModeIsActive()){return;}
