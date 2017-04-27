@@ -94,6 +94,8 @@ class AutoBeaconBase extends LinearOpMode{
         robot.setLeftPower((p*.4)*(isBlue() ? .1 : 1.0));
         robot.setRightPower((p*.4)*(isRed() ? .1 : 1.0));
         hitAngle = false;
+        double startTurnTime = runtime.time();
+        boolean turnTimedOut = false;
         do {
             h = robot.getHeading();
             telemetry.addData("heading: ", "%f", h);
@@ -106,9 +108,15 @@ class AutoBeaconBase extends LinearOpMode{
             else {
                 hitAngle = h <= 0.;
             }
-        } while ( !hitAngle && opModeIsActive());
+            turnTimedOut = (runtime.time() - startTurnTime) > 3.;
+        } while ( !hitAngle && opModeIsActive() && !turnTimedOut);
         robot.stopDriveMotors();
         if (!opModeIsActive()){return;}
+
+        if(turnTimedOut){
+            turnRecovery();
+        }
+
         telemetry.addData("heading:", robot.getHeading());
         telemetry.update();
 
@@ -427,6 +435,12 @@ class AutoBeaconBase extends LinearOpMode{
         return;
     }
 
+    public void turnRecovery(){
+        robot.moveThatRobot(.4, -2., -2., 4., "recovery");
+
+        pivotToAngleEncoder(0, 4.);
+        //OR BACKWARDS SWING
+    }
 
 }
 
