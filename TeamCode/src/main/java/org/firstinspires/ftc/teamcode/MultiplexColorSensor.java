@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.I2cDevice;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynch;
 import com.qualcomm.robotcore.hardware.I2cDeviceSynchImpl;
+import com.qualcomm.robotcore.hardware.I2cWaitControl;
 
 /**
  * Created by Chris D on 10/5/2016.
@@ -96,17 +97,17 @@ public class MultiplexColorSensor {
         // Loop over the ports activating each color sensor
         for (int i = 0; i < sensorPorts.length; i++) {
             // Write to given output port on the multiplexer
-            muxReader.write8(0x0, 1 << sensorPorts[i], true);
+            muxReader.write8(0x0, 1 << sensorPorts[i]);
 
             ada = hardwareMap.i2cDevice.get(colorName);
             adaReader = new I2cDeviceSynchImpl(ada, ADA_ADDRESS, false);
             adaReader.engage();
 
             final int time = integrationByte(milliSeconds);
-            adaReader.write8(ENABLE, 0x03, true);  // Power on and enable ADC
+            adaReader.write8(ENABLE, 0x03);  // Power on and enable ADC
             adaReader.read8(ID);                   // Read device ID
-            adaReader.write8(CONTROL, gain, true); // Set gain
-            adaReader.write8(ATIME, time, true);   // Set integration time
+            adaReader.write8(CONTROL, gain); // Set gain
+            adaReader.write8(ATIME, time);   // Set integration time
         }
     }
 
@@ -118,8 +119,8 @@ public class MultiplexColorSensor {
         int val = integrationByte(milliSeconds);
 
         for (int i = 0; i < sensorPorts.length; i++) {
-            muxReader.write8(0x0, 1 << sensorPorts[i], true);
-            adaReader.write8(ATIME, val, true);
+            muxReader.write8(0x0, 1 << sensorPorts[i]);
+            adaReader.write8(ATIME, val);
         }
     }
 
@@ -133,7 +134,7 @@ public class MultiplexColorSensor {
     // Un-needed?
     public void startPolling() {
         for (int i = 0; i < sensorPorts.length; i++) {
-            muxReader.write8(0x0, 1 << sensorPorts[i], true);
+            muxReader.write8(0x0, 1 << sensorPorts[i]);
             adaReader.read8(STATUS);
         }
     }
@@ -146,7 +147,7 @@ public class MultiplexColorSensor {
      */
     public int[] getCRGB(int port) {
         // Write to I2C port on the multiplexer
-        muxReader.write8(0x0, 1 << port, true);
+        muxReader.write8(0x0, 1 << port);
 
         // Read color registers
         adaCache = adaReader.read(CDATAL, 8);
