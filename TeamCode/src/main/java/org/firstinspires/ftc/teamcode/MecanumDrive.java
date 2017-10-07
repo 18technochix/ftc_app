@@ -62,8 +62,9 @@ public class MecanumDrive extends LinearOpMode {
     private DcMotor frontLeft = null;
     private DcMotor frontRight = null;
     private DcMotor lift = null;
-    private Servo rServo = null;
-    private Servo lServo = null;
+    private Servo rightServo = null;
+    private Servo leftServo = null;
+
 
 
     @Override
@@ -79,8 +80,8 @@ public class MecanumDrive extends LinearOpMode {
         frontLeft  = hardwareMap.get(DcMotor.class, "frontLeft");
         frontRight  = hardwareMap.get(DcMotor.class, "frontRight");
         lift = hardwareMap.get(DcMotor.class, "lift");
-        rServo = hardwareMap.get(Servo.class, "rServo");
-        lServo = hardwareMap.get(Servo.class, "lServo");
+        rightServo = hardwareMap.get(Servo.class, "rightServo");
+        leftServo = hardwareMap.get(Servo.class, "leftServo");
 
 
 
@@ -90,6 +91,11 @@ public class MecanumDrive extends LinearOpMode {
         backRight.setDirection(DcMotor.Direction.FORWARD);
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
+
+        rightServo.setDirection(Servo.Direction.FORWARD);
+        leftServo.setDirection(Servo.Direction.REVERSE);
+        rightServo.setPosition(0.5);
+        leftServo.setPosition(0.5);
 
 
 
@@ -125,6 +131,18 @@ public class MecanumDrive extends LinearOpMode {
             backLeft.setPower   (s * Range.clip(ly + rx - lx, -1.0, 1.0));
             frontRight.setPower (s * Range.clip(ly - rx - lx, -1.0, 1.0));
             backRight.setPower  (s * Range.clip(ly - rx + lx, -1.0, 1.0));
+
+            if (gamepad2.left_bumper)
+                lift.setPower(.2);
+            else if (gamepad2.right_bumper)
+                lift.setPower(-.2);
+            else
+                lift.setPower(0);
+
+            double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
+            rightServo.setPosition(sPosition);
+            leftServo.setPosition(sPosition);
+
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
