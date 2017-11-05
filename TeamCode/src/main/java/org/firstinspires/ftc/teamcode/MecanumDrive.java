@@ -133,13 +133,14 @@ public class MecanumDrive extends LinearOpMode {
             backRight.setPower  (s * Range.clip(ly - rx + lx, -1.0, 1.0));
 
             if (gamepad2.left_bumper)
-                lift.setPower(.2);
+                lift.setPower(.6);
             else if (gamepad2.right_bumper)
-                lift.setPower(-.2);
+                lift.setPower(-.6);
             else
                 lift.setPower(0);
 
             double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
+            Range.clip(sPosition, .2, .8);
             rightServo.setPosition(sPosition);
             leftServo.setPosition(sPosition);
 
