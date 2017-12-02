@@ -78,9 +78,11 @@ public class MecanumDriveTest extends LinearOpMode {
 
     double GRAB_OPEN = 0.12;
     double GRAB_CLOSE = 0.63;
+    double servoPosition = ((GRAB_CLOSE - GRAB_OPEN)/2) + GRAB_OPEN;
 
 
-    @Override
+
+
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -94,10 +96,8 @@ public class MecanumDriveTest extends LinearOpMode {
         frontRight  = hardwareMap.get(DcMotor.class, "fr");
         lift = hardwareMap.get(DcMotor.class, "lift");
         grabServo = hardwareMap.get(Servo.class, "grabServo");
-        hardwareMap.get(BNO055IMU.class, "imu");
+        gyro = hardwareMap.get(BNO055IMU.class, "imu");
 
-
-        gyro = null;
 
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
@@ -118,7 +118,14 @@ public class MecanumDriveTest extends LinearOpMode {
         frontRight.setDirection(DcMotor.Direction.FORWARD);
 
         grabServo.setDirection(Servo.Direction.FORWARD);
-        grabServo.setPosition(GRAB_OPEN);
+        grabServo.setPosition(servoPosition);
+
+        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
 
 
 
@@ -161,13 +168,44 @@ public class MecanumDriveTest extends LinearOpMode {
             lyMod = ly;
             lxMod = lx;
 
+            double fl = 0;
+            double fr = 0;
+            double bl = 0;
+            double br = 0;
 
-            // Send calculated power to wheels
-            frontLeft.setPower  (s * Range.clip(lyMod + rx + lxMod, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
-            backLeft.setPower   (s * Range.clip(lyMod + rx - lxMod, -1.0, 1.0));
-            frontRight.setPower (s * Range.clip(lyMod - rx - lxMod, -1.0, 1.0));
-            backRight.setPower  (s * Range.clip(lyMod - rx + lxMod, -1.0, 1.0));
+            if(gamepad1.dpad_up){
+                fl = 0.2;
+                fr = 0.2;
+                bl = 0.2;
+                br = 0.2;
+            } else if(gamepad1.dpad_down){
+                fl = -0.2;
+                fr = -0.2;
+                bl = -0.2;
+                br = -0.2;
+            } else if(gamepad1.dpad_left){
+                fl = -0.5;
+                fr = 0.5;
+                bl = 0.5;
+                br = -0.5;
+            } else if(gamepad1.dpad_right){
+                fl = 0.5;
+                fr = -0.5;
+                bl = -0.5;
+                br = 0.5;
+            }
+            else {
+                // Send calculated power to wheels
+                fl = (s * Range.clip(lyMod + rx + lxMod, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
+                fr = (s * Range.clip(lyMod + rx - lxMod, -1.0, 1.0));
+                bl = (s * Range.clip(lyMod - rx - lxMod, -1.0, 1.0));
+                br = (s * Range.clip(lyMod - rx + lxMod, -1.0, 1.0));
+            }
 
+            frontLeft.setPower(fl);
+            frontRight.setPower(fr);
+            backLeft.setPower(bl);
+            backRight.setPower(br);
 
             if (gamepad2.left_bumper)
                 lift.setPower(.6);
@@ -176,9 +214,33 @@ public class MecanumDriveTest extends LinearOpMode {
             else
                 lift.setPower(0);
 
-            double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
+            if(gamepad2.dpad_right){
+                servoPosition += .01;
+                if(servoPosition > GRAB_CLOSE){
+                    servoPosition = GRAB_CLOSE;
+                }
+                grabServo.setPosition(servoPosition);
+
+            }else if(gamepad2.dpad_left){
+                servoPosition -= .01;
+                if(servoPosition < GRAB_OPEN){
+                    servoPosition = GRAB_OPEN;
+                }
+                grabServo.setPosition(servoPosition);
+            }
+
+
+
+
+
+
+
+
+
+
+           /* double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
             Range.clip(sPosition, GRAB_OPEN, GRAB_CLOSE);
-            grabServo.setPosition(sPosition);
+            grabServo.setPosition(sPosition);*/
 
 
             // Show the elapsed game time and wheel power.
