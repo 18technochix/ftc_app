@@ -72,11 +72,12 @@ public class MecanumDriveTest extends LinearOpMode {
     private DcMotor frontLeft = null;
     private DcMotor frontRight = null;
     private DcMotor lift = null;
-    private Servo rightServo = null;
-    private Servo leftServo = null;
+    private Servo grabServo = null;
+
     BNO055IMU gyro;
 
-
+    double GRAB_OPEN = 0.12;
+    double GRAB_CLOSE = 0.63;
 
 
     @Override
@@ -87,22 +88,24 @@ public class MecanumDriveTest extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        backLeft  = hardwareMap.get(DcMotor.class, "backLeft");
-        backRight  = hardwareMap.get(DcMotor.class, "backRight");
-        frontLeft  = hardwareMap.get(DcMotor.class, "frontLeft");
-        frontRight  = hardwareMap.get(DcMotor.class, "frontRight");
+        backLeft  = hardwareMap.get(DcMotor.class, "bl");
+        backRight  = hardwareMap.get(DcMotor.class, "br");
+        frontLeft  = hardwareMap.get(DcMotor.class, "fl");
+        frontRight  = hardwareMap.get(DcMotor.class, "fr");
         lift = hardwareMap.get(DcMotor.class, "lift");
-        rightServo = hardwareMap.get(Servo.class, "rightServo");
-        leftServo = hardwareMap.get(Servo.class, "leftServo");
+        grabServo = hardwareMap.get(Servo.class, "grabServo");
+        hardwareMap.get(BNO055IMU.class, "imu");
 
 
-        gyro = hardwareMap.get(BNO055IMU.class, "imu");
+        gyro = null;
+
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         gyro.initialize(parameters);
+
         Orientation angles;
 
 
@@ -114,10 +117,9 @@ public class MecanumDriveTest extends LinearOpMode {
         frontLeft.setDirection(DcMotor.Direction.REVERSE);
         frontRight.setDirection(DcMotor.Direction.FORWARD);
 
-        rightServo.setDirection(Servo.Direction.FORWARD);
-        leftServo.setDirection(Servo.Direction.REVERSE);
-        rightServo.setPosition(0.5);
-        leftServo.setPosition(0.5);
+        grabServo.setDirection(Servo.Direction.FORWARD);
+        grabServo.setPosition(GRAB_OPEN);
+
 
 
 
@@ -150,16 +152,18 @@ public class MecanumDriveTest extends LinearOpMode {
             double s = .5;
 
 
-            double angleDeg = getHeading();
+            double angleDeg = 0; //getHeading();
             double angleRad = angleDeg * (Math.PI / 180);
             double fwd = (ly * Math.cos(angleRad)) + (lx * Math.sin(angleRad));
             double strafe = (-lx * Math.sin(angleRad)) + (ly * Math.cos(angleRad));
             double lyMod = fwd * ly;
             double lxMod = strafe * lx;
+            lyMod = ly;
+            lxMod = lx;
 
 
             // Send calculated power to wheels
-            frontLeft.setPower  (s * Range.clip(lyMod + rx + lxMod, -1.0, 1.0));
+            frontLeft.setPower  (s * Range.clip(lyMod + rx + lxMod, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
             backLeft.setPower   (s * Range.clip(lyMod + rx - lxMod, -1.0, 1.0));
             frontRight.setPower (s * Range.clip(lyMod - rx - lxMod, -1.0, 1.0));
             backRight.setPower  (s * Range.clip(lyMod - rx + lxMod, -1.0, 1.0));
@@ -173,9 +177,8 @@ public class MecanumDriveTest extends LinearOpMode {
                 lift.setPower(0);
 
             double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
-            Range.clip(sPosition, .2, .8);
-            rightServo.setPosition(sPosition);
-            leftServo.setPosition(sPosition);
+            Range.clip(sPosition, GRAB_OPEN, GRAB_CLOSE);
+            grabServo.setPosition(sPosition);
 
 
             // Show the elapsed game time and wheel power.
