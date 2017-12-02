@@ -42,6 +42,7 @@ public class Hardware{
     public Hardware(LinearOpMode _opMode){
         opMode = _opMode;
         telemetry = _opMode.telemetry;
+
     }
 
 
