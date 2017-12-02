@@ -66,69 +66,25 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 public class MecanumDriveTest extends LinearOpMode {
 
     // Declare OpMode members.
+    Hardware robot = new Hardware(this);
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor backLeft = null;
-    private DcMotor backRight = null;
-    private DcMotor frontLeft = null;
-    private DcMotor frontRight = null;
-    private DcMotor lift = null;
-    private Servo grabServo = null;
-
-    BNO055IMU gyro;
-
-    double GRAB_OPEN = 0.12;
-    double GRAB_CLOSE = 0.63;
-    double servoPosition = ((GRAB_CLOSE - GRAB_OPEN)/2) + GRAB_OPEN;
-
-
-
 
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
+        robot.teleInit(hardwareMap);
 
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        backLeft  = hardwareMap.get(DcMotor.class, "bl");
-        backRight  = hardwareMap.get(DcMotor.class, "br");
-        frontLeft  = hardwareMap.get(DcMotor.class, "fl");
-        frontRight  = hardwareMap.get(DcMotor.class, "fr");
-        lift = hardwareMap.get(DcMotor.class, "lift");
-        grabServo = hardwareMap.get(Servo.class, "grabServo");
-        gyro = hardwareMap.get(BNO055IMU.class, "imu");
 
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        gyro.initialize(parameters);
 
-        Orientation angles;
 
 
 
         // Most robots need the motor on one side to be reversed to drive forward
         // Reverse the motor that runs backwards when connected directly to the battery
-        backLeft.setDirection(DcMotor.Direction.REVERSE);
-        backRight.setDirection(DcMotor.Direction.FORWARD);
-        frontLeft.setDirection(DcMotor.Direction.REVERSE);
-        frontRight.setDirection(DcMotor.Direction.FORWARD);
-
-        grabServo.setDirection(Servo.Direction.FORWARD);
-        grabServo.setPosition(servoPosition);
-
-        backLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-
-
-
-
 
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
@@ -159,7 +115,7 @@ public class MecanumDriveTest extends LinearOpMode {
             double s = .5;
 
 
-            double angleDeg = 0; //getHeading();
+            double angleDeg = 0; //robot.getHeading();
             double angleRad = angleDeg * (Math.PI / 180);
             double fwd = (ly * Math.cos(angleRad)) + (lx * Math.sin(angleRad));
             double strafe = (-lx * Math.sin(angleRad)) + (ly * Math.cos(angleRad));
@@ -202,31 +158,31 @@ public class MecanumDriveTest extends LinearOpMode {
                 br = (s * Range.clip(lyMod - rx + lxMod, -1.0, 1.0));
             }
 
-            frontLeft.setPower(fl);
-            frontRight.setPower(fr);
-            backLeft.setPower(bl);
-            backRight.setPower(br);
+            robot.fl.setPower(fl);
+            robot.fr.setPower(fr);
+            robot.bl.setPower(bl);
+            robot.br.setPower(br);
 
             if (gamepad2.left_bumper)
-                lift.setPower(.6);
+                robot.lift.setPower(.6);
             else if (gamepad2.right_bumper)
-                lift.setPower(-.6);
+                robot.lift.setPower(-.6);
             else
-                lift.setPower(0);
+                robot.lift.setPower(0);
 
             if(gamepad2.dpad_right){
-                servoPosition += .01;
-                if(servoPosition > GRAB_CLOSE){
-                    servoPosition = GRAB_CLOSE;
+                robot.servoPosition += .01;
+                if(robot.servoPosition > robot.GRAB_CLOSE){
+                    robot.servoPosition = robot.GRAB_CLOSE;
                 }
-                grabServo.setPosition(servoPosition);
+                robot.grabServo.setPosition(robot.servoPosition);
 
             }else if(gamepad2.dpad_left){
-                servoPosition -= .01;
-                if(servoPosition < GRAB_OPEN){
-                    servoPosition = GRAB_OPEN;
+                robot.servoPosition -= .01;
+                if(robot.servoPosition < robot.GRAB_OPEN){
+                    robot.servoPosition = robot.GRAB_OPEN;
                 }
-                grabServo.setPosition(servoPosition);
+                robot.grabServo.setPosition(robot.servoPosition);
             }
 
 
@@ -250,10 +206,4 @@ public class MecanumDriveTest extends LinearOpMode {
         }
 
     }
-    public double getHeading(){
-        Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        double angle = angles.firstAngle;
-        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
-    }
-
 }
