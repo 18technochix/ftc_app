@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorController;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -36,16 +37,24 @@ public class Hardware{
     DcMotor bl = null;
     DcMotor br = null;
     DcMotor lift = null;
+    DcMotor bopperMotor = null;
     Servo grabServo = null;
+    Servo jewelServo = null;
 
     BNO055IMU gyro;
-    ColorSensor colorSensor = null;
+    ColorSensor jewelSensor = null;
+    ColorSensor tapeSensor1 = null;
+    ColorSensor tapeSensor2 = null;
 
     //constants
     double GRAB_OPEN = 0.12;
     double GRAB_CLOSE = 0.63;
     double servoPosition = ((GRAB_CLOSE - GRAB_OPEN)/2) + GRAB_OPEN;
-
+    int redMin = 355;
+    int redMax = 10;
+    int blueMin = 221;
+    int blueMax = 240;
+    int bopperEncoderCount = 50;
     //local OpMode members
     HardwareMap hwMap           = null;
     LinearOpMode opMode         = null;

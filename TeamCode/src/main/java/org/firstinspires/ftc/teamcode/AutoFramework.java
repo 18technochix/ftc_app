@@ -81,8 +81,58 @@ public class AutoFramework extends LinearOpMode{
     }
 
     //METHODS
-    public void moveThatRobot(double speed, double leftInches, double rightInches, double timeout){
+    public void moveThatRobot(double power, double inches, String direction, double timeout){
         //example shell of a method for y'all to use :) you're welcome
+    double wheelCircumference = 2 * (Math.PI) * 2;
+       int revolutions = (int) (inches / wheelCircumference);
+        int encoderTicks = 1120 * revolutions;
+        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION)
+        int position = robot.fr.getCurrentPosition();
+        while( position < encoderTicks){
+            if(direction == "left"){
+                robot.fr.setPower(-power);
+                robot.br.setPower(power);
+                robot.fl.setPower(power);
+                robot.bl.setPower(-power);
+            } else if (direction == "right") {
+                robot.fr.setPower(-power);
+                robot.br.setPower(power);
+                robot.fl.setPower(power);
+                robot.bl.setPower(-power);
+            }else if(direction == "forward"){
+                robot.fr.setPower(power);
+                robot.br.setPower(power);
+                robot.fl.setPower(power);
+                robot.bl.setPower(power);
+            }else if(direction == "back"){
+                robot.fr.setPower(-power);
+                robot.br.setPower(-power);
+                robot.fl.setPower(-power);
+                robot.bl.setPower(-power);
+            }
+        }
+
+
+
+
+    }
+
+    //knocks jewel off according to color
+    public void jewelKnocker(boolean alliance, int color){
+        color = this.getColor(robot.jewelSensor);
+        if(alliance) {
+            if (color >= robot.redMin && color <= 360 || color >= 0 && color <= robot.redMax) {
+                moveThatRobot(.5, 2, "front", 0);
+            } else {
+                moveThatRobot(.5, 2, "back", 0);
+            }
+        } else if(!alliance){
+                if (color >= robot.blueMin && color <= robot.blueMax){
+                    moveThatRobot(.5, 2, "left", 0);
+                } else {
+                    moveThatRobot(.5, 2, "right", 0);
+            }
+        }
     }
     //returns the color of the Jewels or the balancing stone
 
@@ -98,12 +148,22 @@ public class AutoFramework extends LinearOpMode{
         telemetry.addData("Green", sensor.green());
         telemetry.addData("Blue ", sensor.blue());
         telemetry.addData("Hue", hsvValues[0]);
-       int color =  Color.HSVToColor(0xff, values);
+        int color =  Color.HSVToColor(0xff, values);
 
         return color;
 
 
 
+    }
+
+    public void extendBopper(){
+        robot.bopperMotor.setTargetPosition(robot.bopperEncoderCount);
+        robot.jewelServo.setPosition(180);
+    }
+
+    public void retractBopper(){
+        robot.bopperMotor.setTargetPosition(-robot.bopperEncoderCount);
+        robot.jewelServo.setPosition(0);
     }
 
         public void spinRobot(double angle, double power){
