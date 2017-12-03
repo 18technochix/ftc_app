@@ -25,6 +25,21 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigation;
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
+
 /**
  * Created by Techno Team_PC_III on 12/2/2017.
  */
@@ -45,6 +60,7 @@ public class Hardware{
     ColorSensor jewelSensor = null;
     ColorSensor tapeSensor1 = null;
     ColorSensor tapeSensor2 = null;
+    VuforiaLocalizer picReader = null;
 
     //constants
     double GRAB_OPEN = 0.12;
@@ -75,11 +91,16 @@ public class Hardware{
         fl = hwMap.dcMotor.get("fl");
         bl = hwMap.dcMotor.get("bl");
         lift = hwMap.get(DcMotor.class, "lift");
+        bopperMotor = hwMap.dcMotor.get("bopperMotor");
         grabServo = hwMap.get(Servo.class, "grabServo");
+        jewelServo = hwMap.get(Servo.class, "jewelServo");
         gyro = hwMap.get(BNO055IMU.class, "imu");
 
-        colorSensor = hwMap.colorSensor.get("TapeSensor");
+        jewelSensor = hwMap.colorSensor.get("jewelSensor");
+        tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
+        tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
         hwMap.get(BNO055IMU.class, "imu");
+        picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -106,6 +127,17 @@ public class Hardware{
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         gyro.initialize(parameters);
+
+        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        params.vuforiaLicenseKey = "ARYJT0b/////AAAAGYhN7cav+UUXqkMo7uS9Mswt0KxiQ3Sp/OVgoLfwHMP74uJpsnWLAXQLoXs0AIcpgC2IiJIov+JwDwrMwujShtlUastkjxWBAXLvJ6drxd811wEZGqBtBeOC6ObFPqG+W41u3D0fWJjsU4qG3S6NdgIAv6Q4T1OGH6Q6jOpatGlpEyhclM0Rk+vs77zaVzgBgZmcCa+tTqOpu0hhxqyxMvPv3Ehn0sgbF1KTfba/QQfxEjpsqJRyA5r7HfNNfg/31xdLLtzQXy28id0EXqPkB2iZ39fxsX0XcbKRWd7pq5uXqfvwJm4EvsKFLOz0eJhJBW+2vlCy5jrdehA7wH+pOnQTx3SQmbyqlr8KehWPWL1X";
+        params.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        this.picReader = ClassFactory.createVuforiaLocalizer(params);
+        VuforiaTrackables relicTrackables = this.picReader.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+        relicTrackables.activate();
+
 
         Orientation angles;
 

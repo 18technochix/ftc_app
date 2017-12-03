@@ -16,10 +16,16 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
+import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 @Autonomous(name="Auto Framework", group="Autonomous")
 //@Disabled
@@ -86,7 +92,7 @@ public class AutoFramework extends LinearOpMode{
     double wheelCircumference = 2 * (Math.PI) * 2;
        int revolutions = (int) (inches / wheelCircumference);
         int encoderTicks = 1120 * revolutions;
-        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION)
+        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         int position = robot.fr.getCurrentPosition();
         while( position < encoderTicks){
             if(direction == "left"){
@@ -119,6 +125,7 @@ public class AutoFramework extends LinearOpMode{
 
     //knocks jewel off according to color
     public void jewelKnocker(boolean alliance, int color){
+        extendBopper();
         color = this.getColor(robot.jewelSensor);
         if(alliance) {
             if (color >= robot.redMin && color <= 360 || color >= 0 && color <= robot.redMax) {
@@ -131,8 +138,36 @@ public class AutoFramework extends LinearOpMode{
                     moveThatRobot(.5, 2, "left", 0);
                 } else {
                     moveThatRobot(.5, 2, "right", 0);
-            }
+                }
         }
+        retractBopper();
+    }
+
+    public String crytographReader(){
+        VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+        relicTrackables.activate();
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+        /** yeah fam idk what this does but its in the vuforia code and it won't work bc of the pose variable
+         * if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+        }
+        if (pose != null) {
+            VectorF trans = pose.getTranslation();
+            Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+
+            double tX = trans.get(0);
+            double tY = trans.get(1);
+            double tZ = trans.get(2);
+
+            double rX = rot.firstAngle;
+            double rY = rot.secondAngle;
+            double rZ = rot.thirdAngle;
+        }
+        */
+        String side = vuMark.toString();
+        return side; //yeah also don't know if this works but vuMark is an enum but it's also not an enum its a "RelicRecoveryVuMark" so it's a little confusing
     }
     //returns the color of the Jewels or the balancing stone
 
@@ -153,6 +188,9 @@ public class AutoFramework extends LinearOpMode{
         return color;
 
 
+
+    }
+    public void findCryptoBox(){
 
     }
 
