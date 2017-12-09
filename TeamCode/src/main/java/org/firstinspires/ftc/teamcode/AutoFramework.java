@@ -29,7 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 @Autonomous(name="Auto Framework", group="Autonomous")
 //@Disabled
-public class AutoFramework extends LinearOpMode{
+public class AutoFramework extends LinearOpMode {
 
     Hardware robot = new Hardware(this);
     //Initialize all of your motors, servos, sensors
@@ -76,26 +76,29 @@ public class AutoFramework extends LinearOpMode{
 
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
-        //the actual robot-moving stuff
         waitForStart();
-        telemetry.addData("Heading", robot.getHeading());
-        //THIS IS THE IMPORTANT PART AND I'M TYPING IN CAPS SO THAT YOU NOTICE THIS HOPEFULLY k.
-        //In here, you put the actual code. My recommendation is that you write methods to do the bulk
-        //of the work, and then insert in between steps
-        //e.g. drive off base, then call findTape(), etc
-        spinRobot(180, 0.5);
+        jewelKnocker(true);
+        //putBoxIntoCryptobox(crytographReader());
+        park();
+
+
     }
 
     //METHODS
-    public void moveThatRobot(double power, double inches, String direction, double timeout){
-        //example shell of a method for y'all to use :) you're welcome
-    double wheelCircumference = 2 * (Math.PI) * 2;
-       int revolutions = (int) (inches / wheelCircumference);
-        int encoderTicks = 1120 * revolutions;
+    public void moveThatRobot(double power, double inches, String direction, double timeout) {
+        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        // set left motor to run to target encoder position and stop with brakes on.
         robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        robot.fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        robot.br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double wheelCircumference = 2 * (Math.PI) * 2;
+        int revolutions = (int) (inches / wheelCircumference);
+        int encoderTicks = 1120 * revolutions;
         int position = robot.fr.getCurrentPosition();
-        while( position < encoderTicks){
-            if(direction == "left"){
+        while (position < encoderTicks) {
+            if (direction == "left") {
                 robot.fr.setPower(-power);
                 robot.br.setPower(power);
                 robot.fl.setPower(power);
@@ -105,12 +108,12 @@ public class AutoFramework extends LinearOpMode{
                 robot.br.setPower(power);
                 robot.fl.setPower(power);
                 robot.bl.setPower(-power);
-            }else if(direction == "forward"){
+            } else if (direction == "forward") {
                 robot.fr.setPower(power);
                 robot.br.setPower(power);
                 robot.fl.setPower(power);
                 robot.bl.setPower(power);
-            }else if(direction == "back"){
+            } else if (direction == "back") {
                 robot.fr.setPower(-power);
                 robot.br.setPower(-power);
                 robot.fl.setPower(-power);
@@ -118,32 +121,35 @@ public class AutoFramework extends LinearOpMode{
             }
         }
 
-
+        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
 
     }
 
     //knocks jewel off according to color
-    public void jewelKnocker(boolean alliance, int color){
-        extendBopper();
-        color = this.getColor(robot.jewelSensor);
-        if(alliance) {
+    public void jewelKnocker(boolean alliance){
+        if (alliance) {
+            extendBopper(robot.jewelServoRed);
+            int color = this.getColor(robot.jewelSensorRed);
             if (color >= robot.redMin && color <= 360 || color >= 0 && color <= robot.redMax) {
-                moveThatRobot(.5, 2, "front", 0);
+                moveThatRobot(.5, 2, "forward", 0);
             } else {
                 moveThatRobot(.5, 2, "back", 0);
             }
-        } else if(!alliance){
-                if (color >= robot.blueMin && color <= robot.blueMax){
-                    moveThatRobot(.5, 2, "left", 0);
-                } else {
-                    moveThatRobot(.5, 2, "right", 0);
-                }
+            retractBopper(robot.jewelServoRed);
+        } else if (!alliance) {
+            extendBopper(robot.jewelServoBlue);
+            int color = this.getColor(robot.jewelSensorBlue);
+            if (color >= robot.blueMin && color <= robot.blueMax) {
+                moveThatRobot(.5, 2, "left", 0);
+            } else {
+                moveThatRobot(.5, 2, "right", 0);
+            }
+            retractBopper(robot.jewelServoBlue);
         }
-        retractBopper();
     }
 
-    public String crytographReader(){
+    public RelicRecoveryVuMark crytographReader() {
         VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
@@ -151,24 +157,39 @@ public class AutoFramework extends LinearOpMode{
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
         /** yeah fam idk what this does but its in the vuforia code and it won't work bc of the pose variable
          * if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-        }
-        if (pose != null) {
-            VectorF trans = pose.getTranslation();
-            Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+         OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
+         }
+         if (pose != null) {
+         VectorF trans = pose.getTranslation();
+         Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
 
-            double tX = trans.get(0);
-            double tY = trans.get(1);
-            double tZ = trans.get(2);
+         double tX = trans.get(0);
+         double tY = trans.get(1);
+         double tZ = trans.get(2);
 
-            double rX = rot.firstAngle;
-            double rY = rot.secondAngle;
-            double rZ = rot.thirdAngle;
-        }
-        */
-        String side = vuMark.toString();
-        return side; //yeah also don't know if this works but vuMark is an enum but it's also not an enum its a "RelicRecoveryVuMark" so it's a little confusing
+         double rX = rot.firstAngle;
+         double rY = rot.secondAngle;
+         double rZ = rot.thirdAngle;
+         }
+         */
+        RelicRecoveryVuMark side = vuMark;
+        return side;
     }
+
+    public void putBoxIntoCryptobox(String box) {
+        if (box == "right") {
+            moveThatRobot(0.5, 12.0, "right", 0.0);
+        } else if (box == "left") {
+            moveThatRobot(0.5, 12.0, "left", 0.0);
+    }else if(box =="center") {
+    moveThatRobot(0.5, 6.0, "right", 0.0);
+    }else{
+            moveThatRobot(0.0, 0.0, "right", 0.0);
+
+        }
+
+}
+
     //returns the color of the Jewels or the balancing stone
 
     public int getColor(ColorSensor sensor){
@@ -190,18 +211,16 @@ public class AutoFramework extends LinearOpMode{
 
 
     }
-    public void findCryptoBox(){
+
+
+    public void extendBopper(Servo allianceServo){
+        allianceServo.setPosition(180);
 
     }
 
-    public void extendBopper(){
-        robot.bopperMotor.setTargetPosition(robot.bopperEncoderCount);
-        robot.jewelServo.setPosition(180);
-    }
+    public void retractBopper(Servo allianceServo){
 
-    public void retractBopper(){
-        robot.bopperMotor.setTargetPosition(-robot.bopperEncoderCount);
-        robot.jewelServo.setPosition(0);
+        allianceServo.setPosition(0);
     }
 
         public void spinRobot(double angle, double power){
@@ -219,7 +238,9 @@ public class AutoFramework extends LinearOpMode{
             robot.fr.setPower(-power);
 
         } //timeout
-
+public void park(){
+            moveThatRobot(0.0, 0.0, "left", 0.0);
+}
 
 }
 

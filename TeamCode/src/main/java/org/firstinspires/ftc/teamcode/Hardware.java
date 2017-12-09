@@ -7,6 +7,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorController;
@@ -47,17 +48,26 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 @Disabled
 public class Hardware{
     //public OpMode members
+    //motors
     DcMotor fr = null;
     DcMotor fl = null;
     DcMotor bl = null;
     DcMotor br = null;
     DcMotor lift = null;
     DcMotor bopperMotor = null;
+    //servos
     Servo grabServo = null;
-    Servo jewelServo = null;
-
+    Servo jewelServoBlue = null;
+    Servo jewelServoRed= null;
+    CRServo relicExtendArm1 = null;
+    CRServo relicExtendArm2 = null;
+    CRServo relicElbow = null;
+    CRServo relicWrist = null;
+    Servo relicGrab = null;
+    //sensors
     BNO055IMU gyro;
-    ColorSensor jewelSensor = null;
+    ColorSensor jewelSensorBlue = null;
+    ColorSensor jewelSensorRed = null;
     ColorSensor tapeSensor1 = null;
     ColorSensor tapeSensor2 = null;
     VuforiaLocalizer picReader = null;
@@ -70,7 +80,7 @@ public class Hardware{
     int redMax = 10;
     int blueMin = 221;
     int blueMax = 240;
-    int bopperEncoderCount = 50;
+
     //local OpMode members
     HardwareMap hwMap           = null;
     LinearOpMode opMode         = null;
@@ -86,17 +96,26 @@ public class Hardware{
     //BASE INIT
     public void init(HardwareMap someHwMap){
         hwMap = someHwMap;
+        //motors
         fr = hwMap.dcMotor.get("fr");
         br = hwMap.dcMotor.get("br");
         fl = hwMap.dcMotor.get("fl");
         bl = hwMap.dcMotor.get("bl");
         lift = hwMap.get(DcMotor.class, "lift");
         bopperMotor = hwMap.dcMotor.get("bopperMotor");
+        //servos
         grabServo = hwMap.get(Servo.class, "grabServo");
-        jewelServo = hwMap.get(Servo.class, "jewelServo");
+        jewelServoBlue = hwMap.get(Servo.class, "jewelServoBlue");
+        jewelServoRed = hwMap.get(Servo.class, "jewelServoRed");
+        relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
+        relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
+        relicElbow =hwMap.get(CRServo.class, "relicElbow");
+        relicWrist=hwMap.get(CRServo.class, "relicWrist");
+        relicGrab =hwMap.get(Servo.class, "relicGrab");
+        //sensors
         gyro = hwMap.get(BNO055IMU.class, "imu");
-
-        jewelSensor = hwMap.colorSensor.get("jewelSensor");
+        jewelSensorBlue = hwMap.colorSensor.get("jewelSensorBlue");
+        jewelSensorRed = hwMap.colorSensor.get("jewelSensorRed");
         tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
         tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
         hwMap.get(BNO055IMU.class, "imu");

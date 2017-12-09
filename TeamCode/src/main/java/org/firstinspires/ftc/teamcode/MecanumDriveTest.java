@@ -129,22 +129,22 @@ public class MecanumDriveTest extends LinearOpMode {
             double bl = 0;
             double br = 0;
 
-            if(gamepad1.dpad_up){
+            if(gamepad1.right_bumper){
                 fl = 0.2;
                 fr = 0.2;
                 bl = 0.2;
                 br = 0.2;
-            } else if(gamepad1.dpad_down){
+            } else if(gamepad1.left_bumper){
                 fl = -0.2;
                 fr = -0.2;
                 bl = -0.2;
                 br = -0.2;
-            } else if(gamepad1.dpad_left){
+            } else if(gamepad1.left_trigger > 0.3){
                 fl = -0.5;
                 fr = 0.5;
                 bl = 0.5;
                 br = -0.5;
-            } else if(gamepad1.dpad_right){
+            } else if(gamepad1.right_trigger > 0.3){
                 fl = 0.5;
                 fr = -0.5;
                 bl = -0.5;
@@ -152,10 +152,10 @@ public class MecanumDriveTest extends LinearOpMode {
             }
             else {
                 // Send calculated power to wheels
-                fl = (s * Range.clip(lyMod + rx + lxMod, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
-                fr = (s * Range.clip(lyMod + rx - lxMod, -1.0, 1.0));
-                bl = (s * Range.clip(lyMod - rx - lxMod, -1.0, 1.0));
-                br = (s * Range.clip(lyMod - rx + lxMod, -1.0, 1.0));
+                fl = (s * Range.clip(fwd + rx + strafe, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
+                fr = (s * Range.clip(fwd + rx - strafe, -1.0, 1.0));
+                bl = (s * Range.clip(fwd - rx - strafe, -1.0, 1.0));
+                br = (s * Range.clip(fwd - rx + strafe, -1.0, 1.0));
             }
 
             robot.fl.setPower(fl);
@@ -167,23 +167,39 @@ public class MecanumDriveTest extends LinearOpMode {
                 robot.lift.setPower(.6);
             else if (gamepad2.right_bumper)
                 robot.lift.setPower(-.6);
-            else
-                robot.lift.setPower(0);
 
-            if(gamepad2.dpad_right){
-                robot.servoPosition += .01;
-                if(robot.servoPosition > robot.GRAB_CLOSE){
-                    robot.servoPosition = robot.GRAB_CLOSE;
-                }
-                robot.grabServo.setPosition(robot.servoPosition);
 
-            }else if(gamepad2.dpad_left){
-                robot.servoPosition -= .01;
-                if(robot.servoPosition < robot.GRAB_OPEN){
-                    robot.servoPosition = robot.GRAB_OPEN;
+
+            if(gamepad1.dpad_left){
+                if(robot.relicGrab.getPosition() != 0){
+                    robot.relicGrab.setPosition(0);
+
+                }else if(robot.relicGrab.getPosition() == 0){
+                    robot.relicGrab.setPosition(180);
                 }
-                robot.grabServo.setPosition(robot.servoPosition);
             }
+
+            if(gamepad1.dpad_up){
+                robot.relicWrist.setPower(0.5);
+            } else if (gamepad1.dpad_down){
+                robot.relicWrist.setPower(-0.5);
+            }
+
+            if(gamepad2.dpad_up) {
+                robot.relicElbow.setPower(0.5);
+            } else if (gamepad2.dpad_up){
+                robot.relicElbow.setPower(-0.5);
+            }
+
+            if(gamepad2.dpad_right) {
+                robot.relicExtendArm1.setPower(0.5);
+                robot.relicExtendArm2.setPower(0.5);
+            } else if (gamepad2.dpad_left) {
+                robot.relicExtendArm1.setPower(-0.5);
+                robot.relicExtendArm2.setPower(-0.5);
+            }
+
+
 
 
 
