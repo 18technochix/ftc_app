@@ -61,7 +61,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Mecanum OpMode Test", group="Linear Opmode")
+@TeleOp(name="Mecanum OpMode Real", group="Linear Opmode")
 
 public class MecanumDriveTest extends LinearOpMode {
 
@@ -115,14 +115,20 @@ public class MecanumDriveTest extends LinearOpMode {
             double s = .5;
 
 
-            double angleDeg = 0; //robot.getHeading();
-            double angleRad = angleDeg * (Math.PI / 180);
-            double fwd = (ly * Math.cos(angleRad)) + (lx * Math.sin(angleRad));
-            double strafe = (-lx * Math.sin(angleRad)) + (ly * Math.cos(angleRad));
-            double lyMod = fwd * ly;
-            double lxMod = strafe * lx;
-            lyMod = ly;
-            lxMod = lx;
+            //double angleDeg = 0; //robot.getHeading();
+            //double angleRad = angleDeg * (Math.PI / 180);
+            //double fwd = (ly * Math.cos(angleRad)) + (lx * Math.sin(angleRad));
+            //double strafe = (-lx * Math.sin(angleRad)) + (ly * Math.cos(angleRad));
+            //double lyMod = fwd * ly;
+            //double lxMod = strafe * lx;
+            //lyMod = ly;
+            //lxMod = lx;
+
+            //og mecanum code just in case
+            //robot.fl.setPower(s * Range.clip(ly + rx + lx, -1.0, 1.0));
+            //robot.bl.setPower(s * Range.clip(ly + rx - lx, -1.0, 1.0));
+            //robot.fr.setPower(s * Range.clip(ly - rx - lx, -1.0, 1.0));
+            //robot.br.setPower(s * Range.clip(ly - rx + lx, -1.0, 1.0));
 
             double fl = 0;
             double fr = 0;
@@ -152,10 +158,14 @@ public class MecanumDriveTest extends LinearOpMode {
             }
             else {
                 // Send calculated power to wheels
-                fl = (s * Range.clip(fwd + rx + strafe, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
-                fr = (s * Range.clip(fwd + rx - strafe, -1.0, 1.0));
-                bl = (s * Range.clip(fwd - rx - strafe, -1.0, 1.0));
-                br = (s * Range.clip(fwd - rx + strafe, -1.0, 1.0));
+                //fl = (s * Range.clip(fwd + rx + strafe, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
+                //fr = (s * Range.clip(fwd + rx - strafe, -1.0, 1.0));
+                //bl = (s * Range.clip(fwd - rx - strafe, -1.0, 1.0));
+                //br = (s * Range.clip(fwd - rx + strafe, -1.0, 1.0));
+                fl =(s * Range.clip(ly + rx + lx, -1.0, 1.0));
+                bl = (s * Range.clip(ly + rx - lx, -1.0, 1.0));
+                fr = (s * Range.clip(ly - rx - lx, -1.0, 1.0));
+                br =(s * Range.clip(ly - rx + lx, -1.0, 1.0));
             }
 
             robot.fl.setPower(fl);
@@ -163,13 +173,7 @@ public class MecanumDriveTest extends LinearOpMode {
             robot.bl.setPower(bl);
             robot.br.setPower(br);
 
-            if (gamepad2.left_bumper)
-                robot.lift.setPower(.6);
-            else if (gamepad2.right_bumper)
-                robot.lift.setPower(-.6);
-
-
-
+        /**
             if(gamepad1.dpad_left){
                 if(robot.relicGrab.getPosition() != 0){
                     robot.relicGrab.setPosition(0);
@@ -198,6 +202,29 @@ public class MecanumDriveTest extends LinearOpMode {
                 robot.relicExtendArm1.setPower(-0.5);
                 robot.relicExtendArm2.setPower(-0.5);
             }
+            */
+            //double servoGrabStrength = (gamepad2.right_stick_x + 1.0)/2.0;
+            //Range.clip(servoGrabStrength, .2, .8);
+            //robot.grabServo.setPosition(servoGrabStrength);
+
+            double liftPow = (gamepad2.left_stick_y / 2.0);
+            Range.clip(liftPow, -1.0, 1.0);
+            robot.lift.setPower(liftPow);
+
+              if(gamepad2.right_trigger > 0.3) {
+                  robot.servoPosition += .01;
+                  if (robot.servoPosition > robot.GRAB_CLOSE) {
+                      robot.servoPosition = robot.GRAB_CLOSE;
+                  }
+                  robot.grabServo.setPosition(robot.servoPosition);
+              } else if(gamepad2.left_trigger > 0.3){
+                robot.servoPosition -= .01;
+                if(robot.servoPosition < robot.GRAB_OPEN) {
+                    robot.servoPosition = robot.GRAB_OPEN;
+                }
+                robot.grabServo.setPosition(robot.servoPosition);
+            }
+
 
 
 

@@ -54,23 +54,22 @@ public class Hardware{
     DcMotor bl = null;
     DcMotor br = null;
     DcMotor lift = null;
-    DcMotor bopperMotor = null;
     //servos
     Servo grabServo = null;
     Servo jewelServoBlue = null;
     Servo jewelServoRed= null;
-    CRServo relicExtendArm1 = null;
-    CRServo relicExtendArm2 = null;
-    CRServo relicElbow = null;
-    CRServo relicWrist = null;
-    Servo relicGrab = null;
+    //CRServo relicExtendArm1 = null;
+    //CRServo relicExtendArm2 = null;
+    //CRServo relicElbow = null;
+    //CRServo relicWrist = null;
+    //Servo relicGrab = null;
     //sensors
-    BNO055IMU gyro;
-    ColorSensor jewelSensorBlue = null;
-    ColorSensor jewelSensorRed = null;
-    ColorSensor tapeSensor1 = null;
-    ColorSensor tapeSensor2 = null;
-    VuforiaLocalizer picReader = null;
+    //BNO055IMU gyro;
+    //ColorSensor jewelSensorBlue = null;
+    //ColorSensor jewelSensorRed = null;
+    //ColorSensor tapeSensor1 = null;
+    //ColorSensor tapeSensor2 = null;
+    //VuforiaLocalizer picReader = null;
 
     //constants
     double GRAB_OPEN = 0.12;
@@ -102,24 +101,23 @@ public class Hardware{
         fl = hwMap.dcMotor.get("fl");
         bl = hwMap.dcMotor.get("bl");
         lift = hwMap.get(DcMotor.class, "lift");
-        bopperMotor = hwMap.dcMotor.get("bopperMotor");
         //servos
         grabServo = hwMap.get(Servo.class, "grabServo");
         jewelServoBlue = hwMap.get(Servo.class, "jewelServoBlue");
         jewelServoRed = hwMap.get(Servo.class, "jewelServoRed");
-        relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
-        relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
-        relicElbow =hwMap.get(CRServo.class, "relicElbow");
-        relicWrist=hwMap.get(CRServo.class, "relicWrist");
-        relicGrab =hwMap.get(Servo.class, "relicGrab");
+        //relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
+        //relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
+        //relicElbow =hwMap.get(CRServo.class, "relicElbow");
+        //relicWrist=hwMap.get(CRServo.class, "relicWrist");
+        //relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
-        gyro = hwMap.get(BNO055IMU.class, "imu");
-        jewelSensorBlue = hwMap.colorSensor.get("jewelSensorBlue");
-        jewelSensorRed = hwMap.colorSensor.get("jewelSensorRed");
-        tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
-        tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
-        hwMap.get(BNO055IMU.class, "imu");
-        picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
+        //gyro = hwMap.get(BNO055IMU.class, "imu");
+        //jewelSensorBlue = hwMap.colorSensor.get("jewelSensorBlue");
+        //jewelSensorRed = hwMap.colorSensor.get("jewelSensorRed");
+        //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
+        //tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
+        //hwMap.get(BNO055IMU.class, "imu");
+        //picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -139,15 +137,15 @@ public class Hardware{
         fl.setPower(0.);
         bl.setPower(0.);
 
-        gyro = null; //??? do we need this
+        //gyro = null; //??? do we need this
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        gyro.initialize(parameters);
+        //gyro.initialize(parameters);
 
-        int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+        /**int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         params.vuforiaLicenseKey = "ARYJT0b/////AAAAGYhN7cav+UUXqkMo7uS9Mswt0KxiQ3Sp/OVgoLfwHMP74uJpsnWLAXQLoXs0AIcpgC2IiJIov+JwDwrMwujShtlUastkjxWBAXLvJ6drxd811wEZGqBtBeOC6ObFPqG+W41u3D0fWJjsU4qG3S6NdgIAv6Q4T1OGH6Q6jOpatGlpEyhclM0Rk+vs77zaVzgBgZmcCa+tTqOpu0hhxqyxMvPv3Ehn0sgbF1KTfba/QQfxEjpsqJRyA5r7HfNNfg/31xdLLtzQXy28id0EXqPkB2iZ39fxsX0XcbKRWd7pq5uXqfvwJm4EvsKFLOz0eJhJBW+2vlCy5jrdehA7wH+pOnQTx3SQmbyqlr8KehWPWL1X";
         params.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
@@ -156,6 +154,7 @@ public class Hardware{
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
+         */
 
 
         Orientation angles;
@@ -163,18 +162,20 @@ public class Hardware{
     }
 
     public void autoInit(HardwareMap someHwMap){
+
         init(someHwMap);
     }
 
     public void teleInit(HardwareMap someHwMap){
+
         init(someHwMap);
     }
 
-    public double getHeading(){
-        Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
-        double angle = angles.firstAngle;
-        return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
-    }
+    //public double getHeading(){
+        //Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        //double angle = angles.firstAngle;
+        //return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
+   // }
 
 
 

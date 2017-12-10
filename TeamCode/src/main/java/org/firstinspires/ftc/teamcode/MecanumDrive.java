@@ -29,6 +29,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -59,11 +60,14 @@ public class MecanumDrive extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-Hardware robot = new Hardware(this);
-HardwareMap hwMap = robot.hwMap;
-robot.
-
-
+    DcMotor frontRight = null;
+    DcMotor frontLeft = null;
+    DcMotor backLeft = null;
+    DcMotor backRight = null;
+    DcMotor lift = null;
+    DcMotor bopperMotor = null;
+    Servo rightServo = null;
+    Servo leftServo = null;
 
 
 
@@ -142,6 +146,7 @@ robot.
                 lift.setPower(-.6);
             else
                 lift.setPower(0);
+            //set max and min values
 
             double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
             Range.clip(sPosition, .2, .8);

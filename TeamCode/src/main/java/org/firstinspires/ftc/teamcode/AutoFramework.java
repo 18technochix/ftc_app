@@ -77,7 +77,7 @@ public class AutoFramework extends LinearOpMode {
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
         waitForStart();
-        jewelKnocker(true);
+        //jewelKnocker(true);
         //putBoxIntoCryptobox(crytographReader());
         park();
 
@@ -127,7 +127,7 @@ public class AutoFramework extends LinearOpMode {
     }
 
     //knocks jewel off according to color
-    public void jewelKnocker(boolean alliance){
+    /**public void jewelKnocker(boolean alliance){
         if (alliance) {
             extendBopper(robot.jewelServoRed);
             int color = this.getColor(robot.jewelSensorRed);
@@ -147,9 +147,9 @@ public class AutoFramework extends LinearOpMode {
             }
             retractBopper(robot.jewelServoBlue);
         }
-    }
+    }*/
 
-    public RelicRecoveryVuMark crytographReader() {
+    /**public RelicRecoveryVuMark crytographReader() {
         VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
@@ -172,20 +172,21 @@ public class AutoFramework extends LinearOpMode {
          double rZ = rot.thirdAngle;
          }
          */
+    /**
         RelicRecoveryVuMark side = vuMark;
         return side;
     }
 
-    public void putBoxIntoCryptobox(String box) {
-        if (box == "right") {
-            moveThatRobot(0.5, 12.0, "right", 0.0);
-        } else if (box == "left") {
-            moveThatRobot(0.5, 12.0, "left", 0.0);
-    }else if(box =="center") {
-    moveThatRobot(0.5, 6.0, "right", 0.0);
-    }else{
-            moveThatRobot(0.0, 0.0, "right", 0.0);
 
+    public void putBoxIntoCryptobox(RelicRecoveryVuMark box) {
+        if (box == RelicRecoveryVuMark.RIGHT) {
+            moveThatRobot(0.5, 12.0, "right", 0.0);
+        } else if (box == RelicRecoveryVuMark.LEFT) {
+            moveThatRobot(0.5, 12.0, "left", 0.0);
+        }else if(box == RelicRecoveryVuMark.CENTER) {
+            moveThatRobot(0.5, 6.0, "right", 0.0);
+        }else{
+            moveThatRobot(0.0, 0.0, "right", 0.0);
         }
 
 }
@@ -215,15 +216,17 @@ public class AutoFramework extends LinearOpMode {
 
     public void extendBopper(Servo allianceServo){
         allianceServo.setPosition(180);
+    }
 
+    public void offTheStone(String direction){
+        moveThatRobot(0.5, 15, direction,0.0);
     }
 
     public void retractBopper(Servo allianceServo){
-
         allianceServo.setPosition(0);
     }
 
-        public void spinRobot(double angle, double power){
+       /** public void spinRobot(double angle, double power){
             while(robot.getHeading()< angle ) {
                 robot.fr.setPower(power);
                 robot.br.setPower(power);
@@ -238,9 +241,10 @@ public class AutoFramework extends LinearOpMode {
             robot.fr.setPower(-power);
 
         } //timeout
-public void park(){
+*/
+        public void park(){
             moveThatRobot(0.0, 0.0, "left", 0.0);
-}
+        }
 
 }
 
