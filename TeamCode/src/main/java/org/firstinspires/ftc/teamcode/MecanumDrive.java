@@ -55,7 +55,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
  */
 
 @TeleOp(name="Mecanum OpMode", group="Linear Opmode")
-
+@Disabled
 public class MecanumDrive extends LinearOpMode {
 
     // Declare OpMode members.
