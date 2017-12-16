@@ -64,21 +64,25 @@ public class Hardware{
     //CRServo relicWrist = null;
     //Servo relicGrab = null;
     //sensors
-    //BNO055IMU gyro;
-    ColorSensor jewelSensorBlue = null;
-    ColorSensor jewelSensorRed = null;
+    BNO055IMU imu;
     //ColorSensor tapeSensor1 = null;
     //ColorSensor tapeSensor2 = null;
     //VuforiaLocalizer picReader = null;
-    MultiplexColorSensor multiplexColorSensor = null;
+    MultiplexColorSensor colorSensor = null;
     //constants
     double GRAB_OPEN = 0.12;
     double GRAB_CLOSE = 0.63;
     double servoPosition = ((GRAB_CLOSE - GRAB_OPEN)/2) + GRAB_OPEN;
+
+    double JEWEL_DOWN = 0.0;
+    double JEWEL_UP = 1.0;
     int redMin = 355;
     int redMax = 10;
     int blueMin = 221;
     int blueMax = 240;
+    int bluePort = 2;
+    int redPort = 1;
+    static final int colorSampleMilliseconds = 48;
 
     //local OpMode members
     HardwareMap hwMap           = null;
@@ -111,12 +115,12 @@ public class Hardware{
         //relicWrist=hwMap.get(CRServo.class, "relicWrist");
         //relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
-        //gyro = hwMap.get(BNO055IMU.class, "imu");
-        //jewelSensorBlue = hwMap.colorSensor.get("jewelSensorBlue");
-        //jewelSensorRed = hwMap.colorSensor.get("jewelSensorRed");
+        imu = hwMap.get(BNO055IMU.class, "imu");
+        int[] ports = {bluePort, redPort};
+        colorSensor = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
+                MultiplexColorSensor.GAIN_16X);
         //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
         //tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
-        //hwMap.get(BNO055IMU.class, "imu");
         //picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
@@ -126,26 +130,28 @@ public class Hardware{
 
         grabServo.setDirection(Servo.Direction.FORWARD);
         grabServo.setPosition(servoPosition);
-        jewelServoBlue.setPosition(0);
-        jewelServoRed.setPosition(0);
 
-        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        jewelServoBlue.setDirection(Servo.Direction.REVERSE);
+        jewelServoBlue.scaleRange(0.176, 0.843);
+        jewelServoBlue.setPosition(JEWEL_UP);
+
+        jewelServoRed.scaleRange(0.176, 0.882);
+        jewelServoRed.setPosition(JEWEL_UP);
+
+        setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
 
         fr.setPower(0.);
         br.setPower(0.);
         fl.setPower(0.);
         bl.setPower(0.);
 
-        //gyro = null; //??? do we need this
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        //gyro.initialize(parameters);
+        imu.initialize(parameters);
 
         /**int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
@@ -166,20 +172,28 @@ public class Hardware{
     public void autoInit(HardwareMap someHwMap){
 
         init(someHwMap);
+        setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
     public void teleInit(HardwareMap someHwMap){
 
+
         init(someHwMap);
+        setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     //public double getHeading(){
-        //Orientation angles = gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+        //Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         //double angle = angles.firstAngle;
         //return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
    // }
 
-
+public void setRunMode(DcMotor.RunMode runMode){
+    bl.setMode(runMode);
+    br.setMode(runMode);
+    fl.setMode(runMode);
+    fr.setMode(runMode);
+}
 
 
 
