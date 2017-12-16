@@ -32,6 +32,9 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 public class AutoFramework extends LinearOpMode {
 
     Hardware robot = new Hardware(this);
+
+
+
     //Initialize all of your motors, servos, sensors
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -50,33 +53,7 @@ public class AutoFramework extends LinearOpMode {
         //init call from Hardware class
         robot.autoInit(hardwareMap);
 
-        //make calls to the hardware map (this is just a formality, dw bout what it actually do)
-
-
-        robot.lift= hardwareMap.dcMotor.get("particle lift");
-
-        //ensure everything is going in the direction you want
-        robot.fl.setDirection(DcMotor.Direction.REVERSE);
-        robot.bl.setDirection(DcMotor.Direction.REVERSE);
-        robot.lift.setDirection(DcMotor.Direction.REVERSE);
-
-
-        //when using encoders, do this, don't ask why (check the yellow postit on the desktop)
-
-        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-
        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-        //set the initial values for ya servos
-        //servos work for values from 0-1, you can use the MR program to determine
-        //values from 0-255 and use the corresponding fraction:
-    robot.grabServo.setPosition(0.0);
-    robot.jewelServoBlue.setPosition(0.0);
-    robot.jewelServoRed.setPosition(0.0);
-
-
-        //set the power for all of your motors to 0. why? because i said so. don't make robo move just yet
 
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
@@ -89,6 +66,7 @@ public class AutoFramework extends LinearOpMode {
     }
 
     //METHODS
+    /**
     public void moveThatRobot(double power, double inches, String direction, double timeout) {
         robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
@@ -126,32 +104,34 @@ public class AutoFramework extends LinearOpMode {
         }
 
         robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-
     }
+     */
 
     //knocks jewel off according to color
     public void jewelKnocker(boolean alliance){
-        if (alliance) {
+        double hue = 0;
+        if(alliance) {
             extendBopper(robot.jewelServoRed);
-            int color = this.getColor(robot.jewelSensorRed);
-            if (color >= robot.redMin && color <= 360 || color >= 0 && color <= robot.redMax) {
-                moveThatRobot(.5, 2, "forward", 0);
+             hue = robot.colorSensor.getHue(robot.redPort);
+            if (hue >= robot.redMin && hue <= 360 || hue >= 0 && hue <= robot.redMax) {
+                robot.moveThatRobot(0.5, -2.0, 1.0);
+                telemetry.addData( "color", hue);
             } else {
-                moveThatRobot(.5, 2, "back", 0);
-            }
-            retractBopper(robot.jewelServoRed);
+                    robot.moveThatRobot(0.5, 2.0, 1.0);
+                }
+                retractBopper(robot.jewelServoRed);
         } else if (!alliance) {
             extendBopper(robot.jewelServoBlue);
-            int color = this.getColor(robot.jewelSensorBlue);
-            if (color >= robot.blueMin && color <= robot.blueMax) {
-                moveThatRobot(.5, 2, "left", 0);
+            hue = robot.colorSensor.getHue(robot.bluePort);
+
+            if (hue >= robot.blueMin && hue <= robot.blueMax) {
+                robot.moveThatRobot(0.5, 6.0, -1.0);
             } else {
-                moveThatRobot(.5, 2, "right", 0);
+                robot.moveThatRobot(0.5, -6.0, 1.0);
             }
             retractBopper(robot.jewelServoBlue);
         }
-    }
+     }
 
     /** public RelicRecoveryVuMark crytographReader() {
 
@@ -198,41 +178,16 @@ public class AutoFramework extends LinearOpMode {
 }
      */
 
-    //returns the color of the Jewels or the balancing stone
-
-    public int getColor(ColorSensor sensor){
-        float hsvValues[] = {0F,0F,0F};
-        float values[] = hsvValues;
-        boolean LedOn = true;
-        sensor.enableLed(LedOn);
-        Color.RGBToHSV((sensor.red() * 255) / 800, (sensor.green() * 255) / 800, (sensor.blue() * 255) / 800, hsvValues);
-        telemetry.addData("LED", LedOn ? "On" : "Off");
-        telemetry.addData("Clear", sensor.alpha());
-        telemetry.addData("Red  ", sensor.red());
-        telemetry.addData("Green", sensor.green());
-        telemetry.addData("Blue ", sensor.blue());
-        telemetry.addData("Hue", hsvValues[0]);
-        int color =  Color.HSVToColor(0xff, values);
-
-        return color;
-
-
-
-    }
-
 
     public void extendBopper(Servo allianceServo){
-        allianceServo.setPosition(180);
+        allianceServo.setPosition(robot.JEWEL_DOWN);
+
     }
 
-    public void offTheStone(String direction){
-        moveThatRobot(0.5, 15, direction,0.0);
-    }
 
     public void retractBopper(Servo allianceServo){
-        allianceServo.setPosition(0);
+        allianceServo.setPosition(robot.JEWEL_UP);
     }
-/**
         public void spinRobot(double angle, double power){
             while(robot.getHeading()< angle ) {
                 robot.fr.setPower(power);
@@ -248,12 +203,10 @@ public class AutoFramework extends LinearOpMode {
             robot.fr.setPower(-power);
 
         }
- */
-public void readColor(ColorSensor colorSensor){
-}
-public void park(){
-            moveThatRobot(0.0, 0.0, "left", 0.0);
+        public void park(double speed, double turn){
+
         }
+
 
 }
 
