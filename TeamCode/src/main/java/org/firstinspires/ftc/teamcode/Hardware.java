@@ -65,12 +65,12 @@ public class Hardware{
     //Servo relicGrab = null;
     //sensors
     //BNO055IMU gyro;
-    //ColorSensor jewelSensorBlue = null;
-    //ColorSensor jewelSensorRed = null;
+    ColorSensor jewelSensorBlue = null;
+    ColorSensor jewelSensorRed = null;
     //ColorSensor tapeSensor1 = null;
     //ColorSensor tapeSensor2 = null;
     //VuforiaLocalizer picReader = null;
-
+    MultiplexColorSensor multiplexColorSensor = null;
     //constants
     double GRAB_OPEN = 0.12;
     double GRAB_CLOSE = 0.63;
@@ -126,6 +126,8 @@ public class Hardware{
 
         grabServo.setDirection(Servo.Direction.FORWARD);
         grabServo.setPosition(servoPosition);
+        jewelServoBlue.setPosition(0);
+        jewelServoRed.setPosition(0);
 
         bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);

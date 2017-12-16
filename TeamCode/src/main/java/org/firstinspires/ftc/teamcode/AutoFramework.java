@@ -53,33 +53,37 @@ public class AutoFramework extends LinearOpMode {
         //make calls to the hardware map (this is just a formality, dw bout what it actually do)
 
 
-        /*particleLift = hardwareMap.servo.get("particle lift");*/
+        robot.lift= hardwareMap.dcMotor.get("particle lift");
 
         //ensure everything is going in the direction you want
-        /*robot.fl.setDirection(DcMotor.Direction.REVERSE);
+        robot.fl.setDirection(DcMotor.Direction.REVERSE);
         robot.bl.setDirection(DcMotor.Direction.REVERSE);
-        shooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);*/
+        robot.lift.setDirection(DcMotor.Direction.REVERSE);
+
 
         //when using encoders, do this, don't ask why (check the yellow postit on the desktop)
-      /*leftMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        rightMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        leftMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rightMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);*/
+        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+
+       robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
         //set the initial values for ya servos
         //servos work for values from 0-1, you can use the MR program to determine
         //values from 0-255 and use the corresponding fraction:
-      /*particleLift.setPosition(250. / 255.);*/
+    robot.grabServo.setPosition(0.0);
+    robot.jewelServoBlue.setPosition(0.0);
+    robot.jewelServoRed.setPosition(0.0);
+
 
         //set the power for all of your motors to 0. why? because i said so. don't make robo move just yet
 
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
-        waitForStart();
-        //jewelKnocker(true);
+        //waitForStart();
+        jewelKnocker(true);
         //putBoxIntoCryptobox(crytographReader());
-        park();
+        //park();
 
 
     }
@@ -127,7 +131,7 @@ public class AutoFramework extends LinearOpMode {
     }
 
     //knocks jewel off according to color
-    /**public void jewelKnocker(boolean alliance){
+    public void jewelKnocker(boolean alliance){
         if (alliance) {
             extendBopper(robot.jewelServoRed);
             int color = this.getColor(robot.jewelSensorRed);
@@ -147,16 +151,18 @@ public class AutoFramework extends LinearOpMode {
             }
             retractBopper(robot.jewelServoBlue);
         }
-    }*/
+    }
 
-    /**public RelicRecoveryVuMark crytographReader() {
+    /** public RelicRecoveryVuMark crytographReader() {
+
         VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
         RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-        /** yeah fam idk what this does but its in the vuforia code and it won't work bc of the pose variable
-         * if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+
+        // yeah fam idk what this does but its in the vuforia code and it won't work bc of the pose variabl
+         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
          OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
          }
          if (pose != null) {
@@ -171,8 +177,8 @@ public class AutoFramework extends LinearOpMode {
          double rY = rot.secondAngle;
          double rZ = rot.thirdAngle;
          }
-         */
-    /**
+
+
         RelicRecoveryVuMark side = vuMark;
         return side;
     }
@@ -190,6 +196,7 @@ public class AutoFramework extends LinearOpMode {
         }
 
 }
+     */
 
     //returns the color of the Jewels or the balancing stone
 
@@ -225,8 +232,8 @@ public class AutoFramework extends LinearOpMode {
     public void retractBopper(Servo allianceServo){
         allianceServo.setPosition(0);
     }
-
-       /** public void spinRobot(double angle, double power){
+/**
+        public void spinRobot(double angle, double power){
             while(robot.getHeading()< angle ) {
                 robot.fr.setPower(power);
                 robot.br.setPower(power);
@@ -240,9 +247,11 @@ public class AutoFramework extends LinearOpMode {
             robot.fl.setPower(-power);
             robot.fr.setPower(-power);
 
-        } //timeout
-*/
-        public void park(){
+        }
+ */
+public void readColor(ColorSensor colorSensor){
+}
+public void park(){
             moveThatRobot(0.0, 0.0, "left", 0.0);
         }
 
