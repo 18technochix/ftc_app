@@ -34,6 +34,7 @@ import android.graphics.Color;
 import android.view.View;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
@@ -67,14 +68,13 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 @Autonomous(name = "Sensor: AdafruitRGB", group = "Sens@Disabledor")
-
+@Disabled
 public class MultiplexRGBTest extends LinearOpMode {
   int bluePort = 2;
   int redPort = 1;
   int[] ports = {bluePort, redPort};
   static final int colorSampleMilliseconds = 48;
-  MultiplexColorSensor colorSensor = new MultiplexColorSensor(hardwareMap, "mux", "color sensor", ports, colorSampleMilliseconds,
-          MultiplexColorSensor.GAIN_16X);;
+  MultiplexColorSensor colorSensor = null;
   DeviceInterfaceModule cdim;
 
   // we assume that the LED pin of the RGB sensor is connected to
@@ -94,7 +94,8 @@ public class MultiplexRGBTest extends LinearOpMode {
     // color of the Robot Controller app to match the hue detected by the RGB sensor.
     int relativeLayoutId = hardwareMap.appContext.getResources().getIdentifier("RelativeLayout", "id", hardwareMap.appContext.getPackageName());
     final View relativeLayout = ((Activity) hardwareMap.appContext).findViewById(relativeLayoutId);
-
+    colorSensor = new MultiplexColorSensor(hardwareMap, "mux", "color sensor", ports, colorSampleMilliseconds,
+            MultiplexColorSensor.GAIN_16X);
     // bPrevState and bCurrState represent the previous and current state of the button.
     boolean bPrevState = false;
     boolean bCurrState = false;

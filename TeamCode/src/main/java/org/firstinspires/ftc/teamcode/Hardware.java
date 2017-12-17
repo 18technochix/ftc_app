@@ -70,16 +70,16 @@ public class Hardware{
     //VuforiaLocalizer picReader = null;
     MultiplexColorSensor colorSensor = null;
     //constants
-    double GRAB_OPEN = 0.12;
-    double GRAB_CLOSE = 0.63;
-    double servoPosition = ((GRAB_CLOSE - GRAB_OPEN)/2) + GRAB_OPEN;
+    double GRAB_OPEN = 1.0;
+    double GRAB_CLOSE = 0.0;
+    double servoPosition = GRAB_CLOSE;
 
     double JEWEL_DOWN = 0.0;
     double JEWEL_UP = 1.0;
-    int redMin = 0;
-    int redMax = 20;
-    int blueMin = 150;
-    int blueMax = 360;
+    double redMin = 0;
+    double redMax = 20;
+    double blueMin = 150;
+    double blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
     static final int colorSampleMilliseconds = 48;
@@ -136,13 +136,22 @@ public class Hardware{
         fr.setDirection(DcMotor.Direction.FORWARD);
 
         grabServo.setDirection(Servo.Direction.FORWARD);
+        grabServo.scaleRange(0.137, 0.863);
         grabServo.setPosition(servoPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
-        jewelServoBlue.scaleRange(0.176, 0.843);
+        jewelServoBlue.scaleRange(
+                0.176, // 45
+                // 0.843 // 215
+                0.823 // 210
+                );
         jewelServoBlue.setPosition(JEWEL_UP);
 
-        jewelServoRed.scaleRange(0.176, 0.882);
+        jewelServoRed.scaleRange(
+                // 0.176 // 45
+                0.196 // 50
+                , 0.882 // 225
+                );
         jewelServoRed.setPosition(JEWEL_UP);
 
         setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);

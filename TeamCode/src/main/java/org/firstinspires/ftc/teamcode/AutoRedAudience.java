@@ -8,6 +8,6 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="AutoRedAudience", group="Autonomous")
 public class AutoRedAudience extends AutoFramework {
-    AutoRedAudience(){autoType = AutoType.AutoRedAudience;}
+   public AutoRedAudience(){autoType = AutoType.AutoRedAudience;}
 }
 

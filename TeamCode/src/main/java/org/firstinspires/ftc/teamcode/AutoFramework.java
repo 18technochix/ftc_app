@@ -9,6 +9,7 @@ import android.graphics.Color;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -28,7 +29,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 @Autonomous(name="Auto Framework", group="Autonomous")
-//@Disabled
+@Disabled
 public class AutoFramework extends LinearOpMode {
     enum AutoType { AutoRedTimer, AutoRedAudience, AutoBlueTimer, AutoBlueAudience }
     AutoType autoType;
@@ -56,29 +57,31 @@ public class AutoFramework extends LinearOpMode {
 
        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+       waitForStart();
+
        switch(autoType){
            case AutoBlueAudience:
                jewelKnocker(false);
-               park(24, 0 , 0);
+               //park(65 + jewelKnocker(false), 0 , 0);
                break;
            case AutoBlueTimer:
                jewelKnocker(false);
-               park(12, 90 , 6);
+               //park(65 + jewelKnocker(false), 0 /*90*/ , 0);
                break;
            case AutoRedAudience:
                jewelKnocker(true);
-               park(24, 0 , 0);
+               //park(65 + jewelKnocker(true), 0 , 0);
                break;
            case AutoRedTimer:
                jewelKnocker(true);
-               park(12, -90 , 6);
+               //park(65 + jewelKnocker(true), 0 /*-90*/ , 0);
                break;
        }
 
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
         //waitForStart();
-        jewelKnocker(true);
+        //jewelKnocker(true);
         //putBoxIntoCryptobox(crytographReader());
         //park();
 
@@ -128,29 +131,39 @@ public class AutoFramework extends LinearOpMode {
      */
 
     //knocks jewel off according to color
-    public void jewelKnocker(boolean alliance){
+    public double jewelKnocker(boolean alliance){
         double hue = 0;
         if(alliance) {
             extendBopper(robot.jewelServoRed);
-             hue = robot.colorSensor.getHue(robot.redPort);
+            hue = robot.colorSensor.getHue(robot.redPort);
+            telemetry.addData( "color", hue);
+            telemetry.update();
+
             if (hue >= robot.redMin && hue <= robot.redMax) {
-                robot.moveThatRobot(0.5, -2.0, 1.0);
-                telemetry.addData( "color", hue);
-            } else {
-                    robot.moveThatRobot(0.5, 2.0, 1.0);
-                }
+               robot.moveThatRobot(0.5, 2.0, 1.0);
                 retractBopper(robot.jewelServoRed);
+               return -2.0;
+            } else {
+                robot.moveThatRobot(0.5, -2.0, 1.0);
+                retractBopper(robot.jewelServoRed);
+                return 2.0;
+            }
         } else if (!alliance) {
             extendBopper(robot.jewelServoBlue);
             hue = robot.colorSensor.getHue(robot.bluePort);
-
+            telemetry.addData( "color", hue);
+            telemetry.update();
             if (hue >= robot.blueMin && hue <= robot.blueMax) {
-                robot.moveThatRobot(0.5, 6.0, -1.0);
+                robot.moveThatRobot(0.5, 2.0, -1.0);
+                retractBopper(robot.jewelServoBlue);
+                return -2.0;
             } else {
-                robot.moveThatRobot(0.5, -6.0, 1.0);
+                robot.moveThatRobot(0.5, -2.0, 1.0);
+                retractBopper(robot.jewelServoBlue);
+                return 2.0;
             }
-            retractBopper(robot.jewelServoBlue);
         }
+        return 0;
      }
 
     /** public RelicRecoveryVuMark crytographReader() {
@@ -201,12 +214,13 @@ public class AutoFramework extends LinearOpMode {
 
     public void extendBopper(Servo allianceServo){
         allianceServo.setPosition(robot.JEWEL_DOWN);
-
+        sleep(750);
     }
 
 
     public void retractBopper(Servo allianceServo){
         allianceServo.setPosition(robot.JEWEL_UP);
+        sleep(750);
     }
         public void spinRobot(double angle, double power){
             while(robot.getHeading()< angle ) {
@@ -225,8 +239,9 @@ public class AutoFramework extends LinearOpMode {
         }
         public void park(double distance1, double angle, double distance2){
             robot.moveThatRobot(0.5, distance1, 1.0);
-            spinRobot(angle, 0.5);
-            robot.moveThatRobot(0.5, distance2, 1.0);
+            //spinRobot(angle, 0.5);
+            //robot.moveThatRobot(0.5, distance2, 1.0);
+            sleep(50);
             robot.fr.setPower(0.0);
             robot.br.setPower(0.0);
             robot.fl.setPower(0.0);
