@@ -30,7 +30,8 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 @Autonomous(name="Auto Framework", group="Autonomous")
 //@Disabled
 public class AutoFramework extends LinearOpMode {
-
+    enum AutoType { AutoRedTimer, AutoRedAudience, AutoBlueTimer, AutoBlueAudience }
+    AutoType autoType;
     Hardware robot = new Hardware(this);
 
 
@@ -54,6 +55,25 @@ public class AutoFramework extends LinearOpMode {
         robot.autoInit(hardwareMap);
 
        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+       switch(autoType){
+           case AutoBlueAudience:
+               jewelKnocker(false);
+               park(24, 0 , 0);
+               break;
+           case AutoBlueTimer:
+               jewelKnocker(false);
+               park(12, 90 , 6);
+               break;
+           case AutoRedAudience:
+               jewelKnocker(true);
+               park(24, 0 , 0);
+               break;
+           case AutoRedTimer:
+               jewelKnocker(true);
+               park(12, -90 , 6);
+               break;
+       }
 
 
         //Here's the ticket yo, everything before this is initialization, and after this is all of
@@ -113,7 +133,7 @@ public class AutoFramework extends LinearOpMode {
         if(alliance) {
             extendBopper(robot.jewelServoRed);
              hue = robot.colorSensor.getHue(robot.redPort);
-            if (hue >= robot.redMin && hue <= 360 || hue >= 0 && hue <= robot.redMax) {
+            if (hue >= robot.redMin && hue <= robot.redMax) {
                 robot.moveThatRobot(0.5, -2.0, 1.0);
                 telemetry.addData( "color", hue);
             } else {
@@ -203,7 +223,14 @@ public class AutoFramework extends LinearOpMode {
             robot.fr.setPower(-power);
 
         }
-        public void park(double speed, double turn){
+        public void park(double distance1, double angle, double distance2){
+            robot.moveThatRobot(0.5, distance1, 1.0);
+            spinRobot(angle, 0.5);
+            robot.moveThatRobot(0.5, distance2, 1.0);
+            robot.fr.setPower(0.0);
+            robot.br.setPower(0.0);
+            robot.fl.setPower(0.0);
+            robot.bl.setPower(0.0);
 
         }
 

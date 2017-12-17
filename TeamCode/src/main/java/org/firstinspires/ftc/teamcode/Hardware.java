@@ -76,10 +76,10 @@ public class Hardware{
 
     double JEWEL_DOWN = 0.0;
     double JEWEL_UP = 1.0;
-    int redMin = 355;
-    int redMax = 10;
-    int blueMin = 221;
-    int blueMax = 240;
+    int redMin = 0;
+    int redMax = 20;
+    int blueMin = 150;
+    int blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
     static final int colorSampleMilliseconds = 48;
