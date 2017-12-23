@@ -142,7 +142,7 @@ public class Hardware{
         relicWrist.setPower(0.0);
 
         relicGrab.setDirection(Servo.Direction.REVERSE);
-        relicGrab.scaleRange(128.0/255.0, 230.0/255.0);
+        relicGrab.scaleRange(160.0/255.0, 230.0/255.0);
         relicGrab.setPosition(relicGrabPosition);
 
         setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
