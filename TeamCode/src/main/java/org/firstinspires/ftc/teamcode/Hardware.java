@@ -1,22 +1,15 @@
 package org.firstinspires.ftc.teamcode;
 
 //import statements
-import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.CRServo;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorController;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.UltrasonicSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -24,22 +17,6 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigation;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by Techno Team_PC_III on 12/2/2017.
@@ -55,14 +32,14 @@ public class Hardware{
     DcMotor br = null;
     DcMotor lift = null;
     //servos
-    Servo grabServo = null;
+    Servo glyphGrab = null;
     Servo jewelServoBlue = null;
     Servo jewelServoRed= null;
-    //CRServo relicExtendArm1 = null;
-    //CRServo relicExtendArm2 = null;
-    //CRServo relicElbow = null;
-    //CRServo relicWrist = null;
-    //Servo relicGrab = null;
+    CRServo relicExtendArm1 = null;
+    CRServo relicExtendArm2 = null;
+    CRServo relicElbow = null;
+    CRServo relicWrist = null;
+    Servo relicGrab = null;
     //sensors
     BNO055IMU imu;
     //ColorSensor tapeSensor1 = null;
@@ -70,9 +47,15 @@ public class Hardware{
     //VuforiaLocalizer picReader = null;
     MultiplexColorSensor colorSensor = null;
     //constants
-    double GRAB_OPEN = 1.0;
-    double GRAB_CLOSE = 0.0;
-    double servoPosition = GRAB_CLOSE;
+    double GLYPH_GRAB_OPEN = 1.0;
+    double GLYPH_GRAB_CLOSE = 0.0;
+    double glyphGrabPosition = GLYPH_GRAB_CLOSE;
+
+    double RELIC_GRAB_OPEN = 1.0;
+    double RELIC_GRAB_CLOSE = 0.0;
+    double relicGrabPosition = RELIC_GRAB_CLOSE;
+
+    double RELIC_ELBOW_STOP = 0.0 - 2.0/255.;
 
     double JEWEL_DOWN = 0.0;
     double JEWEL_UP = 1.0;
@@ -113,14 +96,14 @@ public class Hardware{
         bl = hwMap.dcMotor.get("bl");
         lift = hwMap.get(DcMotor.class, "lift");
         //servos
-        grabServo = hwMap.get(Servo.class, "grabServo");
+        glyphGrab = hwMap.get(Servo.class, "glyphGrab");
         jewelServoBlue = hwMap.get(Servo.class, "jewelServoBlue");
         jewelServoRed = hwMap.get(Servo.class, "jewelServoRed");
-        //relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
-        //relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
-        //relicElbow =hwMap.get(CRServo.class, "relicElbow");
-        //relicWrist=hwMap.get(CRServo.class, "relicWrist");
-        //relicGrab =hwMap.get(Servo.class, "relicGrab");
+        relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
+        relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
+        relicElbow =hwMap.get(CRServo.class, "relicElbow");
+        relicWrist=hwMap.get(CRServo.class, "relicWrist");
+        relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
         int[] ports = {bluePort, redPort};
@@ -135,9 +118,9 @@ public class Hardware{
         fl.setDirection(DcMotor.Direction.REVERSE);
         fr.setDirection(DcMotor.Direction.FORWARD);
 
-        grabServo.setDirection(Servo.Direction.FORWARD);
-        grabServo.scaleRange(0.137, 0.863);
-        grabServo.setPosition(servoPosition);
+        glyphGrab.setDirection(Servo.Direction.FORWARD);
+        glyphGrab.scaleRange(0.137, 0.863);
+        glyphGrab.setPosition(glyphGrabPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
         jewelServoBlue.scaleRange(
@@ -153,6 +136,14 @@ public class Hardware{
                 , 0.882 // 225
                 );
         jewelServoRed.setPosition(JEWEL_UP);
+
+        relicExtend(0.0);
+        relicElbow.setPower(RELIC_ELBOW_STOP);
+        relicWrist.setPower(0.0);
+
+        relicGrab.setDirection(Servo.Direction.REVERSE);
+        relicGrab.scaleRange(128.0/255.0, 230.0/255.0);
+        relicGrab.setPosition(relicGrabPosition);
 
         setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
@@ -345,6 +336,12 @@ public void setRunMode(DcMotor.RunMode runMode){
         double angle = angles.firstAngle;
         return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
     }
+
+    public void relicExtend(double power)
+    {
+        relicExtendArm1.setPower(power);
+        relicExtendArm2.setPower(power);
     }
+}
 
 

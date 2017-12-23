@@ -160,56 +160,67 @@ public class DriverOpMode extends LinearOpMode {
             robot.bl.setPower(bl);
             robot.br.setPower(br);
 
-        /**
-            if(gamepad1.dpad_left){
-                if(robot.relicGrab.getPosition() != 0){
-                    robot.relicGrab.setPosition(0);
 
-                }else if(robot.relicGrab.getPosition() == 0){
-                    robot.relicGrab.setPosition(180);
+
+
+            if (gamepad1.dpad_left) {
+                robot.relicGrabPosition += .01;
+                if (robot.relicGrabPosition > robot.RELIC_GRAB_CLOSE) {
+                    robot.relicGrabPosition = robot.RELIC_GRAB_CLOSE;
                 }
+                robot.relicGrab.setPosition(robot.relicGrabPosition);
+            } else if (gamepad1.dpad_right) {
+                robot.relicGrabPosition -= .01;
+                if (robot.relicGrabPosition < robot.RELIC_GRAB_OPEN) {
+                    robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
+                }
+                robot.relicGrab.setPosition(robot.relicGrabPosition);
             }
 
-            if(gamepad1.dpad_up){
+            if(gamepad1.dpad_down){
                 robot.relicWrist.setPower(0.5);
-            } else if (gamepad1.dpad_down){
+            } else if (gamepad1.dpad_up){
                 robot.relicWrist.setPower(-0.5);
+            } else {
+                robot.relicWrist.setPower(0.0);
             }
 
-            if(gamepad2.dpad_up) {
+            if(gamepad2.y) {
                 robot.relicElbow.setPower(0.5);
-            } else if (gamepad2.dpad_up){
+            } else if (gamepad2.a){
                 robot.relicElbow.setPower(-0.5);
+            } else {
+                robot.relicElbow.setPower(robot.RELIC_ELBOW_STOP);
             }
 
             if(gamepad2.dpad_right) {
-                robot.relicExtendArm1.setPower(0.5);
-                robot.relicExtendArm2.setPower(0.5);
+                robot.relicExtend(0.5);
             } else if (gamepad2.dpad_left) {
-                robot.relicExtendArm1.setPower(-0.5);
-                robot.relicExtendArm2.setPower(-0.5);
+                robot.relicExtend(-0.5);
+            } else {
+                robot.relicExtend(0.0);
             }
-            */
+
             //double servoGrabStrength = (gamepad2.right_stick_x + 1.0)/2.0;
             //Range.clip(servoGrabStrength, .2, .8);
-            //robot.grabServo.setPosition(servoGrabStrength);
+            //robot.glyphGrab.setPosition(servoGrabStrength);
 
             double liftPow = (gamepad2.left_stick_y / 2.0);
             Range.clip(liftPow, -1.0, 1.0);
             robot.lift.setPower(liftPow);
 
-              if(gamepad2.right_trigger > 0.3) {
-                  robot.servoPosition += .01;
-                  if (robot.servoPosition > robot.GRAB_CLOSE) {
-                      robot.servoPosition = robot.GRAB_CLOSE;
-                  }
-                  robot.grabServo.setPosition(robot.servoPosition);
-              } else if(gamepad2.left_trigger > 0.3){
-                robot.servoPosition -= .01;
-                if(robot.servoPosition < robot.GRAB_OPEN) {
-                    robot.servoPosition = robot.GRAB_OPEN;
+            if (gamepad2.right_trigger > 0.3) {
+                robot.glyphGrabPosition += .01;
+                if (robot.glyphGrabPosition > robot.GLYPH_GRAB_CLOSE) {
+                    robot.glyphGrabPosition = robot.GLYPH_GRAB_CLOSE;
                 }
-                robot.grabServo.setPosition(robot.servoPosition);
+                robot.glyphGrab.setPosition(robot.glyphGrabPosition);
+            } else if (gamepad2.left_trigger > 0.3) {
+                robot.glyphGrabPosition -= .01;
+                if (robot.glyphGrabPosition < robot.GLYPH_GRAB_OPEN) {
+                    robot.glyphGrabPosition = robot.GLYPH_GRAB_OPEN;
+                }
+                robot.glyphGrab.setPosition(robot.glyphGrabPosition);
             }
 
 
@@ -225,8 +236,8 @@ public class DriverOpMode extends LinearOpMode {
 
 
            /* double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
-            Range.clip(sPosition, GRAB_OPEN, GRAB_CLOSE);
-            grabServo.setPosition(sPosition);*/
+            Range.clip(sPosition, GLYPH_GRAB_OPEN, GLYPH_GRAB_CLOSE);
+            glyphGrab.setPosition(sPosition);*/
 
 
             // Show the elapsed game time and wheel power.

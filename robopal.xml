@@ -10,6 +10,11 @@
         <NeveRest40Gearmotor name="fl" port="2" />
     </MotorController>
     <ServoController name="Arm Servo Controller" serialNumber="AI02QSKO">
+        <ContinuousRotationServo name="relicExtendArm1" port="6" />
+        <ContinuousRotationServo name="relicExtendArm2" port="5" />
+        <ContinuousRotationServo name="relicElbow" port="4" />
+        <Servo name="relicGrab" port="3" />
+        <ContinuousRotationServo name="relicWrist" port="2" />
     </ServoController>
     <MotorController name="Lift Motor Controller" serialNumber="AL00YCWT">
         <NeveRest40Gearmotor name="lift" port="1" />
@@ -17,7 +22,7 @@
     <ServoController name="Jewel Servo Controller" serialNumber="AI02QTIN">
         <Servo name="jewelServoBlue" port="5" />
         <Servo name="jewelServoRed" port="6" />
-        <Servo name="grabServo" port="4" />
+        <Servo name="glyphGrab" port="4" />
     </ServoController>
     <MotorController name="Right Motor Controller" serialNumber="AL00VE17">
         <NeveRest40Gearmotor name="br" port="1" />
