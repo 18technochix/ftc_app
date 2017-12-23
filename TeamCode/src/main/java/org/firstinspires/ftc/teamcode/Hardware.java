@@ -85,7 +85,7 @@ public class Hardware{
     static final int colorSampleMilliseconds = 48;
 
     static final double     ENCODER_CPR             = 1120 ;
-    static final double     DRIVE_GEAR_REDUCTION    = 2.0 ;
+    static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     COUNTS_PER_INCH         = (ENCODER_CPR * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
@@ -142,8 +142,8 @@ public class Hardware{
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
         jewelServoBlue.scaleRange(
                 0.176, // 45
-                // 0.843 // 215
-                0.823 // 210
+                0.843 // 215
+                //0.823 // 210
                 );
         jewelServoBlue.setPosition(JEWEL_UP);
 
@@ -195,7 +195,7 @@ public class Hardware{
 
 
         init(someHwMap);
-        setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     //public double getHeading(){

@@ -59,22 +59,24 @@ public class AutoFramework extends LinearOpMode {
 
        waitForStart();
 
+       double knockDistance = 0.;
+
        switch(autoType){
            case AutoBlueAudience:
-               jewelKnocker(false);
-               //park(65 + jewelKnocker(false), 0 , 0);
+               knockDistance = jewelKnocker(false);
+               park(35 + knockDistance, 0 , 0);
                break;
            case AutoBlueTimer:
-               jewelKnocker(false);
-               //park(65 + jewelKnocker(false), 0 /*90*/ , 0);
+               knockDistance = jewelKnocker(false);
+               park(35 + knockDistance, 0 /*90*/ , 0);
                break;
            case AutoRedAudience:
-               jewelKnocker(true);
-               //park(65 + jewelKnocker(true), 0 , 0);
+               knockDistance = jewelKnocker(true);
+               park(35 + knockDistance, 0 , 0);
                break;
            case AutoRedTimer:
-               jewelKnocker(true);
-               //park(65 + jewelKnocker(true), 0 /*-90*/ , 0);
+               knockDistance = jewelKnocker(true);
+               park(35 + knockDistance, 0 /*-90*/ , 0);
                break;
        }
 
@@ -105,7 +107,7 @@ public class AutoFramework extends LinearOpMode {
         while (position < encoderTicks) {
             if (direction == "left") {
                 robot.fr.setPower(-power);
-                robot.br.setPower(power);
+                obot.br.setPower(power);
                 robot.fl.setPower(power);
                 robot.bl.setPower(-power);
             } else if (direction == "right") {
@@ -143,10 +145,13 @@ public class AutoFramework extends LinearOpMode {
                robot.moveThatRobot(0.5, 2.0, 1.0);
                 retractBopper(robot.jewelServoRed);
                return -2.0;
-            } else {
+            } else if(hue >= robot.blueMin && hue <= robot.blueMax) {
                 robot.moveThatRobot(0.5, -2.0, 1.0);
                 retractBopper(robot.jewelServoRed);
                 return 2.0;
+            } else {
+                retractBopper(robot.jewelServoRed);
+                return 0.0;
             }
         } else if (!alliance) {
             extendBopper(robot.jewelServoBlue);
@@ -154,17 +159,21 @@ public class AutoFramework extends LinearOpMode {
             telemetry.addData( "color", hue);
             telemetry.update();
             if (hue >= robot.blueMin && hue <= robot.blueMax) {
-                robot.moveThatRobot(0.5, 2.0, -1.0);
+                robot.moveThatRobot(0.5, 2.0, 1.0);
                 retractBopper(robot.jewelServoBlue);
                 return -2.0;
-            } else {
+            } else if(hue >= robot.redMin && hue <= robot.redMax) {
                 robot.moveThatRobot(0.5, -2.0, 1.0);
                 retractBopper(robot.jewelServoBlue);
                 return 2.0;
+            } else {
+                retractBopper(robot.jewelServoBlue);
+                return 0.0;
             }
         }
-        return 0;
+        return 0.0;
      }
+     //check if red or blue is greater
 
     /** public RelicRecoveryVuMark crytographReader() {
 
@@ -214,7 +223,7 @@ public class AutoFramework extends LinearOpMode {
 
     public void extendBopper(Servo allianceServo){
         allianceServo.setPosition(robot.JEWEL_DOWN);
-        sleep(750);
+        sleep(1000);
     }
 
 
@@ -238,7 +247,7 @@ public class AutoFramework extends LinearOpMode {
 
         }
         public void park(double distance1, double angle, double distance2){
-            robot.moveThatRobot(0.5, distance1, 1.0);
+            robot.moveThatRobot(0.5, distance1, 15.0);
             //spinRobot(angle, 0.5);
             //robot.moveThatRobot(0.5, distance2, 1.0);
             sleep(50);
