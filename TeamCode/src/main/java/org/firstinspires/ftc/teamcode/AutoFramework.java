@@ -65,19 +65,23 @@ public class AutoFramework extends LinearOpMode {
 
         switch (autoType) {
             case AutoBlueAudience:
-                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                //knockDistance =
+                        jewelKnocker(robot.jewelServoBlue, 2, false);
                 //park(35 + knockDistance, 0 , 0);
                 break;
             case AutoBlueTimer:
-                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                //knockDistance =
+                        jewelKnocker(robot.jewelServoBlue, 2, false);
                 // park(35 + knockDistance, 0 /*90*/ , 0);
                 break;
             case AutoRedAudience:
-                knockDistance = jewelKnocker(robot.jewelServoRed, 1,true);
+                //knockDistance =
+                        jewelKnocker(robot.jewelServoRed, 1,true);
                 //  park(35 + knockDistance, 0 , 0);
                 break;
             case AutoRedTimer:
-                knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
+                //knockDistance =
+                        jewelKnocker(robot.jewelServoRed, 1, true);
                 //  park(35 + knockDistance, 0 /*-90*/ , 0);
                 break;
         }
@@ -113,9 +117,10 @@ public class AutoFramework extends LinearOpMode {
 
     public double jewelKnocker(Servo allianceServo, int port, boolean alliance) {
         double hues[] = new double[6];
+        double position = 0.25;
         for (int i = 0; i < 6; i++) {
-            double position = 0.25;
             allianceServo.setPosition(position);
+            sleep(50);
             double hue = robot.colorSensor.getHue(port);
             position -= 0.05;
             Array.set(hues, i, hue);
@@ -129,35 +134,31 @@ public class AutoFramework extends LinearOpMode {
                 color = 2;
             }
         }
-            if (alliance && color == 1) {
-                robot.jewelServoRed.setPosition(1.0);
+            if (alliance && (color == 1)) {
                 robot.moveThatRobot(0.5, 2.0, 1.0);
                 retractBopper(allianceServo);
                 return -2.0;
             }
-            if (alliance && color == 2) {
-                robot.jewelServoRed.setPosition(1.0);
+            if (alliance && (color == 2)) {
                 robot.moveThatRobot(0.5, -2.0, 1.0);
                 retractBopper(allianceServo);
                 return 2.0;
             }
-            if (alliance && color == 0) {
+            if (alliance && (color == 0)) {
                 retractBopper(allianceServo);
                 return 0.0;
             }
-            if (!alliance && color == 2) {
-                robot.jewelServoBlue.setPosition(0.5);
+            if ((!alliance) && (color == 2)) {
                 robot.moveThatRobot(0.5, 2.0, 1.0);
                 retractBopper(allianceServo);
                 return -2.0;
             }
-            if (!alliance && color == 1) {
-                robot.jewelServoBlue.setPosition(0.5);
+            if ((!alliance) && (color == 1)) {
                 robot.moveThatRobot(0.5, -2.0, 1.0);
                 retractBopper(allianceServo);
                 return 2.0;
             }
-            if (!alliance && color == 0) {
+            if ((!alliance) && (color == 0)) {
                 retractBopper(allianceServo);
                 return 0.0;
             }
