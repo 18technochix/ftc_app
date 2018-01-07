@@ -211,17 +211,19 @@ public class DriverOpMode extends LinearOpMode {
             Range.clip(liftPow, -1.0, 1.0);
             robot.lift.setPower(liftPow);
 
-            if (gamepad2.right_trigger > 0.3) {
-                robot.glyphGrabPosition += .01;
+            if (gamepad2.left_bumper) {
+                robot.glyphGrabPosition -= .01;
                 if (robot.glyphGrabPosition > robot.GLYPH_GRAB_CLOSE) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_CLOSE;
                 }
+                sleep(10);
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
-            } else if (gamepad2.left_trigger > 0.3) {
-                robot.glyphGrabPosition -= .01;
+            } else if (gamepad2.right_bumper) {
+                robot.glyphGrabPosition += .01;
                 if (robot.glyphGrabPosition < robot.GLYPH_GRAB_OPEN) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_OPEN;
                 }
+                sleep(10);
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
             }
 
