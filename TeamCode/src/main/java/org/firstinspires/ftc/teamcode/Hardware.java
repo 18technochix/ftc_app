@@ -12,11 +12,15 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 /**
  * Created by Techno Team_PC_III on 12/2/2017.
@@ -42,9 +46,7 @@ public class Hardware{
     Servo relicGrab = null;
     //sensors
     BNO055IMU imu;
-    //ColorSensor tapeSensor1 = null;
-    //ColorSensor tapeSensor2 = null;
-    //VuforiaLocalizer picReader = null;
+    VuforiaLocalizer picReader = null;
     MultiplexColorSensor colorSensor = null;
     //constants
     double GLYPH_GRAB_OPEN = 1.0;
@@ -54,17 +56,21 @@ public class Hardware{
     double RELIC_GRAB_OPEN = 1.0;
     double RELIC_GRAB_CLOSE = 0.0;
     double relicGrabPosition = RELIC_GRAB_CLOSE;
+    //double relicGrabAuto = 0.0;
 
     double RELIC_ELBOW_STOP = 0.0 - 2.0/255.;
 
     double JEWEL_DOWN = 0.0;
     double JEWEL_UP = 1.0;
+    double JEWEL_UP_TAD = 0.3;
     double redMin = 0;
     double redMax = 20;
     double blueMin = 150;
     double blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
+    int tapeSensor1Port = 3;
+    int tapeSensor2Port = 4;
     static final int colorSampleMilliseconds = 48;
 
     static final double     ENCODER_CPR             = 1120 ;
@@ -106,12 +112,12 @@ public class Hardware{
         relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
-        int[] ports = {bluePort, redPort};
+        int[] ports = {bluePort, redPort, tapeSensor1Port, tapeSensor2Port};
         colorSensor = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
                 MultiplexColorSensor.GAIN_16X);
         //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
         //tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
-        //picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
+      //  picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -119,22 +125,14 @@ public class Hardware{
         fr.setDirection(DcMotor.Direction.FORWARD);
 
         glyphGrab.setDirection(Servo.Direction.FORWARD);
-        glyphGrab.scaleRange(0.137, 0.863);
+        glyphGrab.scaleRange( 15.0 / 255.0, 220.0 / 255.0 );
         glyphGrab.setPosition(glyphGrabPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
-        jewelServoBlue.scaleRange(
-                0.176, // 45
-                0.843 // 215
-                //0.823 // 210
-                );
+        jewelServoBlue.scaleRange( 67.0 / 255.0, 252.0 / 255.0 );
         jewelServoBlue.setPosition(JEWEL_UP);
 
-        jewelServoRed.scaleRange(
-                // 0.176 // 45
-                0.196 // 50
-                , 0.882 // 225
-                );
+        jewelServoRed.scaleRange( 49.0 / 255.0, 239.0 / 255.0 );
         jewelServoRed.setPosition(JEWEL_UP);
 
         relicExtend(0.0);
@@ -142,7 +140,7 @@ public class Hardware{
         relicWrist.setPower(0.0);
 
         relicGrab.setDirection(Servo.Direction.REVERSE);
-        relicGrab.scaleRange(160.0/255.0, 230.0/255.0);
+        relicGrab.scaleRange( 160.0 / 255.0, 230.0 / 255.0 );
         relicGrab.setPosition(relicGrabPosition);
 
         setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -160,7 +158,7 @@ public class Hardware{
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
 
-        /**int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
+      /*  int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         params.vuforiaLicenseKey = "ARYJT0b/////AAAAGYhN7cav+UUXqkMo7uS9Mswt0KxiQ3Sp/OVgoLfwHMP74uJpsnWLAXQLoXs0AIcpgC2IiJIov+JwDwrMwujShtlUastkjxWBAXLvJ6drxd811wEZGqBtBeOC6ObFPqG+W41u3D0fWJjsU4qG3S6NdgIAv6Q4T1OGH6Q6jOpatGlpEyhclM0Rk+vs77zaVzgBgZmcCa+tTqOpu0hhxqyxMvPv3Ehn0sgbF1KTfba/QQfxEjpsqJRyA5r7HfNNfg/31xdLLtzQXy28id0EXqPkB2iZ39fxsX0XcbKRWd7pq5uXqfvwJm4EvsKFLOz0eJhJBW+2vlCy5jrdehA7wH+pOnQTx3SQmbyqlr8KehWPWL1X";
         params.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
@@ -169,8 +167,8 @@ public class Hardware{
         VuforiaTrackable relicTemplate = relicTrackables.get(0);
         relicTemplate.setName("relicVuMarkTemplate");
         relicTrackables.activate();
-         */
 
+*/
 
         Orientation angles;
 
@@ -203,14 +201,18 @@ public void setRunMode(DcMotor.RunMode runMode){
 }
 
     public void moveThatRobot(double speed, double inches, double timeout){
-        moveThatRobot(speed, speed, speed, speed, inches, inches, inches, inches, timeout, "MOVE");
+        moveThatRobot(speed, speed, speed, speed, inches, inches, inches, inches, timeout);
+    }
+
+    public void moveThatRobotSide(double frspeed, double brspeed, double flspeed, double blspeed, double inches, double timeout){
+        moveThatRobot(frspeed, brspeed, flspeed, blspeed, inches, inches, inches, inches, timeout);
     }
 
     public void moveThatRobot(double frontRightSpeed, double backRightSpeed,
                               double frontLeftSpeed, double backLeftSpeed,
                               double frontRightInches, double backRightInches,
                               double frontLeftInches,  double backLeftInches,
-                              double timeout, String tag){
+                              double timeout){
         int newFrontRightTarget;
         int newBackRightTarget;
         int newFrontLeftTarget;
@@ -329,6 +331,30 @@ public void setRunMode(DcMotor.RunMode runMode){
         }
 
         }
+
+    public void spinRobot(double degrees, double power){
+        if(degrees >= 0){
+            while(getHeading() > degrees){
+                fr.setPower(power);
+                br.setPower(power);
+                fl.setPower(-power);
+                bl.setPower(-power);
+            }
+        }
+        if(degrees < 0){
+            while(getHeading() < degrees){
+                fr.setPower(-power);
+                br.setPower(-power);
+                fl.setPower(power);
+                bl.setPower(power);
+            }
+        }
+        fr.setPower(0.0);
+        br.setPower(0.0);
+        fl.setPower(0.0);
+        bl.setPower(0.0);
+    }
+
     private boolean opModeIsActive(){return opMode.opModeIsActive();}
 
     public double getHeading(){

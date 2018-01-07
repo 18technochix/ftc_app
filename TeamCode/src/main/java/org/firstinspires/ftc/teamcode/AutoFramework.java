@@ -28,13 +28,15 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.lang.reflect.Array;
+
 @Autonomous(name="Auto Framework", group="Autonomous")
 @Disabled
 public class AutoFramework extends LinearOpMode {
-    enum AutoType { AutoRedTimer, AutoRedAudience, AutoBlueTimer, AutoBlueAudience }
+    enum AutoType {AutoRedTimer, AutoRedAudience, AutoBlueTimer, AutoBlueAudience}
+
     AutoType autoType;
     Hardware robot = new Hardware(this);
-
 
 
     //Initialize all of your motors, servos, sensors
@@ -55,175 +57,111 @@ public class AutoFramework extends LinearOpMode {
         //init call from Hardware class
         robot.autoInit(hardwareMap);
 
-       robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
-       waitForStart();
-
-       double knockDistance = 0.;
-
-       switch(autoType){
-           case AutoBlueAudience:
-               knockDistance = jewelKnocker(false);
-               park(35 + knockDistance, 0 , 0);
-               break;
-           case AutoBlueTimer:
-               knockDistance = jewelKnocker(false);
-               park(35 + knockDistance, 0 /*90*/ , 0);
-               break;
-           case AutoRedAudience:
-               knockDistance = jewelKnocker(true);
-               park(35 + knockDistance, 0 , 0);
-               break;
-           case AutoRedTimer:
-               knockDistance = jewelKnocker(true);
-               park(35 + knockDistance, 0 /*-90*/ , 0);
-               break;
-       }
-
-
-        //Here's the ticket yo, everything before this is initialization, and after this is all of
-        //waitForStart();
-        //jewelKnocker(true);
-        //putBoxIntoCryptobox(crytographReader());
-        //park();
-
-
-    }
-
-    //METHODS
-    /**
-    public void moveThatRobot(double power, double inches, String direction, double timeout) {
         robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        // set left motor to run to target encoder position and stop with brakes on.
-        robot.fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.fl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.bl.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        robot.br.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        double wheelCircumference = 2 * (Math.PI) * 2;
-        int revolutions = (int) (inches / wheelCircumference);
-        int encoderTicks = 1120 * revolutions;
-        int position = robot.fr.getCurrentPosition();
-        while (position < encoderTicks) {
-            if (direction == "left") {
-                robot.fr.setPower(-power);
-                obot.br.setPower(power);
-                robot.fl.setPower(power);
-                robot.bl.setPower(-power);
-            } else if (direction == "right") {
-                robot.fr.setPower(-power);
-                robot.br.setPower(power);
-                robot.fl.setPower(power);
-                robot.bl.setPower(-power);
-            } else if (direction == "forward") {
-                robot.fr.setPower(power);
-                robot.br.setPower(power);
-                robot.fl.setPower(power);
-                robot.bl.setPower(power);
-            } else if (direction == "back") {
-                robot.fr.setPower(-power);
-                robot.br.setPower(-power);
-                robot.fl.setPower(-power);
-                robot.bl.setPower(-power);
-            }
-        }
+        waitForStart();
 
-        robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        double knockDistance = 0.;
+
+        switch (autoType) {
+            case AutoBlueAudience:
+                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                //park(35 + knockDistance, 0 , 0);
+                break;
+            case AutoBlueTimer:
+                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                // park(35 + knockDistance, 0 /*90*/ , 0);
+                break;
+            case AutoRedAudience:
+                knockDistance = jewelKnocker(robot.jewelServoRed, 1,true);
+                //  park(35 + knockDistance, 0 , 0);
+                break;
+            case AutoRedTimer:
+                knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
+                //  park(35 + knockDistance, 0 /*-90*/ , 0);
+                break;
+        }
     }
-     */
 
-    //knocks jewel off according to color
-    public double jewelKnocker(boolean alliance){
-        double hue = 0;
-        if(alliance) {
-            extendBopper(robot.jewelServoRed);
-            hue = robot.colorSensor.getHue(robot.redPort);
-            telemetry.addData( "color", hue);
-            telemetry.update();
 
-            if (hue >= robot.redMin && hue <= robot.redMax) {
-               robot.moveThatRobot(0.5, 2.0, 1.0);
-                retractBopper(robot.jewelServoRed);
-               return -2.0;
-            } else if(hue >= robot.blueMin && hue <= robot.blueMax) {
-                robot.moveThatRobot(0.5, -2.0, 1.0);
-                retractBopper(robot.jewelServoRed);
-                return 2.0;
-            } else {
-                retractBopper(robot.jewelServoRed);
-                return 0.0;
-            }
-        } else if (!alliance) {
-            extendBopper(robot.jewelServoBlue);
-            hue = robot.colorSensor.getHue(robot.bluePort);
-            telemetry.addData( "color", hue);
-            telemetry.update();
-            if (hue >= robot.blueMin && hue <= robot.blueMax) {
-                robot.moveThatRobot(0.5, 2.0, 1.0);
-                retractBopper(robot.jewelServoBlue);
-                return -2.0;
-            } else if(hue >= robot.redMin && hue <= robot.redMax) {
-                robot.moveThatRobot(0.5, -2.0, 1.0);
-                retractBopper(robot.jewelServoBlue);
-                return 2.0;
-            } else {
-                retractBopper(robot.jewelServoBlue);
-                return 0.0;
-            }
-        }
-        return 0.0;
-     }
-     //check if red or blue is greater
 
-    /** public RelicRecoveryVuMark crytographReader() {
-
-        VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-        relicTrackables.activate();
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-
-        // yeah fam idk what this does but its in the vuforia code and it won't work bc of the pose variabl
-         if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-         OpenGLMatrix pose = ((VuforiaTrackableDefaultListener)relicTemplate.getListener()).getPose();
-         }
+     public RelicRecoveryVuMark crytographReader() {
+     VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
+     VuforiaTrackable relicTemplate = relicTrackables.get(0);
+     relicTemplate.setName("relicVuMarkTemplate");
+     relicTrackables.activate();
+     RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
+     if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
+         OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
          if (pose != null) {
-         VectorF trans = pose.getTranslation();
-         Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-
-         double tX = trans.get(0);
-         double tY = trans.get(1);
-         double tZ = trans.get(2);
-
-         double rX = rot.firstAngle;
-         double rY = rot.secondAngle;
-         double rZ = rot.thirdAngle;
+             VectorF trans = pose.getTranslation();
+             Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
+             double tX = trans.get(0);
+             double tY = trans.get(1);
+             double tZ = trans.get(2);
+             double rX = rot.firstAngle;
+             double rY = rot.secondAngle;
+             double rZ = rot.thirdAngle;
          }
+     }
+     RelicRecoveryVuMark side = vuMark;
+     telemetry.addData("VuMark", "%s visible", side);
+     telemetry.update();
+     return side;
+     }
 
 
-        RelicRecoveryVuMark side = vuMark;
-        return side;
-    }
-
-
-    public void putBoxIntoCryptobox(RelicRecoveryVuMark box) {
-        if (box == RelicRecoveryVuMark.RIGHT) {
-            moveThatRobot(0.5, 12.0, "right", 0.0);
-        } else if (box == RelicRecoveryVuMark.LEFT) {
-            moveThatRobot(0.5, 12.0, "left", 0.0);
-        }else if(box == RelicRecoveryVuMark.CENTER) {
-            moveThatRobot(0.5, 6.0, "right", 0.0);
-        }else{
-            moveThatRobot(0.0, 0.0, "right", 0.0);
+    public double jewelKnocker(Servo allianceServo, int port, boolean alliance) {
+        double hues[] = new double[6];
+        for (int i = 0; i < 6; i++) {
+            double position = 0.25;
+            allianceServo.setPosition(position);
+            double hue = robot.colorSensor.getHue(port);
+            position -= 0.05;
+            Array.set(hues, i, hue);
         }
-
-}
-     */
-
-
-    public void extendBopper(Servo allianceServo){
-        allianceServo.setPosition(robot.JEWEL_DOWN);
-        sleep(1000);
+        int color = 0;
+        for (int j = 0; j < 6; j++) {
+            if (hues[j] > robot.redMin && hues[j] < robot.redMax) {
+                color = 1;
+            }
+            if (hues[j] > robot.blueMin && hues[j] < robot.blueMax) {
+                color = 2;
+            }
+        }
+            if (alliance && color == 1) {
+                robot.jewelServoRed.setPosition(1.0);
+                robot.moveThatRobot(0.5, 2.0, 1.0);
+                retractBopper(allianceServo);
+                return -2.0;
+            }
+            if (alliance && color == 2) {
+                robot.jewelServoRed.setPosition(1.0);
+                robot.moveThatRobot(0.5, -2.0, 1.0);
+                retractBopper(allianceServo);
+                return 2.0;
+            }
+            if (alliance && color == 0) {
+                retractBopper(allianceServo);
+                return 0.0;
+            }
+            if (!alliance && color == 2) {
+                robot.jewelServoBlue.setPosition(0.5);
+                robot.moveThatRobot(0.5, 2.0, 1.0);
+                retractBopper(allianceServo);
+                return -2.0;
+            }
+            if (!alliance && color == 1) {
+                robot.jewelServoBlue.setPosition(0.5);
+                robot.moveThatRobot(0.5, -2.0, 1.0);
+                retractBopper(allianceServo);
+                return 2.0;
+            }
+            if (!alliance && color == 0) {
+                retractBopper(allianceServo);
+                return 0.0;
+            }
+            return 0.0;
     }
 
 
@@ -231,25 +169,10 @@ public class AutoFramework extends LinearOpMode {
         allianceServo.setPosition(robot.JEWEL_UP);
         sleep(750);
     }
-        public void spinRobot(double angle, double power){
-            while(robot.getHeading()< angle ) {
-                robot.fr.setPower(power);
-                robot.br.setPower(power);
-                robot.fl.setPower(-power);
-                robot.fr.setPower(-power);
 
-            }
-            power = 0;
-            robot.fr.setPower(power);
-            robot.br.setPower(power);
-            robot.fl.setPower(-power);
-            robot.fr.setPower(-power);
 
-        }
-        public void park(double distance1, double angle, double distance2){
-            robot.moveThatRobot(0.5, distance1, 15.0);
-            //spinRobot(angle, 0.5);
-            //robot.moveThatRobot(0.5, distance2, 1.0);
+        public void park(double distance){
+            robot.moveThatRobot(0.5, distance, 15.0);
             sleep(50);
             robot.fr.setPower(0.0);
             robot.br.setPower(0.0);
@@ -257,7 +180,60 @@ public class AutoFramework extends LinearOpMode {
             robot.bl.setPower(0.0);
 
         }
+//two sides of the field: left = the pair of red and blue where the are across from eachother, and the pair where the are next to eachother
+    //side by side: true
+    //next to eachother: false
+        public void findTape(boolean side, boolean alliance, RelicRecoveryVuMark direction) {
+            double hue1 = robot.colorSensor.getHue(robot.tapeSensor1Port);
+            double hue2 = robot.colorSensor.getHue(robot.tapeSensor2Port);
+            boolean isColor = false;
+            if (side) {
+                while (!isColor) {
+                    if ((hue2 >= robot.blueMin && hue2 <= robot.blueMin) && (hue2 >= robot.redMin && hue2 <= robot.redMin)) {
+                        isColor = true;
+                    }
+                    robot.fr.setPower(0.1);
+                    robot.br.setPower(0.1);
+                    robot.bl.setPower(0.1);
+                    robot.fl.setPower(0.1);
+                }
+                if (alliance) {
+                    while(!(hue1 >= robot.redMin && hue1 <= robot.redMin)){
+                       robot.fr.setPower(0.2);
+                       robot.fl.setPower(0.2);
+                    }
+                    robot.spinRobot(90, 0.2);
+                    robot.moveThatRobot(0.5, 7.0, 10.0);
+                } else if(!alliance) {
+                    while(!(hue1 >= robot.blueMin && hue1 <= robot.blueMin)){
+                        robot.fr.setPower(-0.2);
+                        robot.fl.setPower(-0.2);
+                    }
+                    robot.spinRobot(-90, 0.2);
+                    robot.moveThatRobot(0.5, 7.0, 10.0);
+                }
+                if(direction == RelicRecoveryVuMark.CENTER || direction == RelicRecoveryVuMark.UNKNOWN){
+                    robot.moveThatRobot(0.1, 3.0, 5.0);
+                }
+                if(direction == RelicRecoveryVuMark.LEFT){
+                    robot.moveThatRobotSide(-0.5, 0.5, 0.5, -0.5, 3.0, 10.0);
+                    robot.moveThatRobot(0.1, 3.0, 5.0);
+                }
+                if(direction == RelicRecoveryVuMark.RIGHT){
+                    robot.moveThatRobotSide(0.5, -0.5, -0.5, 0.5, 3.0, 10.0);
+                    robot.moveThatRobot(0.1, 3.0, 5.0);
+                }
+            }
+        }
+
+   public void placeGlyph(){
+        //lower lift
+        robot.glyphGrab.setPosition(robot.RELIC_GRAB_OPEN);
 
 
 }
 
+
+
+
+}

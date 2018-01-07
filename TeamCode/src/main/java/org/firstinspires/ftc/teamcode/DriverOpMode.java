@@ -173,7 +173,7 @@ public class DriverOpMode extends LinearOpMode {
             } else if (gamepad1.dpad_right) {
                 robot.relicGrabPosition += .01;
                 if (robot.relicGrabPosition > robot.RELIC_GRAB_OPEN) {
-                    robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
+                     robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
                 }
                 sleep(10);
                 robot.relicGrab.setPosition(robot.relicGrabPosition);
