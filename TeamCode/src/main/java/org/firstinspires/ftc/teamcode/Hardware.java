@@ -125,7 +125,7 @@ public class Hardware{
         fr.setDirection(DcMotor.Direction.FORWARD);
 
         glyphGrab.setDirection(Servo.Direction.FORWARD);
-        glyphGrab.scaleRange( 15.0 / 255.0, 220.0 / 255.0 );
+        glyphGrab.scaleRange( 30.0 / 255.0, 220.0 / 255.0 );
         glyphGrab.setPosition(glyphGrabPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
