@@ -55,6 +55,8 @@ public class DriverOpMode extends LinearOpMode {
     // Declare OpMode members.
     Hardware robot = new Hardware(this);
     private ElapsedTime runtime = new ElapsedTime();
+    boolean autoRelic = false;
+
 
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
@@ -64,10 +66,6 @@ public class DriverOpMode extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-
-
-
-
 
 
         // Most robots need the motor on one side to be reversed to drive forward
@@ -88,7 +86,7 @@ public class DriverOpMode extends LinearOpMode {
             double ry = -gamepad1.right_stick_y;
 
 
-             // Tank Mode uses one stick to control each wheel.
+            // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // leftPower  = -gamepad1.left_stick_y ;
             // rightPower = -gamepad1.right_stick_y ;
@@ -122,45 +120,42 @@ public class DriverOpMode extends LinearOpMode {
             double bl = 0;
             double br = 0;
 
-            if(gamepad1.right_bumper){
+            if (gamepad1.right_bumper) {
                 fl = 0.2;
                 fr = 0.2;
                 bl = 0.2;
                 br = 0.2;
-            } else if(gamepad1.left_bumper){
+            } else if (gamepad1.left_bumper) {
                 fl = -0.2;
                 fr = -0.2;
                 bl = -0.2;
                 br = -0.2;
-            } else if(gamepad1.left_trigger > 0.3){
+            } else if (gamepad1.left_trigger > 0.3) {
                 fl = -0.5;
                 fr = 0.5;
                 bl = 0.5;
                 br = -0.5;
-            } else if(gamepad1.right_trigger > 0.3){
+            } else if (gamepad1.right_trigger > 0.3) {
                 fl = 0.5;
                 fr = -0.5;
                 bl = -0.5;
                 br = 0.5;
-            }
-            else {
+            } else {
                 // Send calculated power to wheels
                 //fl = (s * Range.clip(fwd + rx + strafe, -1.0, 1.0)); //lyMod should just be fwd and lxMod should be strafe
                 //fr = (s * Range.clip(fwd + rx - strafe, -1.0, 1.0));
                 //bl = (s * Range.clip(fwd - rx - strafe, -1.0, 1.0));
                 //br = (s * Range.clip(fwd - rx + strafe, -1.0, 1.0));
-                fl =(s * Range.clip(ly + rx + lx, -1.0, 1.0));
+                fl = (s * Range.clip(ly + rx + lx, -1.0, 1.0));
                 bl = (s * Range.clip(ly + rx - lx, -1.0, 1.0));
                 fr = (s * Range.clip(ly - rx - lx, -1.0, 1.0));
-                br =(s * Range.clip(ly - rx + lx, -1.0, 1.0));
+                br = (s * Range.clip(ly - rx + lx, -1.0, 1.0));
             }
 
             robot.fl.setPower(fl);
             robot.fr.setPower(fr);
             robot.bl.setPower(bl);
             robot.br.setPower(br);
-
-
 
 
             if (gamepad1.dpad_left) {
@@ -173,29 +168,29 @@ public class DriverOpMode extends LinearOpMode {
             } else if (gamepad1.dpad_right) {
                 robot.relicGrabPosition += .01;
                 if (robot.relicGrabPosition > robot.RELIC_GRAB_OPEN) {
-                     robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
+                    robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
                 }
                 sleep(10);
                 robot.relicGrab.setPosition(robot.relicGrabPosition);
             }
 
-            if(gamepad1.dpad_down){
+            if (gamepad1.dpad_down) {
                 robot.relicWrist.setPower(0.5);
-            } else if (gamepad1.dpad_up){
+            } else if (gamepad1.dpad_up) {
                 robot.relicWrist.setPower(-0.5);
             } else {
                 robot.relicWrist.setPower(0.0);
             }
 
-            if(gamepad2.y) {
+            if (gamepad2.y) {
                 robot.relicElbow.setPower(0.5);
-            } else if (gamepad2.a){
+            } else if (gamepad2.a) {
                 robot.relicElbow.setPower(-0.5);
             } else {
                 robot.relicElbow.setPower(robot.RELIC_ELBOW_STOP);
             }
 
-            if(gamepad2.dpad_right) {
+            if (gamepad2.dpad_right) {
                 robot.relicExtend(0.5);
             } else if (gamepad2.dpad_left) {
                 robot.relicExtend(-0.5);
@@ -227,17 +222,18 @@ public class DriverOpMode extends LinearOpMode {
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
             }
 
+            if (autoRelic && gamepad1.b) {
+                autoRelic = false;
+            }
 
+            if (!autoRelic && gamepad1.a) {
 
+                autoRelic = true;
 
+                doAutoRelic();
+                autoRelic = false;
 
-
-
-
-
-
-
-
+            }
 
            /* double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
             Range.clip(sPosition, GLYPH_GRAB_OPEN, GLYPH_GRAB_CLOSE);
@@ -249,6 +245,37 @@ public class DriverOpMode extends LinearOpMode {
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", motorPower, rightPower);
             telemetry.update();
         }
+    }
+
+
+    private void doAutoRelic() {
+        ElapsedTime time = new ElapsedTime();
+
+
+        double powerScale = 2.0;
+        double timeScale = 1.0;
+
+
+        robot.relicExtend(-0.5  * powerScale);
+        sleep((long)((7200 - 5340)/timeScale));
+        robot.relicElbow.setPower(-0.5 * powerScale);
+        sleep((long)(5340/timeScale));
+        robot.relicExtend(0.0);
+        robot.relicElbow.setPower(0.0);
+        robot.relicGrabPosition = .5;
+        robot.relicGrab.setPosition(robot.relicGrabPosition);
+        sleep((long)(100/timeScale));
+        robot.relicElbow.setPower(powerScale * 0.5);
+        robot.relicExtend(powerScale * 0.5);
+        sleep((long)(5340/timeScale));
+        robot.relicElbow.setPower(0.0);
+        sleep((long)((7200 - 5340 - 750)/timeScale ));
+        robot.relicWrist.setPower(-0.5);
+        sleep((long)(250/timeScale));
+        robot.relicWrist.setPower(0.0);
+        sleep((long)(500/timeScale));
+        robot.relicExtend(0.0);
 
     }
+
 }
