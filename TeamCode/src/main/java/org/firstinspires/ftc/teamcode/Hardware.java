@@ -29,6 +29,17 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 @Disabled
 public class Hardware{
     //public OpMode members
+    public enum Servos {
+        RELIC_EXTEND_ARM,
+        //RELIC_EXTEND_ARM2,
+        RELIC_ELBOW,
+        RELIC_WRIST,
+        RELIC_GRAB
+
+
+
+
+    }
     //motors
     DcMotor fr = null;
     DcMotor fl = null;
@@ -65,12 +76,12 @@ public class Hardware{
     double JEWEL_UP_TAD = 0.3;
     double redMin = 0;
     double redMax = 20;
-    double blueMin = 150;
+    double blueMin = 130 ;
     double blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
-    int tapeSensor1Port = 3;
-    int tapeSensor2Port = 4;
+    int tapeSensorLeft = 3;
+    int tapeSensorRight = 4;
     static final int colorSampleMilliseconds = 48;
 
     static final double     ENCODER_CPR             = 1120 ;
@@ -112,7 +123,7 @@ public class Hardware{
         relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
-        int[] ports = {bluePort, redPort, tapeSensor1Port, tapeSensor2Port};
+       int[] ports = {bluePort, redPort};
         colorSensor = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
                 MultiplexColorSensor.GAIN_16X);
         //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
@@ -199,7 +210,12 @@ public void setRunMode(DcMotor.RunMode runMode){
     fl.setMode(runMode);
     fr.setMode(runMode);
 }
-
+public void stopRelic(){
+    relicExtend(0.0);
+    //relicGrab.setPosition(0.5);
+    relicElbow.setPower(0.0);
+    relicWrist.setPower(0.0);
+}
     public void moveThatRobot(double speed, double inches, double timeout){
         moveThatRobot(speed, speed, speed, speed, inches, inches, inches, inches, timeout);
     }
