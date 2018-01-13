@@ -34,6 +34,8 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import java.util.ArrayList;
+
 
 /**
  * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
@@ -55,10 +57,18 @@ public class DriverOpMode extends LinearOpMode {
     // Declare OpMode members.
     Hardware robot = new Hardware(this);
     private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime autoRelicTime = new ElapsedTime();
     boolean autoRelic = false;
+    ArrayList<AutoRelicEvent> autoRelicEvents  = new ArrayList<AutoRelicEvent>();
 
 
     public void runOpMode() {
+        autoRelicEvents.add(new AutoRelicEvent(0.0, 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(7200.0-5340.0, 7200.0, Hardware.Servos.RELIC_ELBOW, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
+        autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_ELBOW, 0.0));
+
+
         telemetry.addData("Status", "Initialized");
         telemetry.update();
         robot.teleInit(hardwareMap);
@@ -207,32 +217,36 @@ public class DriverOpMode extends LinearOpMode {
             robot.lift.setPower(liftPow);
 
             if (gamepad2.left_bumper) {
-                robot.glyphGrabPosition -= .01;
-                if (robot.glyphGrabPosition > robot.GLYPH_GRAB_CLOSE) {
+                robot.glyphGrabPosition -= .05;
+                if (robot.glyphGrabPosition < robot.GLYPH_GRAB_CLOSE) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_CLOSE;
                 }
-                sleep(10);
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
+                sleep(10);
             } else if (gamepad2.right_bumper) {
-                robot.glyphGrabPosition += .01;
-                if (robot.glyphGrabPosition < robot.GLYPH_GRAB_OPEN) {
+                robot.glyphGrabPosition += .05;
+                if (robot.glyphGrabPosition > robot.GLYPH_GRAB_OPEN) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_OPEN;
                 }
-                sleep(10);
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
+                sleep(10);
             }
 
             if (autoRelic && gamepad1.b) {
                 autoRelic = false;
+                robot.stopRelic();
             }
 
             if (!autoRelic && gamepad1.a) {
-
+                autoRelicTime.reset();
+                for (AutoRelicEvent event: autoRelicEvents){
+                    event.done = false;
+                }
                 autoRelic = true;
+            }
 
-                doAutoRelic();
-                autoRelic = false;
-
+            if(autoRelic){
+                doAutoRelicSteps();
             }
 
            /* double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
@@ -241,22 +255,65 @@ public class DriverOpMode extends LinearOpMode {
 
 
             // Show the elapsed game time and wheel power.
-            telemetry.addData("Status", "Run Time: " + runtime.toString());
+            //telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", motorPower, rightPower);
             telemetry.update();
         }
     }
 
+private void doAutoRelicSteps() {
+    double currTime = autoRelicTime.milliseconds();
 
+    for (AutoRelicEvent event: autoRelicEvents){
+        //telemetry.addData("Status", "Current Time: " +currTime);
+        telemetry.update();
+        if((currTime > event.startTime) && (currTime < event.endTime) && (!event.done)){
+            telemetry.addData("Status", "Event Start Time: "+event.startTime);
+            telemetry.addData("Status", "Event End Time: "+event.endTime);
+            telemetry.addData("Status", "Servo: "+event.servo+" Value: "+event.value);
+            switch(event.servo){
+                case RELIC_EXTEND_ARM:
+                    robot.relicExtend(event.value);
+                    break;
+
+                case RELIC_ELBOW:
+                    robot.relicElbow.setPower(event.value);
+                    break;
+
+                case RELIC_GRAB:
+                    robot.relicGrab.setPosition(event.value);
+                    break;
+
+                case RELIC_WRIST:
+                    robot.relicWrist.setPower(event.value);
+                    break;
+            }
+            sleep(5);
+            event.done = true;
+        }
+    }
+}
     private void doAutoRelic() {
+        double powerScale = 2.0;
         ElapsedTime time = new ElapsedTime();
 
 
-        double powerScale = 2.0;
-        double timeScale = 1.0;
+        while (time.seconds() < 5.34) {
+            robot.relicExtend(-0.5 * powerScale);
+        }
+            while (time.seconds() > 5.34){ robot.relicElbow.setPower(-0.5 * powerScale);}
+            while (time.seconds() > 7.2) {robot.relicElbow.setPower(0.5 * powerScale);}
+            while (time.seconds() > 12.54){ robot.relicExtend(0.5 * powerScale);}
+
+        }
 
 
-        robot.relicExtend(-0.5  * powerScale);
+
+
+
+
+
+        /* robot.relicExtend(-0.5  * powerScale);
         sleep((long)((7200 - 5340)/timeScale));
         robot.relicElbow.setPower(-0.5 * powerScale);
         sleep((long)(5340/timeScale));
@@ -275,7 +332,6 @@ public class DriverOpMode extends LinearOpMode {
         robot.relicWrist.setPower(0.0);
         sleep((long)(500/timeScale));
         robot.relicExtend(0.0);
-
+*/
     }
 
-}
