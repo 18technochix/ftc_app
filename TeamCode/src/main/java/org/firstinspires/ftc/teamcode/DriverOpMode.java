@@ -72,7 +72,7 @@ public class DriverOpMode extends LinearOpMode {
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 5340.0, Hardware.Servos.RELIC_ELBOW, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 5340.0, startRetract + 5340.0 + 100.0, Hardware.Servos.RELIC_ELBOW, 0.0));
-        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 750.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 1000.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_WRIST, 0.0));
 
