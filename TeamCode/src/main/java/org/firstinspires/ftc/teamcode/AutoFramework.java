@@ -65,29 +65,36 @@ public class AutoFramework extends LinearOpMode {
 
         switch (autoType) {
             case AutoBlueAudience:
-                //knockDistance =
-                //jewelKnocker(robot.jewelServoBlue, 2, false);
-                //park(35 + knockDistance, 0 , 0);
+                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
+                robot.moveLift(-50);
+                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                glyphPlaceAudience(false, knockDistance);
+                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
                 //centerOnTape(true);
-                testSpin();
                 break;
             case AutoBlueTimer:
-                //knockDistance =
-                //jewelKnocker(robot.jewelServoBlue, 2, false);
-                // park(35 + knockDistance, 0 /*90*/ , 0);
-                centerOnTape(true);
+                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
+                robot.moveLift(-50);
+                knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
+                placeGlyphTimer(false, knockDistance);
+                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
+                //centerOnTape(true);
                 break;
             case AutoRedAudience:
-                //knockDistance =
-                //jewelKnocker(robot.jewelServoRed, 1, true);
-                //  park(35 + knockDistance, 0 , 0);
-                centerOnTape(false);
+                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
+                robot.moveLift(-50);
+                knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
+                glyphPlaceAudience(true, knockDistance);
+                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
+                //centerOnTape(false);
                 break;
             case AutoRedTimer:
-                //knockDistance =
-                //jewelKnocker(robot.jewelServoRed, 1, true);
-                //  park(35 + knockDistance, 0 /*-90*/ , 0);
-                centerOnTape(false);
+                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
+                robot.moveLift(-50);
+                knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
+                placeGlyphTimer(true, knockDistance);
+                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
+                //centerOnTape(false);
                 break;
         }
     }
@@ -179,14 +186,59 @@ public class AutoFramework extends LinearOpMode {
 
 
     public void park(double distance) {
-        robot.moveThatRobot(0.5, distance, 15.0);
-        sleep(50);
         robot.fr.setPower(0.0);
         robot.br.setPower(0.0);
         robot.fl.setPower(0.0);
         robot.bl.setPower(0.0);
 
     }
+
+    public void glyphPlaceAudience(boolean alliance, double distance){
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 36 + distance, 5.0);
+            if(alliance){
+                robot.fr.setPower(-0.5);
+                robot.fl.setPower(0.5);
+                robot.br.setPower(-0.5);
+                robot.bl.setPower(0.5);
+                sleep(1200);
+            } else if(!alliance){
+                robot.fr.setPower(0.5);
+                robot.fl.setPower(-0.5);
+                robot.br.setPower(0.5);
+                robot.bl.setPower(-0.5);
+                sleep(900);
+        }
+        robot.fr.setPower(0.0);
+        robot.fl.setPower(0.0);
+        robot.br.setPower(0.0);
+        robot.bl.setPower(0.0);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 13, 5.0);
+        robot.moveLift(50);
+        robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+    }
+
+    public void placeGlyphTimer(boolean alliance, double distance){
+        robot.moveThatRobot(0.6 * (1.0 + 12.0/70.0), 0.6, 36 + distance, 5.0);
+        if(alliance){
+            robot.fr.setPower(0.5);
+            robot.br.setPower(-0.5);
+            robot.fl.setPower(-0.5);
+            robot.bl.setPower(0.5);
+        } else if(!alliance){
+            robot.fr.setPower(-0.5);
+            robot.br.setPower(0.5);
+            robot.fl.setPower(0.5);
+            robot.bl.setPower(-0.5);
+        }
+        sleep(900);
+        robot.fr.setPower(0.0);
+        robot.fl.setPower(0.0);
+        robot.br.setPower(0.0);
+        robot.bl.setPower(0.0);
+        robot.moveLift(50);
+        robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+    }
+
 
     //two sides of the field: left = the pair of red and blue where the are across from eachother, and the pair where the are next to eachother
     //side by side: true
@@ -241,7 +293,6 @@ public class AutoFramework extends LinearOpMode {
 
     }
 
-    //switch()
 
     // true side = side where the red and blue are next to eachother
     //true alliance = blue
@@ -344,20 +395,7 @@ public class AutoFramework extends LinearOpMode {
         }
     }
 
-    public void testSpin(){
-        //robot.setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //robot.fr.setPower(0.5);
-        //robot.fl.setPower(-0.5);
-        //robot.br.setPower(0.5);
-        //robot.bl.setPower(-0.5);
-        //sleep(900);
-        //robot.fr.setPower(0.0);
-        //robot.fl.setPower(0.0);
-        //robot.br.setPower(0.0);
-        //robot.bl.setPower(0.0);
-        robot.moveThatRobot(0.6 * (1.0 + 12.0/70.0), 0.6, 120, 15);
 
-    }
 
     public void moveRight() {
         robot.fr.setPower(-0.5);
