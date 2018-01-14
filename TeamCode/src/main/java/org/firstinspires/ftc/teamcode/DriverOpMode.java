@@ -59,12 +59,12 @@ public class DriverOpMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private ElapsedTime autoRelicTime = new ElapsedTime();
     boolean autoRelic = false;
-    ArrayList<AutoRelicEvent> autoRelicEvents  = new ArrayList<AutoRelicEvent>();
+    ArrayList<AutoRelicEvent> autoRelicEvents = new ArrayList<AutoRelicEvent>();
 
 
     public void runOpMode() {
         autoRelicEvents.add(new AutoRelicEvent(0.0, 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, -0.5));
-        autoRelicEvents.add(new AutoRelicEvent(7200.0-5340.0, 7200.0, Hardware.Servos.RELIC_ELBOW, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(7200.0 - 5340.0, 7200.0, Hardware.Servos.RELIC_ELBOW, -0.5));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_ELBOW, 0.0));
 
@@ -167,64 +167,19 @@ public class DriverOpMode extends LinearOpMode {
             robot.bl.setPower(bl);
             robot.br.setPower(br);
 
-
-            if (gamepad1.dpad_left) {
-                robot.relicGrabPosition -= .01;
-                if (robot.relicGrabPosition < robot.RELIC_GRAB_CLOSE) {
-                    robot.relicGrabPosition = robot.RELIC_GRAB_CLOSE;
-                }
-                sleep(10);
-                robot.relicGrab.setPosition(robot.relicGrabPosition);
-            } else if (gamepad1.dpad_right) {
-                robot.relicGrabPosition += .01;
-                if (robot.relicGrabPosition > robot.RELIC_GRAB_OPEN) {
-                    robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
-                }
-                sleep(10);
-                robot.relicGrab.setPosition(robot.relicGrabPosition);
-            }
-
-            if (gamepad1.dpad_down) {
-                robot.relicWrist.setPower(0.5);
-            } else if (gamepad1.dpad_up) {
-                robot.relicWrist.setPower(-0.5);
-            } else {
-                robot.relicWrist.setPower(0.0);
-            }
-
-            if (gamepad2.y) {
-                robot.relicElbow.setPower(0.5);
-            } else if (gamepad2.a) {
-                robot.relicElbow.setPower(-0.5);
-            } else {
-                robot.relicElbow.setPower(robot.RELIC_ELBOW_STOP);
-            }
-
-            if (gamepad2.dpad_right) {
-                robot.relicExtend(0.5);
-            } else if (gamepad2.dpad_left) {
-                robot.relicExtend(-0.5);
-            } else {
-                robot.relicExtend(0.0);
-            }
-
-            //double servoGrabStrength = (gamepad2.right_stick_x + 1.0)/2.0;
-            //Range.clip(servoGrabStrength, .2, .8);
-            //robot.glyphGrab.setPosition(servoGrabStrength);
-
             double liftPow = (gamepad2.left_stick_y / 2.0);
             Range.clip(liftPow, -1.0, 1.0);
             robot.lift.setPower(liftPow);
 
             if (gamepad2.left_bumper) {
-                robot.glyphGrabPosition -= .05;
+                robot.glyphGrabPosition -= .09;
                 if (robot.glyphGrabPosition < robot.GLYPH_GRAB_CLOSE) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_CLOSE;
                 }
                 robot.glyphGrab.setPosition(robot.glyphGrabPosition);
                 sleep(10);
             } else if (gamepad2.right_bumper) {
-                robot.glyphGrabPosition += .05;
+                robot.glyphGrabPosition += .09;
                 if (robot.glyphGrabPosition > robot.GLYPH_GRAB_OPEN) {
                     robot.glyphGrabPosition = robot.GLYPH_GRAB_OPEN;
                 }
@@ -232,27 +187,7 @@ public class DriverOpMode extends LinearOpMode {
                 sleep(10);
             }
 
-            if (autoRelic && gamepad1.b) {
-                autoRelic = false;
-                robot.stopRelic();
-            }
-
-            if (!autoRelic && gamepad1.a) {
-                autoRelicTime.reset();
-                for (AutoRelicEvent event: autoRelicEvents){
-                    event.done = false;
-                }
-                autoRelic = true;
-            }
-
-            if(autoRelic){
-                doAutoRelicSteps();
-            }
-
-           /* double sPosition = (gamepad2.right_stick_x + 1.0)/2.0;
-            Range.clip(sPosition, GLYPH_GRAB_OPEN, GLYPH_GRAB_CLOSE);
-            glyphGrab.setPosition(sPosition);*/
-
+            doRelicArm();
 
             // Show the elapsed game time and wheel power.
             //telemetry.addData("Status", "Run Time: " + runtime.toString());
@@ -261,38 +196,114 @@ public class DriverOpMode extends LinearOpMode {
         }
     }
 
-private void doAutoRelicSteps() {
-    double currTime = autoRelicTime.milliseconds();
-
-    for (AutoRelicEvent event: autoRelicEvents){
-        //telemetry.addData("Status", "Current Time: " +currTime);
-        telemetry.update();
-        if((currTime > event.startTime) && (currTime < event.endTime) && (!event.done)){
-            telemetry.addData("Status", "Event Start Time: "+event.startTime);
-            telemetry.addData("Status", "Event End Time: "+event.endTime);
-            telemetry.addData("Status", "Servo: "+event.servo+" Value: "+event.value);
-            switch(event.servo){
-                case RELIC_EXTEND_ARM:
-                    robot.relicExtend(event.value);
-                    break;
-
-                case RELIC_ELBOW:
-                    robot.relicElbow.setPower(event.value);
-                    break;
-
-                case RELIC_GRAB:
-                    robot.relicGrab.setPosition(event.value);
-                    break;
-
-                case RELIC_WRIST:
-                    robot.relicWrist.setPower(event.value);
-                    break;
-            }
-            sleep(5);
-            event.done = true;
+    private void cancelAutoRelic() {
+        if (autoRelic) {
+            autoRelic = false;
+            robot.stopRelic();
         }
     }
-}
+
+    private void doRelicArm() {
+        if (gamepad1.dpad_left) {
+            cancelAutoRelic();
+            robot.relicGrabPosition -= 0.01;
+            if (robot.relicGrabPosition < robot.RELIC_GRAB_CLOSE) {
+                robot.relicGrabPosition = robot.RELIC_GRAB_CLOSE;
+            }
+            sleep(10);
+            robot.relicGrab.setPosition(robot.relicGrabPosition);
+        } else if (gamepad1.dpad_right) {
+            cancelAutoRelic();
+            robot.relicGrabPosition += .01;
+            if (robot.relicGrabPosition > robot.RELIC_GRAB_OPEN) {
+                robot.relicGrabPosition = robot.RELIC_GRAB_OPEN;
+            }
+            sleep(10);
+            robot.relicGrab.setPosition(robot.relicGrabPosition);
+        }
+
+        if (gamepad1.dpad_down) {
+            cancelAutoRelic();
+            robot.relicWrist.setPower(0.5);
+        } else if (gamepad1.dpad_up) {
+            cancelAutoRelic();
+            robot.relicWrist.setPower(-0.5);
+        } else {
+            if (!autoRelic)
+                robot.relicWrist.setPower(0.0);
+        }
+
+        if (gamepad2.y) {
+            cancelAutoRelic();
+            robot.relicElbow.setPower(0.5);
+        } else if (gamepad2.a) {
+            cancelAutoRelic();
+            robot.relicElbow.setPower(-0.5);
+        } else {
+            if (!autoRelic)
+                robot.relicElbow.setPower(robot.RELIC_ELBOW_STOP);
+        }
+
+        if (gamepad2.dpad_right) {
+            cancelAutoRelic();
+            robot.relicExtend(0.5);
+        } else if (gamepad2.dpad_left) {
+            cancelAutoRelic();
+            robot.relicExtend(-0.5);
+        } else {
+            if (!autoRelic)
+                robot.relicExtend(0.0);
+        }
+
+        if (autoRelic && gamepad1.b) {
+            cancelAutoRelic();
+        }
+
+        if (!autoRelic && gamepad1.a) {
+            autoRelicTime.reset();
+            for (AutoRelicEvent event : autoRelicEvents) {
+                event.done = false;
+            }
+            autoRelic = true;
+        }
+
+        if (autoRelic) {
+            doAutoRelicSteps();
+        }
+    }
+
+    private void doAutoRelicSteps() {
+        double currTime = autoRelicTime.milliseconds();
+
+        for (AutoRelicEvent event : autoRelicEvents) {
+            //telemetry.addData("Status", "Current Time: " +currTime);
+            telemetry.update();
+            if ((currTime > event.startTime) && (currTime < event.endTime) && (!event.done)) {
+                telemetry.addData("Status", "Event Start Time: " + event.startTime);
+                telemetry.addData("Status", "Event End Time: " + event.endTime);
+                telemetry.addData("Status", "Servo: " + event.servo + " Value: " + event.value);
+                switch (event.servo) {
+                    case RELIC_EXTEND_ARM:
+                        robot.relicExtend(event.value);
+                        break;
+
+                    case RELIC_ELBOW:
+                        robot.relicElbow.setPower(event.value);
+                        break;
+
+                    case RELIC_GRAB:
+                        robot.relicGrab.setPosition(event.value);
+                        break;
+
+                    case RELIC_WRIST:
+                        robot.relicWrist.setPower(event.value);
+                        break;
+                }
+                event.done = true;
+            }
+        }
+    }
+
     private void doAutoRelic() {
         double powerScale = 2.0;
         ElapsedTime time = new ElapsedTime();
@@ -301,17 +312,15 @@ private void doAutoRelicSteps() {
         while (time.seconds() < 5.34) {
             robot.relicExtend(-0.5 * powerScale);
         }
-            while (time.seconds() > 5.34){ robot.relicElbow.setPower(-0.5 * powerScale);}
-            while (time.seconds() > 7.2) {robot.relicElbow.setPower(0.5 * powerScale);}
-            while (time.seconds() > 12.54){ robot.relicExtend(0.5 * powerScale);}
-
+        while (time.seconds() > 5.34) {
+            robot.relicElbow.setPower(-0.5 * powerScale);
         }
-
-
-
-
-
-
+        while (time.seconds() > 7.2) {
+            robot.relicElbow.setPower(0.5 * powerScale);
+        }
+        while (time.seconds() > 12.54) {
+            robot.relicExtend(0.5 * powerScale);
+        }
 
         /* robot.relicExtend(-0.5  * powerScale);
         sleep((long)((7200 - 5340)/timeScale));
@@ -334,4 +343,6 @@ private void doAutoRelicSteps() {
         robot.relicExtend(0.0);
 */
     }
+
+}
 

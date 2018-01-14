@@ -35,10 +35,6 @@ public class Hardware{
         RELIC_ELBOW,
         RELIC_WRIST,
         RELIC_GRAB
-
-
-
-
     }
     //motors
     DcMotor fr = null;
@@ -62,7 +58,7 @@ public class Hardware{
     //constants
     double GLYPH_GRAB_OPEN = 1.0;
     double GLYPH_GRAB_CLOSE = 0.0;
-    double glyphGrabPosition = GLYPH_GRAB_CLOSE;
+    double glyphGrabPosition = GLYPH_GRAB_OPEN;
 
     double RELIC_GRAB_OPEN = 1.0;
     double RELIC_GRAB_CLOSE = 0.0;
@@ -80,8 +76,8 @@ public class Hardware{
     double blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
-    int tapeSensorLeft = 3;
-    int tapeSensorRight = 4;
+    int tapeSensorLeft = 0;
+    int tapeSensorRight = 3;
     static final int colorSampleMilliseconds = 48;
 
     static final double     ENCODER_CPR             = 1120 ;
