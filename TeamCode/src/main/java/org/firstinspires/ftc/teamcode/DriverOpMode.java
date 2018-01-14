@@ -67,7 +67,14 @@ public class DriverOpMode extends LinearOpMode {
         autoRelicEvents.add(new AutoRelicEvent(7200.0 - 5340.0, 7200.0, Hardware.Servos.RELIC_ELBOW, -0.5));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_ELBOW, 0.0));
-
+        autoRelicEvents.add(new AutoRelicEvent(7300.0, 7400.0, Hardware.Servos.RELIC_GRAB, 0.5));
+        double startRetract = 7400.0;
+        autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.5));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 5340.0, Hardware.Servos.RELIC_ELBOW, 0.5));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 5340.0, startRetract + 5340.0 + 100.0, Hardware.Servos.RELIC_ELBOW, 0.0));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 750.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_WRIST, 0.0));
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -292,6 +299,7 @@ public class DriverOpMode extends LinearOpMode {
                         break;
 
                     case RELIC_GRAB:
+                        robot.relicGrabPosition = event.value;
                         robot.relicGrab.setPosition(event.value);
                         break;
 
@@ -331,6 +339,7 @@ public class DriverOpMode extends LinearOpMode {
         robot.relicGrabPosition = .5;
         robot.relicGrab.setPosition(robot.relicGrabPosition);
         sleep((long)(100/timeScale));
+
         robot.relicElbow.setPower(powerScale * 0.5);
         robot.relicExtend(powerScale * 0.5);
         sleep((long)(5340/timeScale));
