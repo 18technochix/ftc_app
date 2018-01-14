@@ -132,7 +132,7 @@ public class Hardware{
         fr.setDirection(DcMotor.Direction.FORWARD);
 
         glyphGrab.setDirection(Servo.Direction.FORWARD);
-        glyphGrab.scaleRange( 30.0 / 255.0, 220.0 / 255.0 );
+        glyphGrab.scaleRange( 20.0 / 255.0, 220.0 / 255.0 );
         glyphGrab.setPosition(glyphGrabPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
@@ -205,6 +205,7 @@ public void setRunMode(DcMotor.RunMode runMode){
     br.setMode(runMode);
     fl.setMode(runMode);
     fr.setMode(runMode);
+    lift.setMode(runMode);
 }
 public void stopRelic(){
     relicExtend(0.0);
@@ -214,6 +215,14 @@ public void stopRelic(){
 }
     public void moveThatRobot(double speed, double inches, double timeout){
         moveThatRobot(speed, speed, speed, speed, inches, inches, inches, inches, timeout);
+    }
+
+    public void moveThatRobot(double rightSpeed, double leftSpeed, double inches, double timeout){
+        moveThatRobot(rightSpeed, rightSpeed, leftSpeed, leftSpeed, inches, inches, inches, inches, timeout);
+    }
+
+    public void moveThatRobot(double rightSpeed, double leftSpeed, double rightInches, double leftInches, double timeout){
+        moveThatRobot(rightSpeed, rightSpeed, leftSpeed, leftSpeed, rightInches, rightInches, leftInches, leftInches, timeout);
     }
 
     public void moveThatRobotSide(double frspeed, double brspeed, double flspeed, double blspeed, double inches, double timeout){
@@ -276,7 +285,7 @@ public void stopRelic(){
             // keep looping while we are still active, and there is time left, and both motors are running.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeout) &&
-                    (fr.isBusy() || br.isBusy() || fl.isBusy() || bl.isBusy())) {
+                    (fr.isBusy() && br.isBusy() && fl.isBusy() && bl.isBusy())) {
 
                 frCurrent = fr.getCurrentPosition();
                 brCurrent = br.getCurrentPosition();
@@ -373,6 +382,17 @@ public void stopRelic(){
         Orientation angles = imu.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
         double angle = angles.firstAngle;
         return AngleUnit.DEGREES.normalize(AngleUnit.DEGREES.fromUnit(angles.angleUnit, angle));
+    }
+
+    public void moveLift(int encoderCount){
+        lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        lift.setTargetPosition(encoderCount);
+        lift.setPower(0.5);
+        while(lift.isBusy()){
+            opMode.idle();
+        }
+        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     public void relicExtend(double power)
