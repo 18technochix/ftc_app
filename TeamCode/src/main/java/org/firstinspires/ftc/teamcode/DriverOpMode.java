@@ -126,12 +126,6 @@ public class DriverOpMode extends LinearOpMode {
             //lyMod = ly;
             //lxMod = lx;
 
-            //og mecanum code just in case
-            //robot.fl.setPower(s * Range.clip(ly + rx + lx, -1.0, 1.0));
-            //robot.bl.setPower(s * Range.clip(ly + rx - lx, -1.0, 1.0));
-            //robot.fr.setPower(s * Range.clip(ly - rx - lx, -1.0, 1.0));
-            //robot.br.setPower(s * Range.clip(ly - rx + lx, -1.0, 1.0));
-
             double fl = 0;
             double fr = 0;
             double bl = 0;
@@ -195,10 +189,6 @@ public class DriverOpMode extends LinearOpMode {
             }
 
             doRelicArm();
-
-            // Show the elapsed game time and wheel power.
-            //telemetry.addData("Status", "Run Time: " + runtime.toString());
-            //telemetry.addData("Motors", "left (%.2f), right (%.2f)", motorPower, rightPower);
             telemetry.update();
         }
     }
@@ -286,9 +276,6 @@ public class DriverOpMode extends LinearOpMode {
             //telemetry.addData("Status", "Current Time: " +currTime);
             telemetry.update();
             if ((currTime > event.startTime) && (currTime < event.endTime) && (!event.done)) {
-                telemetry.addData("Status", "Event Start Time: " + event.startTime);
-                telemetry.addData("Status", "Event End Time: " + event.endTime);
-                telemetry.addData("Status", "Servo: " + event.servo + " Value: " + event.value);
                 switch (event.servo) {
                     case RELIC_EXTEND_ARM:
                         robot.relicExtend(event.value);
@@ -311,47 +298,5 @@ public class DriverOpMode extends LinearOpMode {
             }
         }
     }
-
-    private void doAutoRelic() {
-        double powerScale = 2.0;
-        ElapsedTime time = new ElapsedTime();
-
-
-        while (time.seconds() < 5.34) {
-            robot.relicExtend(-0.5 * powerScale);
-        }
-        while (time.seconds() > 5.34) {
-            robot.relicElbow.setPower(-0.5 * powerScale);
-        }
-        while (time.seconds() > 7.2) {
-            robot.relicElbow.setPower(0.5 * powerScale);
-        }
-        while (time.seconds() > 12.54) {
-            robot.relicExtend(0.5 * powerScale);
-        }
-
-        /* robot.relicExtend(-0.5  * powerScale);
-        sleep((long)((7200 - 5340)/timeScale));
-        robot.relicElbow.setPower(-0.5 * powerScale);
-        sleep((long)(5340/timeScale));
-        robot.relicExtend(0.0);
-        robot.relicElbow.setPower(0.0);
-        robot.relicGrabPosition = .5;
-        robot.relicGrab.setPosition(robot.relicGrabPosition);
-        sleep((long)(100/timeScale));
-
-        robot.relicElbow.setPower(powerScale * 0.5);
-        robot.relicExtend(powerScale * 0.5);
-        sleep((long)(5340/timeScale));
-        robot.relicElbow.setPower(0.0);
-        sleep((long)((7200 - 5340 - 750)/timeScale ));
-        robot.relicWrist.setPower(-0.5);
-        sleep((long)(250/timeScale));
-        robot.relicWrist.setPower(0.0);
-        sleep((long)(500/timeScale));
-        robot.relicExtend(0.0);
-*/
-    }
-
 }
 

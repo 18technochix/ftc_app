@@ -38,23 +38,12 @@ public class AutoFramework extends LinearOpMode {
     AutoType autoType;
     Hardware robot = new Hardware(this);
 
-
-    //Initialize all of your motors, servos, sensors
-
     private ElapsedTime runtime = new ElapsedTime();
 
-    /* Declare OpMode members. */
-    //private ElapsedTime     runtime = new ElapsedTime();
-
-    //Place constants here e.g. encoder counts!
-
-    //Here's where the magic actually happens lol
     public void runOpMode() {
-        //Here's an example of telemetry, this displays on the phone
         telemetry.addData("Status", "Resetting Encoders");
         telemetry.update();
 
-        //init call from Hardware class
         robot.autoInit(hardwareMap);
 
         robot.fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -66,35 +55,31 @@ public class AutoFramework extends LinearOpMode {
         switch (autoType) {
             case AutoBlueAudience:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-50);
+                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 glyphPlaceAudience(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
-                //centerOnTape(true);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
                 break;
             case AutoBlueTimer:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-50);
+                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 placeGlyphTimer(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
-                //centerOnTape(true);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
                 break;
             case AutoRedAudience:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-50);
+                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 glyphPlaceAudience(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
-                //centerOnTape(false);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
                 break;
             case AutoRedTimer:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-50);
+                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 placeGlyphTimer(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 7.0/12.0), 0.6, -3.0, 5.0);
-                //centerOnTape(false);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70), 0.6, -3.0, 5.0);
                 break;
         }
     }
@@ -185,46 +170,39 @@ public class AutoFramework extends LinearOpMode {
     }
 
 
-    public void park(double distance) {
-        robot.fr.setPower(0.0);
-        robot.br.setPower(0.0);
-        robot.fl.setPower(0.0);
-        robot.bl.setPower(0.0);
-
-    }
-
     public void glyphPlaceAudience(boolean alliance, double distance){
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 36 + distance, 5.0);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 38 + distance, 5.0);
             if(alliance){
                 robot.fr.setPower(-0.5);
                 robot.fl.setPower(0.5);
                 robot.br.setPower(-0.5);
                 robot.bl.setPower(0.5);
-                sleep(1200);
+                sleep(1250);
             } else if(!alliance){
                 robot.fr.setPower(0.5);
                 robot.fl.setPower(-0.5);
                 robot.br.setPower(0.5);
                 robot.bl.setPower(-0.5);
-                sleep(900);
-        }
+                sleep(1250);
+            }
         robot.fr.setPower(0.0);
         robot.fl.setPower(0.0);
         robot.br.setPower(0.0);
         robot.bl.setPower(0.0);
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 13, 5.0);
-        robot.moveLift(50);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 12, 5.0);
+        robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
     }
 
     public void placeGlyphTimer(boolean alliance, double distance){
-        robot.moveThatRobot(0.6 * (1.0 + 12.0/70.0), 0.6, 36 + distance, 5.0);
         if(alliance){
+            robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 36 + distance, 5.0);
             robot.fr.setPower(0.5);
             robot.br.setPower(-0.5);
             robot.fl.setPower(-0.5);
             robot.bl.setPower(0.5);
         } else if(!alliance){
+            robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 33 + distance, 5.0);
             robot.fr.setPower(-0.5);
             robot.br.setPower(0.5);
             robot.fl.setPower(0.5);
@@ -235,7 +213,7 @@ public class AutoFramework extends LinearOpMode {
         robot.fl.setPower(0.0);
         robot.br.setPower(0.0);
         robot.bl.setPower(0.0);
-        robot.moveLift(50);
+        robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
     }
 
@@ -285,14 +263,6 @@ public class AutoFramework extends LinearOpMode {
                 }
             }
         }
-*/
-    public void placeGlyph() {
-        //lower lift
-        robot.glyphGrab.setPosition(robot.RELIC_GRAB_OPEN);
-
-
-    }
-
 
     // true side = side where the red and blue are next to eachother
     //true alliance = blue
@@ -340,14 +310,14 @@ public class AutoFramework extends LinearOpMode {
                     telemetry.addData("LeftColor", colorOfLeft);
                     telemetry.addData("RightColor",colorOfRight);
                     telemetry.update();
-                    moveLeft();
+                    //moveLeft();
                 }
             } else if (RightreadingBlue == true && LeftreadingBlue == true) {
                 while (RightreadingBlue == true && LeftreadingBlue == true) {
                     telemetry.addData("LeftColor", colorOfLeft);
                     telemetry.addData("RightColor",colorOfRight);
                     telemetry.update();
-                    moveRight();
+                    //moveRight();
 
                 }
             } else if (LeftreadingBlue == false && RightreadingBlue == false) ;
@@ -368,14 +338,14 @@ public class AutoFramework extends LinearOpMode {
                     telemetry.addData("LeftColor", colorOfLeft);
                     telemetry.addData("RightColor",colorOfRight);
                     telemetry.update();
-                    moveLeft();
+                    //moveLeft();
                 }
             } else if (RightreadingRed == true && LeftreadingRed == true) {
                 while (RightreadingRed == true && LeftreadingRed == true) {
                     telemetry.addData("LeftColor", colorOfLeft);
                     telemetry.addData("RightColor",colorOfRight);
                     telemetry.update();
-                    moveRight();
+                    //moveRight();
                 }
             } else if (LeftreadingRed == false && RightreadingRed == false) ;
             {
@@ -394,24 +364,8 @@ public class AutoFramework extends LinearOpMode {
 
         }
     }
+    */
 
-
-
-    public void moveRight() {
-        robot.fr.setPower(-0.5);
-        robot.br.setPower(0.5);
-        robot.fl.setPower(0.5);
-        robot.bl.setPower(-0.5);
-
-    }
-
-    public void moveLeft() {
-
-        robot.fl.setPower(-0.5);
-        robot.bl.setPower(0.5);
-        robot.fr.setPower(0.5);
-        robot.br.setPower(-0.5);
-}
 }
 
 

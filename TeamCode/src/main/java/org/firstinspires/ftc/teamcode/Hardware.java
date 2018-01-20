@@ -209,7 +209,6 @@ public void setRunMode(DcMotor.RunMode runMode){
 }
 public void stopRelic(){
     relicExtend(0.0);
-    //relicGrab.setPosition(0.5);
     relicElbow.setPower(0.0);
     relicWrist.setPower(0.0);
 }
@@ -386,13 +385,18 @@ public void stopRelic(){
 
     public void moveLift(int encoderCount){
         lift.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        if (encoderCount > 0)
+            encoderCount -= 200;
         lift.setTargetPosition(encoderCount);
+        lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         lift.setPower(0.5);
         while(lift.isBusy()){
             opMode.idle();
         }
-        lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        if(encoderCount > 0){
+            lift.setPower(0.0);
+            lift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
     }
 
     public void relicExtend(double power)
