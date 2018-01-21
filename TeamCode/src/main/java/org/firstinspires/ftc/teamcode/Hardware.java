@@ -49,7 +49,7 @@ public class Hardware{
     CRServo relicExtendArm1 = null;
     CRServo relicExtendArm2 = null;
     CRServo relicElbow = null;
-    CRServo relicWrist = null;
+    Servo relicWrist = null;
     Servo relicGrab = null;
     //sensors
     BNO055IMU imu;
@@ -60,10 +60,14 @@ public class Hardware{
     double GLYPH_GRAB_CLOSE = 0.0;
     double glyphGrabPosition = GLYPH_GRAB_OPEN;
 
+    double RELIC_WRIST_UP = 1.0;
+    double RELIC_WRIST_MID = 0.5;
+    double RELIC_WRIST_DOWN = 0.0;
+    double relicWristPosition = RELIC_WRIST_MID;
+
     double RELIC_GRAB_OPEN = 1.0;
     double RELIC_GRAB_CLOSE = 0.0;
     double relicGrabPosition = RELIC_GRAB_CLOSE;
-    //double relicGrabAuto = 0.0;
 
     double RELIC_ELBOW_STOP = 0.0 - 2.0/255.;
 
@@ -115,7 +119,7 @@ public class Hardware{
         relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
         relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
         relicElbow =hwMap.get(CRServo.class, "relicElbow");
-        relicWrist=hwMap.get(CRServo.class, "relicWrist");
+        relicWrist = hwMap.get(Servo.class, "relicWrist");
         relicGrab =hwMap.get(Servo.class, "relicGrab");
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
@@ -144,7 +148,10 @@ public class Hardware{
 
         relicExtend(0.0);
         relicElbow.setPower(RELIC_ELBOW_STOP);
-        relicWrist.setPower(0.0);
+
+        relicWrist.setDirection(Servo.Direction.FORWARD);
+        relicWrist.scaleRange( 0.0 / 255.0, 250.0 / 255.0 );
+        relicWrist.setPosition(RELIC_WRIST_MID);
 
         relicGrab.setDirection(Servo.Direction.REVERSE);
         relicGrab.scaleRange( 160.0 / 255.0, 230.0 / 255.0 );
@@ -210,7 +217,6 @@ public void setRunMode(DcMotor.RunMode runMode){
 public void stopRelic(){
     relicExtend(0.0);
     relicElbow.setPower(0.0);
-    relicWrist.setPower(0.0);
 }
     public void moveThatRobot(double speed, double inches, double timeout){
         moveThatRobot(speed, speed, speed, speed, inches, inches, inches, inches, timeout);

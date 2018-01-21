@@ -72,9 +72,9 @@ public class DriverOpMode extends LinearOpMode {
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 5340.0, Hardware.Servos.RELIC_ELBOW, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 5340.0, startRetract + 5340.0 + 100.0, Hardware.Servos.RELIC_ELBOW, 0.0));
-        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 1000.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
+//        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 1000.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
-        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_WRIST, 0.0));
+//        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_WRIST, 0.0));
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
@@ -221,13 +221,20 @@ public class DriverOpMode extends LinearOpMode {
 
         if (gamepad1.dpad_down) {
             cancelAutoRelic();
-            robot.relicWrist.setPower(0.5);
+            robot.relicWristPosition -= 0.01;
+            if (robot.relicWristPosition < robot.RELIC_WRIST_DOWN) {
+                robot.relicWristPosition = robot.RELIC_WRIST_DOWN;
+            }
+            sleep(10);
+            robot.relicWrist.setPosition(robot.relicWristPosition);
         } else if (gamepad1.dpad_up) {
             cancelAutoRelic();
-            robot.relicWrist.setPower(-0.5);
-        } else {
-            if (!autoRelic)
-                robot.relicWrist.setPower(0.0);
+            robot.relicWristPosition += .01;
+            if (robot.relicWristPosition > robot.RELIC_WRIST_UP) {
+                robot.relicWristPosition = robot.RELIC_WRIST_UP;
+            }
+            sleep(10);
+            robot.relicWrist.setPosition(robot.relicWristPosition);
         }
 
         if (gamepad2.y) {
@@ -291,7 +298,7 @@ public class DriverOpMode extends LinearOpMode {
                         break;
 
                     case RELIC_WRIST:
-                        robot.relicWrist.setPower(event.value);
+                        robot.relicWrist.setPosition(event.value);
                         break;
                 }
                 event.done = true;

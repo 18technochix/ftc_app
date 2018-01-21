@@ -14,7 +14,7 @@
         <ContinuousRotationServo name="relicExtendArm2" port="5" />
         <ContinuousRotationServo name="relicElbow" port="4" />
         <Servo name="relicGrab" port="3" />
-        <ContinuousRotationServo name="relicWrist" port="2" />
+        <Servo name="relicWrist" port="2" />
     </ServoController>
     <MotorController name="Lift Motor Controller" serialNumber="AL00YCWT">
         <NeveRest40Gearmotor name="lift" port="1" />
