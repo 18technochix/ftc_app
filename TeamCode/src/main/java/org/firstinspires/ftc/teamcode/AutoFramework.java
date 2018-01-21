@@ -58,28 +58,28 @@ public class AutoFramework extends LinearOpMode {
                 robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 glyphPlaceAudience(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
                 break;
             case AutoBlueTimer:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
                 robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 placeGlyphTimer(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
                 break;
             case AutoRedAudience:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
                 robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 glyphPlaceAudience(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -3.0, 5.0);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
                 break;
             case AutoRedTimer:
                 robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
                 robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 placeGlyphTimer(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70), 0.6, -3.0, 5.0);
+                robot.moveThatRobot(0.6 * (1.0 + 12.5/70), 0.6, -5.0, 5.0);
                 break;
         }
     }
@@ -189,9 +189,10 @@ public class AutoFramework extends LinearOpMode {
         robot.fl.setPower(0.0);
         robot.br.setPower(0.0);
         robot.bl.setPower(0.0);
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 12, 5.0);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 10, 5.0);
         robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 2, 5.0);
     }
 
     public void placeGlyphTimer(boolean alliance, double distance){
@@ -208,13 +209,14 @@ public class AutoFramework extends LinearOpMode {
             robot.fl.setPower(0.5);
             robot.bl.setPower(-0.5);
         }
-        sleep(900);
+        sleep(1000);
         robot.fr.setPower(0.0);
         robot.fl.setPower(0.0);
         robot.br.setPower(0.0);
         robot.bl.setPower(0.0);
         robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 3, 5.0);
     }
 
 
