@@ -53,9 +53,10 @@ public class Hardware{
     Servo relicGrab = null;
     Servo glyphPush = null;
     //sensors
-    BNO055IMU imu;
-    VuforiaLocalizer picReader = null;
+    BNO055IMU imu = null;
     MultiplexColorSensor colorSensor = null;
+    VuforiaLocalizer picReader = null;
+    VuforiaTrackable relicTemplate = null;
     //constants
     double GLYPH_GRAB_OPEN = 1.0;
     double GLYPH_GRAB_CLOSE = 0.0;
@@ -130,12 +131,9 @@ public class Hardware{
 
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
-        int[] ports = {bluePort, redPort};
+        int[] ports = {bluePort, redPort, tapeSensorLeft, tapeSensorRight};
         colorSensor = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
                 MultiplexColorSensor.GAIN_16X);
-        //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
-        //tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
-        //  picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -168,6 +166,8 @@ public class Hardware{
         relicGrab.scaleRange( 160.0 / 255.0, 230.0 / 255.0 );
         relicGrab.setPosition(relicGrabPosition);
 
+        lift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
         setRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
 
@@ -183,17 +183,6 @@ public class Hardware{
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu.initialize(parameters);
 
-      /*  int cameraMonitorViewId = hwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hwMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
-        params.vuforiaLicenseKey = "ARYJT0b/////AAAAGYhN7cav+UUXqkMo7uS9Mswt0KxiQ3Sp/OVgoLfwHMP74uJpsnWLAXQLoXs0AIcpgC2IiJIov+JwDwrMwujShtlUastkjxWBAXLvJ6drxd811wEZGqBtBeOC6ObFPqG+W41u3D0fWJjsU4qG3S6NdgIAv6Q4T1OGH6Q6jOpatGlpEyhclM0Rk+vs77zaVzgBgZmcCa+tTqOpu0hhxqyxMvPv3Ehn0sgbF1KTfba/QQfxEjpsqJRyA5r7HfNNfg/31xdLLtzQXy28id0EXqPkB2iZ39fxsX0XcbKRWd7pq5uXqfvwJm4EvsKFLOz0eJhJBW+2vlCy5jrdehA7wH+pOnQTx3SQmbyqlr8KehWPWL1X";
-        params.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
-        this.picReader = ClassFactory.createVuforiaLocalizer(params);
-        VuforiaTrackables relicTrackables = this.picReader.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-        relicTrackables.activate();
-
-*/
 
         Orientation angles;
 
@@ -202,6 +191,18 @@ public class Hardware{
     public void autoInit(HardwareMap someHwMap){
 
         init(someHwMap);
+        telemetry.addData("Vuforia", "Begining Vuforia Init");
+        telemetry.update();
+        VuforiaLocalizer.Parameters params = new VuforiaLocalizer.Parameters();
+        params.vuforiaLicenseKey = "ARYJT0b/////AAAAGYhN7cav+UUXqkMo7uS9Mswt0KxiQ3Sp/OVgoLfwHMP74uJpsnWLAXQLoXs0AIcpgC2IiJIov+JwDwrMwujShtlUastkjxWBAXLvJ6drxd811wEZGqBtBeOC6ObFPqG+W41u3D0fWJjsU4qG3S6NdgIAv6Q4T1OGH6Q6jOpatGlpEyhclM0Rk+vs77zaVzgBgZmcCa+tTqOpu0hhxqyxMvPv3Ehn0sgbF1KTfba/QQfxEjpsqJRyA5r7HfNNfg/31xdLLtzQXy28id0EXqPkB2iZ39fxsX0XcbKRWd7pq5uXqfvwJm4EvsKFLOz0eJhJBW+2vlCy5jrdehA7wH+pOnQTx3SQmbyqlr8KehWPWL1X";
+        params.cameraDirection = VuforiaLocalizer.CameraDirection.FRONT;
+        picReader = ClassFactory.createVuforiaLocalizer(params);
+        VuforiaTrackables relicTrackables = picReader.loadTrackablesFromAsset("RelicVuMark");
+        relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate");
+        relicTrackables.activate();
+        telemetry.addData("Vuforia", "Ending Vuforia Init");
+        telemetry.update();
         setRunMode(DcMotor.RunMode.RUN_TO_POSITION);
     }
 
@@ -267,6 +268,9 @@ public void stopRelic(){
         double flSlowdown;
         double blSlowdown;
 
+        frontRightSpeed = frontRightSpeed * (1.0 + 12.5/70.0);
+        backRightSpeed = backRightSpeed * (1.0 + 12.5/70.0);
+
         //are we still running? good. if so:
         if (opModeIsActive()) {
             fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -308,10 +312,6 @@ public void stopRelic(){
                 flCurrent = fl.getCurrentPosition();
                 blCurrent = bl.getCurrentPosition();
 
-                // Display it for the driver.
-                //telemetry.addData(tag + ": Path1", "Running to %7d :%7d", newFrontRightTarget, newBackRightTarget, newFrontLeftTarget, newBackLeftTarget);
-                //telemetry.addData(tag + ": Path2", "Running at %7d :%7d", frCurrent, brCurrent, flCurrent, blCurrent);
-                //telemetry.update();
 
                 frComplete = (double) frCurrent / (double) newFrontRightTarget;
                 brComplete = (double) brCurrent / (double) newBackRightTarget;
@@ -369,27 +369,65 @@ public void stopRelic(){
 
         }
 
-    public void spinRobot(double degrees, double power){
+    public void spinTurn(double degrees, double power){
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double heading = getHeading();
+        telemetry.addData("cool", "Original Heading " + heading);
+        telemetry.update();
+        if(degrees <= 0) {
+            fr.setPower(-power);
+            br.setPower(-power);
+            fl.setPower(power);
+            bl.setPower(power);
+            while(getHeading() - heading > degrees) {
+                telemetry.addData("fun", "Get Heading: " + getHeading());
+                telemetry.update();
+                opMode.sleep(50);
+            }
+            setAllPowers(0);
+        }
         if(degrees >= 0){
-            while(getHeading() > degrees){
-                fr.setPower(power);
-                br.setPower(power);
-                fl.setPower(-power);
-                bl.setPower(-power);
+            fr.setPower(power);
+            br.setPower(power);
+            fl.setPower(-power);
+            bl.setPower(-power);
+            while(getHeading() - heading < degrees){
+                opMode.sleep(50);
             }
+            setAllPowers(0.0);
         }
-        if(degrees < 0){
-            while(getHeading() < degrees){
-                fr.setPower(-power);
-                br.setPower(-power);
-                fl.setPower(power);
-                bl.setPower(power);
+    }
+
+    public void swingTurn(double degrees, double power){
+        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        double heading = getHeading();
+        if(degrees <= 0) {
+            fr.setPower(0.0);
+            br.setPower(0.0);
+            fl.setPower(power);
+            bl.setPower(power);
+            while(getHeading() - heading > degrees) {
+                opMode.sleep(50);
             }
+            setAllPowers(0);
         }
-        fr.setPower(0.0);
-        br.setPower(0.0);
-        fl.setPower(0.0);
-        bl.setPower(0.0);
+        if(degrees > 0){
+            fr.setPower(power);
+            br.setPower(power);
+            fl.setPower(0.0);
+            bl.setPower(0.0);
+            while(getHeading() - heading < degrees){
+                opMode.sleep(50);
+            }
+            setAllPowers(0.0);
+        }
+    }
+
+    public void setAllPowers(double power){
+        fr.setPower(power * (1.0 +12.5/70.0));
+        br.setPower(power * (1.0 +12.5/70.0));
+        fl.setPower(power);
+        bl.setPower(power);
     }
 
     private boolean opModeIsActive(){return opMode.opModeIsActive();}

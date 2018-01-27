@@ -17,15 +17,7 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.RelicRecoveryVuMark;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
 import java.lang.reflect.Array;
@@ -52,62 +44,44 @@ public class AutoFramework extends LinearOpMode {
 
         double knockDistance = 0.;
 
+        RelicRecoveryVuMark side = cryptographReader();
+
+        robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
+        robot.moveLift(-1000);
+
         switch (autoType) {
             case AutoBlueAudience:
-                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-1000);
+                double heading = robot.getHeading();
+                telemetry.addData("cool", "End Heading " + heading);
+                telemetry.update();
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 glyphPlaceAudience(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
+                robot.moveThatRobot(0.6, 0.6, -5.0, 5.0);
                 break;
             case AutoBlueTimer:
-                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoBlue, 2, false);
                 placeGlyphTimer(false, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
+                robot.moveThatRobot(0.6, 0.6, -5.0, 5.0);
                 break;
             case AutoRedAudience:
-                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 glyphPlaceAudience(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, -5.0, 5.0);
+                robot.moveThatRobot(0.6, 0.6, -5.0, 5.0);
                 break;
             case AutoRedTimer:
-                robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
-                robot.moveLift(-1000);
                 knockDistance = jewelKnocker(robot.jewelServoRed, 1, true);
                 placeGlyphTimer(true, knockDistance);
-                robot.moveThatRobot(0.6 * (1.0 + 12.5/70), 0.6, -5.0, 5.0);
+                robot.moveThatRobot(0.6, 0.6, -5.0, 5.0);
                 break;
         }
     }
 
 
-    public RelicRecoveryVuMark crytographReader() {
-        VuforiaTrackables relicTrackables = robot.picReader.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate");
-        relicTrackables.activate();
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(relicTemplate);
-        if (vuMark != RelicRecoveryVuMark.UNKNOWN) {
-            OpenGLMatrix pose = ((VuforiaTrackableDefaultListener) relicTemplate.getListener()).getPose();
-            if (pose != null) {
-                VectorF trans = pose.getTranslation();
-                Orientation rot = Orientation.getOrientation(pose, AxesReference.EXTRINSIC, AxesOrder.XYZ, AngleUnit.DEGREES);
-                double tX = trans.get(0);
-                double tY = trans.get(1);
-                double tZ = trans.get(2);
-                double rX = rot.firstAngle;
-                double rY = rot.secondAngle;
-                double rZ = rot.thirdAngle;
-            }
-        }
-        RelicRecoveryVuMark side = vuMark;
-        telemetry.addData("VuMark", "%s visible", side);
+    public RelicRecoveryVuMark cryptographReader() {
+        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(robot.relicTemplate);
+        telemetry.addData("VuMark", "%s visible", vuMark);
         telemetry.update();
-        return side;
+        return vuMark;
     }
 
 
@@ -117,7 +91,7 @@ public class AutoFramework extends LinearOpMode {
         double position = 0.25;
         for (int i = 0; i < 6; i++) {
             allianceServo.setPosition(position);
-            sleep(50);
+            sleep(100);
             double hue = robot.colorSensor.getHue(port);
             telemetry.addData("Status", "Hue: " + hue);
             telemetry.update();
@@ -171,7 +145,7 @@ public class AutoFramework extends LinearOpMode {
 
 
     public void glyphPlaceAudience(boolean alliance, double distance){
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 38 + distance, 5.0);
+        robot.moveThatRobot(0.6, 0.6, 38 + distance, 5.0);
             if(alliance){
                 robot.fr.setPower(-0.5);
                 robot.fl.setPower(0.5);
@@ -189,21 +163,21 @@ public class AutoFramework extends LinearOpMode {
         robot.fl.setPower(0.0);
         robot.br.setPower(0.0);
         robot.bl.setPower(0.0);
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 10, 5.0);
+        robot.moveThatRobot(0.6, 0.6, 10, 5.0);
         robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 2, 5.0);
+        robot.moveThatRobot(0.6, 0.6, 2, 5.0);
     }
 
     public void placeGlyphTimer(boolean alliance, double distance){
         if(alliance){
-            robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 36 + distance, 5.0);
+            robot.moveThatRobot(0.6, 0.6, 36 + distance, 5.0);
             robot.fr.setPower(0.5);
             robot.br.setPower(-0.5);
             robot.fl.setPower(-0.5);
             robot.bl.setPower(0.5);
         } else if(!alliance){
-            robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 33 + distance, 5.0);
+            robot.moveThatRobot(0.6, 0.6, 33 + distance, 5.0);
             robot.fr.setPower(-0.5);
             robot.br.setPower(0.5);
             robot.fl.setPower(0.5);
@@ -216,26 +190,26 @@ public class AutoFramework extends LinearOpMode {
         robot.bl.setPower(0.0);
         robot.moveLift(1000);
         robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
-        robot.moveThatRobot(0.6 * (1.0 + 12.5/70.0), 0.6, 3, 5.0);
+        robot.moveThatRobot(0.6, 0.6, 3, 5.0);
     }
 
 
     //two sides of the field: left = the pair of red and blue where the are across from eachother, and the pair where the are next to eachother
-    //side by side: true
-    //next to eachother: false
+    //side by side: true timer
+    //next to eachother: false audience
        /* public void findTape(boolean side, boolean alliance, RelicRecoveryVuMark direction) {
-            double hue1 = robot.colorSensor.getHue(robot.tapeSensor1Port);
-            double hue2 = robot.colorSensor.getHue(robot.tapeSensor2Port);
+            double hueLeft = robot.colorSensor.getHue(robot.tapeSensorLeft);
+            double hueRight = robot.colorSensor.getHue(robot.tapeSensorRight);
             boolean isColor = false;
             if (side) {
                 while (!isColor) {
-                    if ((hue2 >= robot.blueMin && hue2 <= robot.blueMin) && (hue2 >= robot.redMin && hue2 <= robot.redMin)) {
+                    if ((hueRight >= robot.blueMin && hueRight <= robot.blueMin) || (hueRight >= robot.redMin && hueRight <= robot.redMin)) {
                         isColor = true;
                     }
-                    robot.fr.setPower(0.1);
-                    robot.br.setPower(0.1);
-                    robot.bl.setPower(0.1);
-                    robot.fl.setPower(0.1);
+                    robot.fr.setPower(0.2 * (1.0 + 12.5/70.0));
+                    robot.br.setPower(0.2 * (1.0 + 12.5/70.0));
+                    robot.bl.setPower(0.2);
+                    robot.fl.setPower(0.2);
                 }
                 if (alliance) {
                     while(!(hue1 >= robot.redMin && hue1 <= robot.redMin)){
@@ -367,8 +341,44 @@ public class AutoFramework extends LinearOpMode {
         }
     }
     */
+    public void findTapeAudience(boolean alliance, int hitFirst){
+        boolean isColor = false;
+        robot.moveThatRobot(0.2, 5.0, 7.0);
+        if(alliance){
+            robot.fr.setPower(-0.5);
+            robot.fl.setPower(0.5);
+            robot.br.setPower(-0.5);
+            robot.bl.setPower(0.5);
+            sleep(1250);
+            robot.setAllPowers(0.0);
+            sleep(50);
+            while(!isColor){
+                double hue1 = robot.colorSensor.getHue(hitFirst);
+                if(hue1 >= robot.redMin && hue1 <= robot.redMax){
+                    isColor = true;
+                }
+                robot.fr.setPower(0.2);
+                robot.br.setPower(-0.2);
+                robot.fl.setPower(-0.2);
+                robot.bl.setPower(0.2);
+            }
+        } if (!alliance){
+            robot.fr.setPower(0.5);
+            robot.fl.setPower(-0.5);
+            robot.br.setPower(0.5);
+            robot.bl.setPower(-0.5);
+            sleep(1250);
+            robot.setAllPowers(0.0);
+            sleep(50);
+            robot.fr.setPower(-0.5);
+            robot.br.setPower(0.5);
+            robot.fl.setPower(0.5);
+            robot.bl.setPower(-0.5);
+        }
+
+
+    }
 
 }
-
 
 
