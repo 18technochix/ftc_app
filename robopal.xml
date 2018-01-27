@@ -23,6 +23,7 @@
         <Servo name="jewelServoBlue" port="5" />
         <Servo name="jewelServoRed" port="6" />
         <Servo name="glyphGrab" port="4" />
+        <Servo name="glyphPush" port="3" />
     </ServoController>
     <MotorController name="Right Motor Controller" serialNumber="AL00VE17">
         <NeveRest40Gearmotor name="br" port="1" />

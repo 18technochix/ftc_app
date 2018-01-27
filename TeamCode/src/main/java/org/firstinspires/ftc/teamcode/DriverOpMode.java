@@ -188,6 +188,22 @@ public class DriverOpMode extends LinearOpMode {
                 sleep(10);
             }
 
+            if (gamepad2.left_trigger > 0.3) {
+                robot.glyphPushPosition -= .09;
+                if (robot.glyphPushPosition < robot.GLYPH_PUSH_IN) {
+                    robot.glyphPushPosition = robot.GLYPH_PUSH_IN;
+                }
+                robot.glyphPush.setPosition(robot.glyphPushPosition);
+                sleep(10);
+            } else if (gamepad2.right_trigger > 0.3) {
+                robot.glyphPushPosition += .09;
+                if (robot.glyphPushPosition > robot.GLYPH_PUSH_OUT) {
+                    robot.glyphPushPosition = robot.GLYPH_PUSH_OUT;
+                }
+                robot.glyphPush.setPosition(robot.glyphPushPosition);
+                sleep(10);
+            }
+
             doRelicArm();
             telemetry.update();
         }

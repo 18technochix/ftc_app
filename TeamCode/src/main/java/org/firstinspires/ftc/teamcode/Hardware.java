@@ -51,6 +51,7 @@ public class Hardware{
     CRServo relicElbow = null;
     Servo relicWrist = null;
     Servo relicGrab = null;
+    Servo glyphPush = null;
     //sensors
     BNO055IMU imu;
     VuforiaLocalizer picReader = null;
@@ -59,6 +60,10 @@ public class Hardware{
     double GLYPH_GRAB_OPEN = 1.0;
     double GLYPH_GRAB_CLOSE = 0.0;
     double glyphGrabPosition = GLYPH_GRAB_OPEN;
+
+    double GLYPH_PUSH_OUT = 1.0;
+    double GLYPH_PUSH_IN = 0.0;
+    double glyphPushPosition = GLYPH_PUSH_IN;
 
     double RELIC_WRIST_UP = 1.0;
     double RELIC_WRIST_MID = 0.5;
@@ -114,21 +119,23 @@ public class Hardware{
         lift = hwMap.get(DcMotor.class, "lift");
         //servos
         glyphGrab = hwMap.get(Servo.class, "glyphGrab");
+        glyphPush = hwMap.get(Servo.class, "glyphPush");
         jewelServoBlue = hwMap.get(Servo.class, "jewelServoBlue");
         jewelServoRed = hwMap.get(Servo.class, "jewelServoRed");
         relicExtendArm1 =hwMap.get(CRServo.class, "relicExtendArm1");
         relicExtendArm2 =hwMap.get(CRServo.class, "relicExtendArm2");
         relicElbow =hwMap.get(CRServo.class, "relicElbow");
         relicWrist = hwMap.get(Servo.class, "relicWrist");
-        relicGrab =hwMap.get(Servo.class, "relicGrab");
+        relicGrab = hwMap.get(Servo.class, "relicGrab");
+
         //sensors
         imu = hwMap.get(BNO055IMU.class, "imu");
-       int[] ports = {bluePort, redPort};
+        int[] ports = {bluePort, redPort};
         colorSensor = new MultiplexColorSensor(someHwMap, "mux", "color sensor", ports, colorSampleMilliseconds,
                 MultiplexColorSensor.GAIN_16X);
         //tapeSensor1 = hwMap.colorSensor.get("tapeSensor1");
         //tapeSensor2 = hwMap.colorSensor.get("tapeSensor2");
-      //  picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
+        //  picReader = hwMap.get(VuforiaLocalizer.class, "picReader");
 
         bl.setDirection(DcMotor.Direction.REVERSE);
         br.setDirection(DcMotor.Direction.FORWARD);
@@ -138,6 +145,10 @@ public class Hardware{
         glyphGrab.setDirection(Servo.Direction.FORWARD);
         glyphGrab.scaleRange( 20.0 / 255.0, 220.0 / 255.0 );
         glyphGrab.setPosition(glyphGrabPosition);
+
+        glyphPush.setDirection(Servo.Direction.FORWARD);
+        glyphPush.scaleRange( 110.0 / 255.0, 140.0 / 255.0 );
+        glyphPush.setPosition(glyphPushPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
         jewelServoBlue.scaleRange( 67.0 / 255.0, 252.0 / 255.0 );
@@ -150,7 +161,7 @@ public class Hardware{
         relicElbow.setPower(RELIC_ELBOW_STOP);
 
         relicWrist.setDirection(Servo.Direction.FORWARD);
-        relicWrist.scaleRange( 0.0 / 255.0, 250.0 / 255.0 );
+        relicWrist.scaleRange( 20.0 / 255.0, 200.0 / 255.0 );
         relicWrist.setPosition(RELIC_WRIST_MID);
 
         relicGrab.setDirection(Servo.Direction.REVERSE);
