@@ -82,13 +82,14 @@ public class Hardware{
     double JEWEL_UP_TAD = 0.3;
     double redMin = 0;
     double redMax = 20;
-    double blueMin = 130 ;
+    double blueMin = 125 ;
     double blueMax = 360;
     int bluePort = 2;
     int redPort = 1;
-    int tapeSensorLeft = 0;
-    int tapeSensorRight = 3;
+    int tapeSensorLeft = 3;
+    int tapeSensorRight = 0;
     static final int colorSampleMilliseconds = 48;
+    final double rightAdjustment = 12.5/70.0;
 
     static final double     ENCODER_CPR             = 1120 ;
     static final double     DRIVE_GEAR_REDUCTION    = 1.0 ;
@@ -152,7 +153,7 @@ public class Hardware{
         jewelServoBlue.scaleRange( 67.0 / 255.0, 252.0 / 255.0 );
         jewelServoBlue.setPosition(JEWEL_UP);
 
-        jewelServoRed.scaleRange( 49.0 / 255.0, 239.0 / 255.0 );
+        jewelServoRed.scaleRange( 58.0 / 255.0, 239.0 / 255.0 );
         jewelServoRed.setPosition(JEWEL_UP);
 
         relicExtend(0.0);
