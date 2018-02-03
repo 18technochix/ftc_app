@@ -65,16 +65,16 @@ public class DriverOpMode extends LinearOpMode {
     public void runOpMode() {
         autoRelicEvents.add(new AutoRelicEvent(0.0, 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, -0.5));
         autoRelicEvents.add(new AutoRelicEvent(7200.0 - 5340.0, 7200.0, Hardware.Servos.RELIC_ELBOW, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(7200.0 - 5340.0, 7200.0, Hardware.Servos.RELIC_WRIST, robot.RELIC_WRIST_DOWN));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
         autoRelicEvents.add(new AutoRelicEvent(7200.0, 7300.0, Hardware.Servos.RELIC_ELBOW, 0.0));
-        autoRelicEvents.add(new AutoRelicEvent(7300.0, 7400.0, Hardware.Servos.RELIC_GRAB, 0.5));
+        autoRelicEvents.add(new AutoRelicEvent(7300.0, 7400.0, Hardware.Servos.RELIC_GRAB, robot.RELIC_GRAB_OPEN));
         double startRetract = 7400.0;
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 7200.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract, startRetract + 5340.0, Hardware.Servos.RELIC_ELBOW, 0.5));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 5340.0, startRetract + 5340.0 + 100.0, Hardware.Servos.RELIC_ELBOW, 0.0));
-//        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 1000.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, -0.5));
+        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0 - 2000.0, startRetract + 7200.0, Hardware.Servos.RELIC_WRIST, robot.RELIC_WRIST_MID));
         autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_EXTEND_ARM, 0.0));
-//        autoRelicEvents.add(new AutoRelicEvent(startRetract + 7200.0, startRetract + 7200.0 + 100.0, Hardware.Servos.RELIC_WRIST, 0.0));
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
