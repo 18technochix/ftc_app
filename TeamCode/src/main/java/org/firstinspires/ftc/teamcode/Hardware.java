@@ -226,6 +226,13 @@ public void setRunMode(DcMotor.RunMode runMode){
     fr.setMode(runMode);
     lift.setMode(runMode);
 }
+
+public void setDriveRunMode(DcMotor.RunMode runMode){
+    bl.setMode(runMode);
+    br.setMode(runMode);
+    fl.setMode(runMode);
+    fr.setMode(runMode);
+}
 public void stopRelic(){
     relicExtend(0.0);
     relicElbow.setPower(0.0);
@@ -370,18 +377,14 @@ public void stopRelic(){
         }
 
     public void spinTurn(double degrees, double power){
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
-        telemetry.addData("cool", "Original Heading " + heading);
-        telemetry.update();
         if(degrees <= 0) {
             fr.setPower(-power);
             br.setPower(-power);
             fl.setPower(power);
             bl.setPower(power);
             while(getHeading() - heading > degrees) {
-                telemetry.addData("fun", "Get Heading: " + getHeading());
-                telemetry.update();
                 opMode.sleep(50);
             }
             setAllPowers(0);
@@ -399,7 +402,7 @@ public void stopRelic(){
     }
 
     public void swingTurn(double degrees, double power){
-        setRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
         if(degrees <= 0) {
             fr.setPower(0.0);
