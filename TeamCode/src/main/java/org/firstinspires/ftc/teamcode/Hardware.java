@@ -54,6 +54,7 @@ public class Hardware{
     Servo glyphPush = null;
     //sensors
     BNO055IMU imu = null;
+    BNO055IMU.Parameters parameters = null;
     MultiplexColorSensor colorSensor = null;
     VuforiaLocalizer picReader = null;
     VuforiaTrackable relicTemplate = null;
@@ -177,7 +178,7 @@ public class Hardware{
         fl.setPower(0.);
         bl.setPower(0.);
 
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters = new BNO055IMU.Parameters();
         parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
         parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
         parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
@@ -378,15 +379,21 @@ public void stopRelic(){
         }
 
     public void spinTurn(double degrees, double power){
+        imu.initialize(parameters);
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
+        double currentHeading = heading;
         if(degrees <= 0) {
             fr.setPower(-power);
             br.setPower(-power);
             fl.setPower(power);
             bl.setPower(power);
-            while(getHeading() - heading > degrees) {
+            while(currentHeading - heading > degrees) {
                 opMode.sleep(50);
+                telemetry.addData("cool", "Current Heading: " + currentHeading);
+                telemetry.addData("fun", "Original Angle : " + heading);
+                telemetry.update();
+                currentHeading = getHeading();
             }
             setAllPowers(0);
         }
@@ -395,23 +402,33 @@ public void stopRelic(){
             br.setPower(power);
             fl.setPower(-power);
             bl.setPower(-power);
-            while(getHeading() - heading < degrees){
+            while(currentHeading - heading < degrees){
                 opMode.sleep(50);
+                telemetry.addData("cool", "Current Heading: " + currentHeading);
+                telemetry.addData("fun", "Original Angle : " + heading);
+                telemetry.update();
+                currentHeading = getHeading();
             }
             setAllPowers(0.0);
         }
     }
 
     public void swingTurn(double degrees, double power){
+        imu.initialize(parameters);
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
+        double currentHeading = heading;
         if(degrees <= 0) {
             fr.setPower(0.0);
             br.setPower(0.0);
             fl.setPower(power);
             bl.setPower(power);
-            while(getHeading() - heading > degrees) {
+            while(currentHeading - heading > degrees) {
                 opMode.sleep(50);
+                telemetry.addData("cool", "Current Heading: " + currentHeading);
+                telemetry.addData("fun", "Original Angle : " + heading);
+                telemetry.update();
+                currentHeading = getHeading();
             }
             setAllPowers(0);
         }
@@ -420,8 +437,12 @@ public void stopRelic(){
             br.setPower(power);
             fl.setPower(0.0);
             bl.setPower(0.0);
-            while(getHeading() - heading < degrees){
+            while(currentHeading - heading < degrees){
                 opMode.sleep(50);
+                telemetry.addData("cool", "Current Heading: " + currentHeading);
+                telemetry.addData("fun", "Original Angle : " + heading);
+                telemetry.update();
+                currentHeading = getHeading();
             }
             setAllPowers(0.0);
         }
