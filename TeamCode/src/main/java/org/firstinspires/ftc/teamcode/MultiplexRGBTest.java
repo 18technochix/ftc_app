@@ -36,9 +36,7 @@ import android.view.View;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
 
 /*
  *
@@ -67,12 +65,14 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
  * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
-@Autonomous(name = "Sensor: AdafruitRGB", group = "Sens@Disabledor")
+@Autonomous(name = "Mux RGB", group = "Sensor")
 @Disabled
 public class MultiplexRGBTest extends LinearOpMode {
-  int bluePort = 2;
-  int redPort = 1;
-  int[] ports = {bluePort, redPort};
+  int blueJewelPort = 2;
+  int redJewelPort = 1;
+  int tapeSensorLeft = 3;
+  int tapeSensorRight = 0;
+  int[] ports = {blueJewelPort, redJewelPort, tapeSensorLeft, tapeSensorRight};
   static final int colorSampleMilliseconds = 48;
   MultiplexColorSensor colorSensor = null;
   DeviceInterfaceModule cdim;
@@ -118,12 +118,16 @@ public class MultiplexRGBTest extends LinearOpMode {
       bPrevState = bCurrState;
 
       // convert the RGB values to HSV values.
-      double redHSV = colorSensor.getHue(redPort);
-      double blueHSV = colorSensor.getHue(bluePort);
+      double redHSV = colorSensor.getHue(redJewelPort);
+      double blueHSV = colorSensor.getHue(blueJewelPort);
+      double leftHSV = colorSensor.getHue(tapeSensorLeft);
+      double rightHSV = colorSensor.getHue(tapeSensorRight);
 
       // send the info back to driver station using telemetry function.
       telemetry.addData("Red Hue", redHSV);
       telemetry.addData("Blue Hue", blueHSV);
+      telemetry.addData("Left Hue", leftHSV);
+      telemetry.addData("Right Hue", rightHSV);
 
       // change the background color to match the color detected by the RGB sensor.
       // pass a reference to the hue, saturation, and value array as an argument
