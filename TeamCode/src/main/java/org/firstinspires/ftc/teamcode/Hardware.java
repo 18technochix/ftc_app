@@ -97,6 +97,7 @@ public class Hardware{
     static final double     WHEEL_DIAMETER_INCHES   = 4.0 ;
     static final double     COUNTS_PER_INCH         = (ENCODER_CPR * DRIVE_GEAR_REDUCTION) /
             (WHEEL_DIAMETER_INCHES * 3.1415);
+    static final double COUNTS_PER_INCH_STRAFE = ENCODER_CPR / 8.5;
 
     //local OpMode members
     HardwareMap hwMap           = null;
@@ -255,6 +256,127 @@ public void stopRelic(){
         moveThatRobot(frspeed, brspeed, flspeed, blspeed, inches, inches, inches, inches, timeout);
     }
 
+    public void strafeThatRobot(double speed,
+                              double inches, double timeout){
+        int newFrontRightTarget;
+        int newBackRightTarget;
+        int newFrontLeftTarget;
+        int newBackLeftTarget;
+        double frCurrent;
+        double brCurrent;
+        double flCurrent;
+        double blCurrent;
+        double frComplete;
+        double brComplete;
+        double flComplete;
+        double blComplete;
+        double frSlowdown;
+        double brSlowdown;
+        double flSlowdown;
+        double blSlowdown;
+
+
+        //are we still running? good. if so:
+        if (opModeIsActive()) {
+            fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+            //now, where do we go? let's set the target position.
+            newFrontRightTarget = fr.getCurrentPosition() + (int) (-(inches) * Hardware.COUNTS_PER_INCH_STRAFE);
+            newBackRightTarget = br.getCurrentPosition() + (int) ((inches) * Hardware.COUNTS_PER_INCH_STRAFE);
+            newFrontLeftTarget = fl.getCurrentPosition() + (int) ((inches) * Hardware.COUNTS_PER_INCH_STRAFE);
+            newBackLeftTarget = bl.getCurrentPosition() + (int) (-(inches) * Hardware.COUNTS_PER_INCH_STRAFE);
+            fr.setTargetPosition(newFrontRightTarget);
+            br.setTargetPosition(newBackRightTarget);
+            fl.setTargetPosition(newFrontLeftTarget);
+            bl.setTargetPosition(newBackLeftTarget);
+
+            //now you gotta make sure they know what to do with this info. give the motor a runmode.
+            fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            // reset the timeout time and start motion.
+            runtime.reset();
+            fr.setPower(Math.abs(speed * 1.11));
+            br.setPower(Math.abs(speed));
+            fl.setPower(Math.abs(speed * 1.11));
+            bl.setPower(Math.abs(speed));
+            double lastSpeedSetTime = runtime.seconds();
+
+            // keep looping while we are still active, and there is time left, and both motors are running.
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeout) &&
+                    (fr.isBusy() && br.isBusy() && fl.isBusy() && bl.isBusy())) {
+
+                frCurrent = fr.getCurrentPosition();
+                brCurrent = br.getCurrentPosition();
+                flCurrent = fl.getCurrentPosition();
+                blCurrent = bl.getCurrentPosition();
+
+
+                frComplete = (double) frCurrent / (double) newFrontRightTarget;
+                brComplete = (double) brCurrent / (double) newBackRightTarget;
+                flComplete = (double) flCurrent / (double) newFrontLeftTarget;
+                blComplete = (double) blCurrent / (double) newBackLeftTarget;
+
+                frSlowdown = 1.0;
+                if (frComplete > 0.92) {
+                    frSlowdown = 0.5;
+                } else if (frComplete > 0.85) {
+                    frSlowdown = 0.8;
+                }
+                brSlowdown = 1.0;
+                if (brComplete > 0.92) {
+                    brSlowdown = 0.5;
+                } else if (brComplete > 0.85) {
+                    brSlowdown = 0.8;
+                }
+                flSlowdown = 1.0;
+                if (flComplete > 0.92) {
+                    flSlowdown = 0.5;
+                } else if (flComplete > 0.85) {
+                    flSlowdown = 0.8;
+                }
+                blSlowdown = 1.0;
+                if (blComplete > 0.92) {
+                    blSlowdown = 0.5;
+                } else if (blComplete > 0.85) {
+                    blSlowdown = 0.8;
+                }
+                /**
+
+                if ((runtime.seconds() - lastSpeedSetTime) > 0.04) {
+                    fr.setPower(frSlowdown * Math.abs(speed));
+                    br.setPower(brSlowdown * Math.abs(speed));
+                    fl.setPower(flSlowdown * Math.abs(speed));
+                    bl.setPower(blSlowdown * Math.abs(speed));
+                    lastSpeedSetTime = runtime.seconds();
+                }
+                 */
+
+
+                //opMode.idle();
+            }
+
+            // Stop all motion;
+            fr.setPower(0.);
+            br.setPower(0.);
+            fl.setPower(0.);
+            bl.setPower(0.);
+
+            // Turn off RUN_TO_POSITION
+            fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+
+        }
+
     public void moveThatRobot(double frontRightSpeed, double backRightSpeed,
                               double frontLeftSpeed, double backLeftSpeed,
                               double frontRightInches, double backRightInches,
@@ -376,10 +498,12 @@ public void stopRelic(){
             bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
 
-        }
+    }
 
-    public void spinTurn(double degrees, double power){
+
+    public void spinTurn(double degrees, double power, double timeout){
         imu.initialize(parameters);
+        runtime.reset();
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
         double currentHeading = heading;
@@ -388,7 +512,7 @@ public void stopRelic(){
             br.setPower(-power);
             fl.setPower(power);
             bl.setPower(power);
-            while(currentHeading - heading > degrees) {
+            while(opModeIsActive() && runtime.seconds() < timeout && currentHeading - heading > degrees) {
                 opMode.sleep(50);
                 telemetry.addData("cool", "Current Heading: " + currentHeading);
                 telemetry.addData("fun", "Original Angle : " + heading);
@@ -402,7 +526,7 @@ public void stopRelic(){
             br.setPower(power);
             fl.setPower(-power);
             bl.setPower(-power);
-            while(currentHeading - heading < degrees){
+            while(opModeIsActive() && runtime.seconds() < timeout && currentHeading - heading < degrees){
                 opMode.sleep(50);
                 telemetry.addData("cool", "Current Heading: " + currentHeading);
                 telemetry.addData("fun", "Original Angle : " + heading);
@@ -413,7 +537,7 @@ public void stopRelic(){
         }
     }
 
-    public void swingTurn(double degrees, double power){
+    public void swingTurn(double degrees, double power, double timeout){
         imu.initialize(parameters);
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
@@ -423,7 +547,7 @@ public void stopRelic(){
             br.setPower(0.0);
             fl.setPower(power);
             bl.setPower(power);
-            while(currentHeading - heading > degrees) {
+            while(opModeIsActive() && runtime.seconds() < timeout && currentHeading - heading > degrees) {
                 opMode.sleep(50);
                 telemetry.addData("cool", "Current Heading: " + currentHeading);
                 telemetry.addData("fun", "Original Angle : " + heading);
@@ -437,7 +561,7 @@ public void stopRelic(){
             br.setPower(power);
             fl.setPower(0.0);
             bl.setPower(0.0);
-            while(currentHeading - heading < degrees){
+            while(opModeIsActive() && runtime.seconds() < timeout && currentHeading - heading < degrees){
                 opMode.sleep(50);
                 telemetry.addData("cool", "Current Heading: " + currentHeading);
                 telemetry.addData("fun", "Original Angle : " + heading);
