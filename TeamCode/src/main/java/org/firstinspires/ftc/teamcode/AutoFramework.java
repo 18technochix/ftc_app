@@ -51,25 +51,33 @@ public class AutoFramework extends LinearOpMode {
             switch (autoType) {
                 case AutoBlueAudience:
                     jewelKnocker(robot.jewelServoBlue, 2, false);
+                    if(!opModeIsActive()){return;}
                     findTapeAudience(false, robot.tapeSensorRight);
+                    if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphAudience(false, side);
                     break;
                 case AutoBlueTimer:
                     jewelKnocker(robot.jewelServoBlue, 2, false);
+                    if(!opModeIsActive()){return;}
                     findTapeTimer(false, robot.tapeSensorRight);
+                    if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphTimer(false, side);
                     break;
                 case AutoRedAudience:
                     jewelKnocker(robot.jewelServoRed, 1, true);
+                    if(!opModeIsActive()){return;}
                     findTapeAudience(true, robot.tapeSensorLeft);
+                    if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphAudience(true, side);
                     break;
                 case AutoRedTimer:
                     jewelKnocker(robot.jewelServoRed, 1, true);
+                    if(!opModeIsActive()){return;}
                     findTapeTimer(true, robot.tapeSensorLeft);
+                    if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphTimer(true, side);
                     break;
@@ -154,10 +162,10 @@ public class AutoFramework extends LinearOpMode {
 
     public void findTapeAudience(boolean alliance, int hitFirst) {
         boolean isColor = false;
-        robot.moveThatRobot(0.3, 26, 7.0);
+        robot.moveThatRobot(0.3, 28, 7.0);
         sleep(200);
         if (alliance) {
-            robot.spinTurn(-90, 0.2, 3.2);
+            robot.spinTurn(-90, 0.2, 3.1);
             robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.fr.setPower(0.3);
             robot.br.setPower(-0.3);
@@ -173,7 +181,7 @@ public class AutoFramework extends LinearOpMode {
             }
             robot.setAllPowers(0.0);
         } else if (!alliance) {
-            robot.spinTurn(90, 0.2, 3.2);
+            robot.spinTurn(90, 0.2, 3.1);
             robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.fr.setPower(-0.3);
             robot.br.setPower(0.3);
@@ -229,31 +237,41 @@ public class AutoFramework extends LinearOpMode {
     public void placeThatGlyphAudience(boolean alliance, RelicRecoveryVuMark side) {
         if (alliance) {
             if (side == RelicRecoveryVuMark.RIGHT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, 1.0, 5.0);
-                robot.moveThatRobot(0.4, 5.0, 7.0);
+                robot.strafeThatRobot(0.7, 4.5, 5.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 7.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
-                robot.strafeThatRobot(0.7, -6.0, 7.0);
-                robot.moveThatRobot(0.4, 6.0, 7.0);
+                robot.strafeThatRobot(0.7, -3.5, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 8.0, 7.0);
             } else if (side == RelicRecoveryVuMark.LEFT) {
-                robot.strafeThatRobot(0.7, -12.0, 8.0);
-                robot.moveThatRobot(0.6, 8.0, 7.0);
+                robot.strafeThatRobot(0.7, -10.0, 8.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.6, 9.0, 7.0);
             }
-            robot.moveLift(1000);
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+            sleep(50);
             robot.moveThatRobot(0.4, -4.0, 6.0);
         } else if (!alliance) {
             if (side == RelicRecoveryVuMark.LEFT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, -4.0, 5.0);
-                robot.moveThatRobot(0.4, 6.5, 7.0);
+                robot.strafeThatRobot(0.7, -4.5, 5.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 7.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
-                robot.strafeThatRobot(0.7, 4.0, 7.0);
-                robot.moveThatRobot(0.4, 6.5, 7.0);
+                robot.strafeThatRobot(0.7, 3.5, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 8.0, 7.0);
             } else if (side == RelicRecoveryVuMark.RIGHT) {
-                robot.strafeThatRobot(0.7, 12.0, 7.0);
-                robot.moveThatRobot(0.4, 6.5, 7.0);
+                robot.strafeThatRobot(0.7, 10.0, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 9.0, 7.0);
             }
-            robot.moveLift(1000);
-            sleep(50);
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
             robot.moveThatRobot(0.4, -4.0, 6.0);
@@ -264,30 +282,40 @@ public class AutoFramework extends LinearOpMode {
         if (alliance) {
             if (side == RelicRecoveryVuMark.RIGHT || side == RelicRecoveryVuMark.UNKNOWN) {
                 robot.strafeThatRobot(0.7, 2.0, 5.0);
-                robot.moveThatRobot(0.4, 2.0, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 5.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
                 robot.strafeThatRobot(0.7, -7.0, 5.0);
-                robot.moveThatRobot(0.4, 2.0, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 3.0, 7.0);
             } else if (side == RelicRecoveryVuMark.LEFT) {
                 robot.strafeThatRobot(0.7, -15.0, 5.0);
-                robot.moveThatRobot(0.6, 2.0, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.6, 6.0, 7.0);
             }
-            robot.moveLift(1000);
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
+            sleep(50);
             robot.moveThatRobot(0.4, -4.0, 6.0);
         } else if (!alliance) {
             if (side == RelicRecoveryVuMark.LEFT || side == RelicRecoveryVuMark.UNKNOWN) {
                 robot.strafeThatRobot(0.7, -2.0, 5.0);
-                robot.moveThatRobot(0.4, 4.0, 7.0);
+                robot.moveLift(1000);
+                sleep(50);
+                robot.moveThatRobot(0.4, 5.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
                 robot.strafeThatRobot(0.7, 7.0, 5.0);
+                robot.moveLift(1000);
+                sleep(50);
                 robot.moveThatRobot(0.4, 3.0, 7.0);
             } else if (side == RelicRecoveryVuMark.RIGHT) {
                 robot.strafeThatRobot(0.7, 15.0, 5.0);
+                robot.moveLift(1000);
+                sleep(50);
                 robot.moveThatRobot(0.4, 3.0, 7.0);
             }
-            robot.moveLift(1000);
-            sleep(50);
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
             robot.moveThatRobot(0.4, -4.0, 6.0);

@@ -145,7 +145,7 @@ public class Hardware{
         fr.setDirection(DcMotor.Direction.FORWARD);
 
         glyphGrab.setDirection(Servo.Direction.FORWARD);
-        glyphGrab.scaleRange( 20.0 / 255.0, 220.0 / 255.0 );
+        glyphGrab.scaleRange( 22.0 / 255.0, 240.0 / 255.0 );
         glyphGrab.setPosition(glyphGrabPosition);
 
         glyphPush.setDirection(Servo.Direction.FORWARD);
@@ -263,28 +263,14 @@ public void stopRelic(){
         int newBackRightTarget;
         int newFrontLeftTarget;
         int newBackLeftTarget;
-        double frCurrent;
-        double brCurrent;
-        double flCurrent;
-        double blCurrent;
-        double frComplete;
-        double brComplete;
-        double flComplete;
-        double blComplete;
-        double frSlowdown;
-        double brSlowdown;
-        double flSlowdown;
-        double blSlowdown;
 
 
-        //are we still running? good. if so:
         if (opModeIsActive()) {
             fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            //now, where do we go? let's set the target position.
             newFrontRightTarget = fr.getCurrentPosition() + (int) (-(inches) * Hardware.COUNTS_PER_INCH_STRAFE);
             newBackRightTarget = br.getCurrentPosition() + (int) ((inches) * Hardware.COUNTS_PER_INCH_STRAFE);
             newFrontLeftTarget = fl.getCurrentPosition() + (int) ((inches) * Hardware.COUNTS_PER_INCH_STRAFE);
@@ -294,13 +280,11 @@ public void stopRelic(){
             fl.setTargetPosition(newFrontLeftTarget);
             bl.setTargetPosition(newBackLeftTarget);
 
-            //now you gotta make sure they know what to do with this info. give the motor a runmode.
             fr.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             br.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             fl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             bl.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            // reset the timeout time and start motion.
             runtime.reset();
             fr.setPower(Math.abs(speed * 1.11));
             br.setPower(Math.abs(speed));
@@ -308,68 +292,15 @@ public void stopRelic(){
             bl.setPower(Math.abs(speed));
             double lastSpeedSetTime = runtime.seconds();
 
-            // keep looping while we are still active, and there is time left, and both motors are running.
             while (opModeIsActive() &&
                     (runtime.seconds() < timeout) &&
-                    (fr.isBusy() && br.isBusy() && fl.isBusy() && bl.isBusy())) {
+                    (fr.isBusy() && br.isBusy() && fl.isBusy() && bl.isBusy())) { }
 
-                frCurrent = fr.getCurrentPosition();
-                brCurrent = br.getCurrentPosition();
-                flCurrent = fl.getCurrentPosition();
-                blCurrent = bl.getCurrentPosition();
-
-
-                frComplete = (double) frCurrent / (double) newFrontRightTarget;
-                brComplete = (double) brCurrent / (double) newBackRightTarget;
-                flComplete = (double) flCurrent / (double) newFrontLeftTarget;
-                blComplete = (double) blCurrent / (double) newBackLeftTarget;
-
-                frSlowdown = 1.0;
-                if (frComplete > 0.92) {
-                    frSlowdown = 0.5;
-                } else if (frComplete > 0.85) {
-                    frSlowdown = 0.8;
-                }
-                brSlowdown = 1.0;
-                if (brComplete > 0.92) {
-                    brSlowdown = 0.5;
-                } else if (brComplete > 0.85) {
-                    brSlowdown = 0.8;
-                }
-                flSlowdown = 1.0;
-                if (flComplete > 0.92) {
-                    flSlowdown = 0.5;
-                } else if (flComplete > 0.85) {
-                    flSlowdown = 0.8;
-                }
-                blSlowdown = 1.0;
-                if (blComplete > 0.92) {
-                    blSlowdown = 0.5;
-                } else if (blComplete > 0.85) {
-                    blSlowdown = 0.8;
-                }
-                /**
-
-                if ((runtime.seconds() - lastSpeedSetTime) > 0.04) {
-                    fr.setPower(frSlowdown * Math.abs(speed));
-                    br.setPower(brSlowdown * Math.abs(speed));
-                    fl.setPower(flSlowdown * Math.abs(speed));
-                    bl.setPower(blSlowdown * Math.abs(speed));
-                    lastSpeedSetTime = runtime.seconds();
-                }
-                 */
-
-
-                //opMode.idle();
-            }
-
-            // Stop all motion;
             fr.setPower(0.);
             br.setPower(0.);
             fl.setPower(0.);
             bl.setPower(0.);
 
-            // Turn off RUN_TO_POSITION
             fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
