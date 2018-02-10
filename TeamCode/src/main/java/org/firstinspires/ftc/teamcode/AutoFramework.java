@@ -43,9 +43,7 @@ public class AutoFramework extends LinearOpMode {
 
         waitForStart();
 
-            sleep(500);
             RelicRecoveryVuMark side = cryptographReader();
-
 
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_CLOSE);
             robot.moveLift(-1000);
@@ -80,8 +78,14 @@ public class AutoFramework extends LinearOpMode {
 
 
     public RelicRecoveryVuMark cryptographReader() {
-        RelicRecoveryVuMark vuMark = RelicRecoveryVuMark.from(robot.relicTemplate);
-        telemetry.addData("VuMark", "%s visible", vuMark);
+        int attempts = 0;
+        RelicRecoveryVuMark vuMark;
+        do {
+            sleep(50);
+            vuMark = RelicRecoveryVuMark.from(robot.relicTemplate);
+         } while (opModeIsActive() && (attempts++ < 100) && (vuMark == RelicRecoveryVuMark.UNKNOWN));
+        RobotLog.ii("TC18_TARGET", String.format("%s visible after %d attempts", vuMark, attempts));
+        telemetry.addData("VuMark", "%s visible after %d attempts", vuMark, attempts);
         telemetry.update();
         return vuMark;
     }
@@ -108,31 +112,31 @@ public class AutoFramework extends LinearOpMode {
             }
         }
         if (alliance && (color == 1)) {
-            robot.spinTurn(2.0, 0.15, 5.0);
+            robot.spinTurn(2.0, 0.15, 0.5);
             retractBopper(allianceServo);
             sleep(60);
-            robot.spinTurn(-2.0, 0.15, 5.0);
+            robot.spinTurn(-2.0, 0.15, 0.5);
         }
         if (alliance && (color == 2)) {
-            robot.spinTurn(-2.0, 0.15, 5.0);
+            robot.spinTurn(-2.0, 0.15, 0.5);
             retractBopper(allianceServo);
             sleep(60);
-            robot.spinTurn(2.0, 0.15, 5.0);
+            robot.spinTurn(2.0, 0.15, 0.5);
         }
         if (alliance && (color == 0)) {
             retractBopper(allianceServo);
         }
         if ((!alliance) && (color == 2)) {
-            robot.spinTurn(-2.0, 0.15, 5.0);
+            robot.spinTurn(-2.0, 0.15, 0.5);
             retractBopper(allianceServo);
             sleep(60);
-            robot.spinTurn(2.0, 0.15, 5.0);
+            robot.spinTurn(2.0, 0.15, 0.5);
         }
         if ((!alliance) && (color == 1)) {
-            robot.spinTurn(2.0, 0.15, 5.0);
+            robot.spinTurn(2.0, 0.15, 0.5);
             retractBopper(allianceServo);
             sleep(60);
-            robot.spinTurn(-2.0, 0.15, 5.0);
+            robot.spinTurn(-2.0, 0.15, 0.5);
         }
         if ((!alliance) && (color == 0)) {
             retractBopper(allianceServo);
@@ -153,7 +157,7 @@ public class AutoFramework extends LinearOpMode {
         robot.moveThatRobot(0.3, 26, 7.0);
         sleep(200);
         if (alliance) {
-            robot.spinTurn(-90, 0.2, 8.0);
+            robot.spinTurn(-90, 0.2, 3.2);
             robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.fr.setPower(0.3);
             robot.br.setPower(-0.3);
@@ -169,7 +173,7 @@ public class AutoFramework extends LinearOpMode {
             }
             robot.setAllPowers(0.0);
         } else if (!alliance) {
-            robot.spinTurn(90, 0.2, 8.0);
+            robot.spinTurn(90, 0.2, 3.2);
             robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.fr.setPower(-0.3);
             robot.br.setPower(0.3);

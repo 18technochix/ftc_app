@@ -11,6 +11,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -502,7 +503,7 @@ public void stopRelic(){
 
 
     public void spinTurn(double degrees, double power, double timeout){
-        imu.initialize(parameters);
+        // imu.initialize(parameters);
         runtime.reset();
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
@@ -535,10 +536,13 @@ public void stopRelic(){
             }
             setAllPowers(0.0);
         }
+        RobotLog.ii("TC18_TURN",
+                String.format("Spin turn %f degrees took %f seconds (timeout=%f)",
+                        degrees, runtime.seconds(), timeout));
     }
 
     public void swingTurn(double degrees, double power, double timeout){
-        imu.initialize(parameters);
+        // imu.initialize(parameters);
         setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         double heading = getHeading();
         double currentHeading = heading;
@@ -570,6 +574,9 @@ public void stopRelic(){
             }
             setAllPowers(0.0);
         }
+        RobotLog.ii("TC18_TURN",
+                String.format("Swing turn %f degrees took %f seconds (timeout=%f)",
+                        degrees, runtime.seconds(), timeout));
     }
 
     public void setAllPowers(double power){
