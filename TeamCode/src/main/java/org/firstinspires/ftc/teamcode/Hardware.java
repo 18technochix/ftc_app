@@ -153,7 +153,7 @@ public class Hardware{
         glyphPush.setPosition(glyphPushPosition);
 
         jewelServoBlue.setDirection(Servo.Direction.REVERSE);
-        jewelServoBlue.scaleRange( 67.0 / 255.0, 252.0 / 255.0 );
+        jewelServoBlue.scaleRange( 65.0 / 255.0, 252.0 / 255.0 );
         jewelServoBlue.setPosition(JEWEL_UP);
 
         jewelServoRed.scaleRange( 58.0 / 255.0, 239.0 / 255.0 );

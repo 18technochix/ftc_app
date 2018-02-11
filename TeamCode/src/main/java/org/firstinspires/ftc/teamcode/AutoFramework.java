@@ -237,51 +237,55 @@ public class AutoFramework extends LinearOpMode {
     public void placeThatGlyphAudience(boolean alliance, RelicRecoveryVuMark side) {
         if (alliance) {
             if (side == RelicRecoveryVuMark.RIGHT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, 4.5, 5.0);
+                //robot.strafeThatRobot(0.7, 4.5, 5.0);
                 robot.moveLift(1000);
                 sleep(50);
-                robot.moveThatRobot(0.4, 7.0, 7.0);
+                robot.moveThatRobot(0.4, 6.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
-                robot.strafeThatRobot(0.7, -3.5, 7.0);
+                robot.strafeThatRobot(0.7, -4.0, 7.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 8.0, 7.0);
             } else if (side == RelicRecoveryVuMark.LEFT) {
-                robot.strafeThatRobot(0.7, -10.0, 8.0);
+                robot.strafeThatRobot(0.7, -13.5, 8.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.6, 9.0, 7.0);
             }
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_OUT);
             robot.moveThatRobot(0.4, -4.0, 6.0);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_IN);
         } else if (!alliance) {
             if (side == RelicRecoveryVuMark.LEFT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, -4.5, 5.0);
+                //robot.strafeThatRobot(0.7, -4.5, 5.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 7.0, 7.0);
             } else if (side == RelicRecoveryVuMark.CENTER) {
-                robot.strafeThatRobot(0.7, 3.5, 7.0);
+                robot.strafeThatRobot(0.7, 4.0, 7.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 8.0, 7.0);
             } else if (side == RelicRecoveryVuMark.RIGHT) {
-                robot.strafeThatRobot(0.7, 10.0, 7.0);
+                robot.strafeThatRobot(0.7, 13.5, 7.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 9.0, 7.0);
             }
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_OUT);
             robot.moveThatRobot(0.4, -4.0, 6.0);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_IN);
         }
     }
 
     public void placeThatGlyphTimer(boolean alliance, RelicRecoveryVuMark side) {
         if (alliance) {
             if (side == RelicRecoveryVuMark.RIGHT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, 2.0, 5.0);
+                robot.strafeThatRobot(0.7, 1.0, 5.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 5.0, 7.0);
@@ -298,10 +302,12 @@ public class AutoFramework extends LinearOpMode {
             }
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_OUT);
             robot.moveThatRobot(0.4, -4.0, 6.0);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_IN);
         } else if (!alliance) {
             if (side == RelicRecoveryVuMark.LEFT || side == RelicRecoveryVuMark.UNKNOWN) {
-                robot.strafeThatRobot(0.7, -2.0, 5.0);
+                robot.strafeThatRobot(0.7, -1.0, 5.0);
                 robot.moveLift(1000);
                 sleep(50);
                 robot.moveThatRobot(0.4, 5.0, 7.0);
@@ -314,11 +320,13 @@ public class AutoFramework extends LinearOpMode {
                 robot.strafeThatRobot(0.7, 15.0, 5.0);
                 robot.moveLift(1000);
                 sleep(50);
-                robot.moveThatRobot(0.4, 3.0, 7.0);
+                robot.moveThatRobot(0.4, 6.0, 7.0);
             }
             robot.glyphGrab.setPosition(robot.GLYPH_GRAB_OPEN);
             sleep(50);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_OUT);
             robot.moveThatRobot(0.4, -4.0, 6.0);
+            robot.glyphPush.setPosition(robot.GLYPH_PUSH_IN);
         }
     }
 
