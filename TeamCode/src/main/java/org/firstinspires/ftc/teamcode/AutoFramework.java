@@ -52,7 +52,7 @@ public class AutoFramework extends LinearOpMode {
                 case AutoBlueAudience:
                     jewelKnocker(robot.jewelServoBlue, 2, false);
                     if(!opModeIsActive()){return;}
-                    findTapeAudience(false, robot.tapeSensorRight);
+                    findTapeAudience(false, robot.tapeSensorRight, 3.0);
                     if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphAudience(false, side);
@@ -60,7 +60,7 @@ public class AutoFramework extends LinearOpMode {
                 case AutoBlueTimer:
                     jewelKnocker(robot.jewelServoBlue, 2, false);
                     if(!opModeIsActive()){return;}
-                    findTapeTimer(false, robot.tapeSensorRight);
+                    findTapeTimer(false, robot.tapeSensorRight, 3.0);
                     if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphTimer(false, side);
@@ -68,7 +68,7 @@ public class AutoFramework extends LinearOpMode {
                 case AutoRedAudience:
                     jewelKnocker(robot.jewelServoRed, 1, true);
                     if(!opModeIsActive()){return;}
-                    findTapeAudience(true, robot.tapeSensorLeft);
+                    findTapeAudience(true, robot.tapeSensorLeft, 3.0);
                     if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphAudience(true, side);
@@ -76,7 +76,7 @@ public class AutoFramework extends LinearOpMode {
                 case AutoRedTimer:
                     jewelKnocker(robot.jewelServoRed, 1, true);
                     if(!opModeIsActive()){return;}
-                    findTapeTimer(true, robot.tapeSensorLeft);
+                    findTapeTimer(true, robot.tapeSensorLeft, 3.0);
                     if(!opModeIsActive()){return;}
                     sleep(100);
                     placeThatGlyphTimer(true, side);
@@ -160,10 +160,11 @@ public class AutoFramework extends LinearOpMode {
 
 
 
-    public void findTapeAudience(boolean alliance, int hitFirst) {
+    public void findTapeAudience(boolean alliance, int hitFirst, double timeout) {
         boolean isColor = false;
         robot.moveThatRobot(0.3, 28, 7.0);
         sleep(200);
+        robot.runtime.reset();
         if (alliance) {
             robot.spinTurn(-90, 0.2, 3.1);
             robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -171,7 +172,7 @@ public class AutoFramework extends LinearOpMode {
             robot.br.setPower(-0.3);
             robot.fl.setPower(-0.3);
             robot.bl.setPower(0.3);
-            while (!isColor) {
+            while (!isColor && (robot.runtime.seconds() < timeout)) {
                 sleep(70);
                 double hue = robot.colorSensor.getHue(hitFirst);
                 if (hue >= robot.redMin && hue <= robot.redMax) {
@@ -187,7 +188,7 @@ public class AutoFramework extends LinearOpMode {
             robot.br.setPower(0.3);
             robot.fl.setPower(0.3);
             robot.bl.setPower(-0.3);
-            while (!isColor) {
+            while (!isColor && (robot.runtime.seconds() < timeout)) {
                 sleep(70);
                 double hue = robot.colorSensor.getHue(hitFirst);
                 if (hue >= robot.blueMin && hue <= robot.blueMax) {
@@ -199,16 +200,17 @@ public class AutoFramework extends LinearOpMode {
         robot.setDriveRunMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
-    public void findTapeTimer(boolean alliance, int hitFirst) {
+    public void findTapeTimer(boolean alliance, int hitFirst, double timeout) {
         boolean isColor = false;
         robot.moveThatRobot(0.5, 33, 7.0);
+        robot.runtime.reset();
         robot.setDriveRunMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         if (alliance) {
             robot.fr.setPower(0.3);
             robot.br.setPower(-0.3);
             robot.fl.setPower(-0.3);
             robot.bl.setPower(0.3);
-            while (!isColor) {
+            while (!isColor && (robot.runtime.seconds() < timeout)) {
                 sleep(70);
                 double hue = robot.colorSensor.getHue(hitFirst);
                 if (hue >= robot.redMin && hue <= robot.redMax) {
@@ -222,7 +224,7 @@ public class AutoFramework extends LinearOpMode {
             robot.br.setPower(0.3);
             robot.fl.setPower(0.3);
             robot.bl.setPower(-0.3);
-            while (!isColor) {
+            while (!isColor && (robot.runtime.seconds() < timeout)) {
                 sleep(70);
                 double hue = robot.colorSensor.getHue(hitFirst);
                 if (hue >= robot.blueMin && hue <= robot.blueMax) {
