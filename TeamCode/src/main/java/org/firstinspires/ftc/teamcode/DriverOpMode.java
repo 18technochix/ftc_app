@@ -168,7 +168,7 @@ public class DriverOpMode extends LinearOpMode {
             robot.bl.setPower(bl);
             robot.br.setPower(br);
 
-            double liftPow = (gamepad2.left_stick_y / 2.0);
+            double liftPow = (gamepad2.left_stick_y / 1.0);
             Range.clip(liftPow, -1.0, 1.0);
             robot.lift.setPower(liftPow);
 
