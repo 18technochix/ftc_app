@@ -19,6 +19,7 @@ public class AutoAfterSample extends LinearOpMode {
     private ElapsedTime newTime = new ElapsedTime();
 
     //String for color seen. None=0; Red=1; Blue=2; Black=3;
+    int position = 1;
 
 
     Hardware robot = new Hardware();

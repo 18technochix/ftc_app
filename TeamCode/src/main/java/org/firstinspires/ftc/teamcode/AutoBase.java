@@ -121,7 +121,7 @@ public class AutoBase extends LinearOpMode {
             //rotate(112, .5, 3);
             land();
             runtime.reset();
-            rotate(630 , 1, 3);
+            rotate(380 , 1, 3);
             Sample();
             //findLine();
 
@@ -199,7 +199,7 @@ public class AutoBase extends LinearOpMode {
         //robot.collectorArm.setPower(0.2);
         robot.lift.setTargetPosition((int) lowerLift);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setPower(0.5);
+        robot.lift.setPower(0.65);
         while (opModeIsActive() && robot.lift.isBusy()) {
         }
         robot.lift.setPower(0.0);
@@ -224,7 +224,7 @@ public class AutoBase extends LinearOpMode {
         robot.latch.setPower(0.0);
 
         latchTime.reset();
-        while (opModeIsActive() && (latchTime.seconds() < 2)) {
+        while (opModeIsActive() && (latchTime.seconds() < 1)) {
             robot.leftDrive.setPower(0.5);
             robot.rightDrive.setPower(0.5);
         }
@@ -254,7 +254,7 @@ public class AutoBase extends LinearOpMode {
 
         robot.lift.setTargetPosition((int) Hardware.pinion_CPI);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        robot.lift.setPower(0.5);
+        robot.lift.setPower(0.7);
         while (opModeIsActive() && robot.lift.isBusy()) {
         }
         robot.lift.setPower(0.0);
