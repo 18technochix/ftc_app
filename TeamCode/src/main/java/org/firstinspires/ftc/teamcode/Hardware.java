@@ -69,11 +69,13 @@ public class Hardware
     public static final double WINCH_UP_POWER   =  0.7;
     public static final double WINCH_DOWN_POWER   = -0.7;
 
+    public static final double TRANSPORT_POSITION = 90.0;
+
 
     public static final double LATCH_OPEN_POWER  =  0.6 ;
     public static final double LATCH_CLOSE_POWER = -0.6 ;
 
-    public static final double BUCKET_UP_POWER    =  0.8 ;
+    public static final double BUCKET_UP_POWER    =  0.7 ;
     public static final double BUCKET_DOWN_POWER  =  -0.4 ;
 
     public static final double BUCKET_DOOR_CLOSED =  0.55 ;
@@ -146,6 +148,12 @@ public class Hardware
 
         slide.setDirection(DcMotorSimple.Direction.FORWARD);
         slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+//        slide.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+//        slide.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+//        slide.setTargetPosition(0);
+//        slide.setPower(.3);
+
+
         bucket.setDirection(DcMotorSimple.Direction.REVERSE);
         bucket.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -163,14 +171,14 @@ public class Hardware
         rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         lift.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        slide.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         bucket.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-
+        bucket.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // Define and initialize ALL installed servos.
         latch  = hwMap.get(CRServo.class, "latch");
         latch.setPower(0.0);
         transport = hwMap.get(Servo.class, "transport");
+        transport.scaleRange(0.15,0.65);
 
         //Define and initialize ALL installed sensors.
         colorSensor = hwMap.get(ColorSensor.class, "color_sensor");
@@ -219,4 +227,3 @@ public class Hardware
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABEL_GOLD_MINERAL, LABEL_SILVER_MINERAL);
     }
 }
-
