@@ -88,9 +88,9 @@ public class Hardware
 
     //auto lift constants
     static final double PINION_DIAMETER_Inches = 20.8/25.4;
-    //static final double LIFT_HEIGHT = 8.875;
     static final double LIFT_HEIGHT = 9.4;
     static final double pinion_CPI = ENCODER_CPR_60/(PINION_DIAMETER_Inches*Math.PI);
+    static final double lowerLift = Hardware.LIFT_HEIGHT * Hardware.pinion_CPI;
 
     //auto collector constants
     static final double COLLECTOR_ANGLE = -90;
@@ -201,6 +201,9 @@ public class Hardware
 
         collector.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         collector.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        slide.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slide.setPower(.25);
     }
 
     //init vuforia localization engine

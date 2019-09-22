@@ -62,6 +62,9 @@ public class TeleOpDouble extends LinearOpMode {
                 robot.latch.setPower(0.0);
 
             // Use gamepad trigger to move lift up and down
+/*            if (robot.lift.getCurrentPosition() >= (robot.lowerLift+3.5)) {
+                robot.lift.setPower(-0.1);
+            }*/
             if (gamepad1.right_trigger > 0.05)
                 robot.lift.setPower(gamepad1.right_trigger);
             else if (gamepad1.left_trigger > 0.05)

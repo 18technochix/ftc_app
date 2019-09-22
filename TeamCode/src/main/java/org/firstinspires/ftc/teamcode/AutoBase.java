@@ -49,7 +49,6 @@ import java.util.List;
 public class AutoBase extends LinearOpMode {
 
     //OpMode Members
-    static final double lowerLift = Hardware.LIFT_HEIGHT * Hardware.pinion_CPI;
     static final double lowerCollector = ((Hardware.ENCODER_CPR_60 / (360 / Hardware.COLLECTOR_ANGLE)) / 3) * 2;
     Boolean crater = true;
     int position = 1;
@@ -93,14 +92,13 @@ public class AutoBase extends LinearOpMode {
 
         // run until the end of the match (driver presses STOP)
         if (opModeIsActive()) {
-            //land();
 
             robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.leftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
             robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             robot.rightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            runtime.reset();
+            //runtime.reset();
             //moveThatRobot(.5, 7, 7, 4);
             //moveThatRobot(.5, 7, 7, 8);
 
@@ -121,11 +119,18 @@ public class AutoBase extends LinearOpMode {
             //rotate(112, .5, 3);
             land();
             runtime.reset();
-            rotate(380 , 1, 3);
-            Sample();
+           // rotate(  , 0.75, 10);
+            //Sample();
+            moveThatRobot(.5,13,13,15);
+            newTime.reset();
+            while (opModeIsActive() && newTime.seconds() <= 2) {
+                robot.collector.setPower(-0.75);
+            }
+
+            //Sample();
             //findLine();
 
-            getColor();
+           /* getColor();
             robot.rightDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             robot.leftDrive.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
@@ -160,7 +165,7 @@ public class AutoBase extends LinearOpMode {
                         }
                     }
                 }
-            }
+            }*/
             telemetry.update();
 
         }
@@ -197,7 +202,7 @@ public class AutoBase extends LinearOpMode {
         //robot.collectorArm.setTargetPosition((int) lowerCollector);
         //robot.collectorArm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         //robot.collectorArm.setPower(0.2);
-        robot.lift.setTargetPosition((int) lowerLift);
+        robot.lift.setTargetPosition((int) robot.lowerLift);
         robot.lift.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         robot.lift.setPower(0.65);
         while (opModeIsActive() && robot.lift.isBusy()) {
@@ -224,7 +229,7 @@ public class AutoBase extends LinearOpMode {
         robot.latch.setPower(0.0);
 
         latchTime.reset();
-        while (opModeIsActive() && (latchTime.seconds() < 1)) {
+        while (opModeIsActive() && (latchTime.seconds() < 0.75)) {
             robot.leftDrive.setPower(0.5);
             robot.rightDrive.setPower(0.5);
         }
@@ -305,11 +310,14 @@ public class AutoBase extends LinearOpMode {
         //  sleep(250);   // optional pause after each move
     }
 
+    //for every 90 degrees, subtract 15 degrees
     public void rotate(double degrees, double speed, double timeoutS) {
         //arc length/2pir = degrees
         //degrees/2pir = arc length
         double circumference = 2 * Math.PI * 6.625;
-        double inches = degrees / circumference;
+        double inches = (degrees * circumference)/360;
+        telemetry.addData("Inches:", inches);
+        telemetry.update();
 
         runtime.reset();
         int newLeftTarget;
@@ -374,11 +382,11 @@ public class AutoBase extends LinearOpMode {
                             telemetry.addData("# Object Detected", updatedRecognitions.size());
                             for (Recognition recognition : updatedRecognitions) {
                                 if (recognition.getLabel().equals(robot.LABEL_GOLD_MINERAL) == true) {
-                                    moveThatRobot(1, -17, -17, 4);
-                                    position = 1;
+                                    moveThatRobot(1, 17, 17, 4);
+                                    position = 2;
 
                                 } else {
-                                    rotate(135, .5, 4);
+                                    rotate(80, .75, 4);
                                     List<Recognition> updatedRecognitions2 = robot.tfod.getUpdatedRecognitions();
                                     if (updatedRecognitions2 != null && updatedRecognitions2.size() == 1) {
                                         telemetry.addData("# Object Detected", updatedRecognitions.size());
@@ -389,13 +397,13 @@ public class AutoBase extends LinearOpMode {
                                                 telemetry.update();
 
                                                 moveThatRobot(.5, -17, -17, 6);
-                                                position = 2;
+                                                position = 1;
 
 
                                             } else {
                                                 telemetry.addData("hi", "hi");
                                                 telemetry.update();
-                                                rotate(-111, .5, 25);
+                                                rotate(360, .5, 25);
                                                 moveThatRobot(.5, -25, -25, 6);
                                                 position = 3;
 
@@ -431,18 +439,18 @@ public class AutoBase extends LinearOpMode {
     //line following
     void lineFollow() {
         if (robot.color == 3) {
-            robot.leftDrive.setPower(-0.5);
-            robot.rightDrive.setPower(0.0);
+            robot.rightDrive.setPower(-0.5);
+            robot.leftDrive.setPower(0.0);
             telemetry.addLine("Position: Moving left side");
             telemetry.update();
         } else if (robot.color == 1 || robot.color == 2) {
-            robot.rightDrive.setPower(-0.5);
-            robot.leftDrive.setPower(0.0);
+            robot.leftDrive.setPower(-0.5);
+            robot.rightDrive.setPower(0.0);
             telemetry.addLine("Position: moving right side");
             telemetry.update();
         } else if (robot.color == 4) {
-            robot.rightDrive.setPower(-0.35);
-            robot.leftDrive.setPower(0.0);
+            robot.leftDrive.setPower(-0.35);
+            robot.rightDrive.setPower(0.0);
             telemetry.addLine("Position: Twitching");
             telemetry.update();
         } else {
@@ -457,7 +465,7 @@ public class AutoBase extends LinearOpMode {
         moveThatRobot(.4, 6, 6, 20);
         robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rotate(1050, .75, 25);
+        rotate(-90, .75, 25);
         robot.collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         newTime.reset();
         while (opModeIsActive() && newTime.seconds() <= 2) {
@@ -472,7 +480,7 @@ public class AutoBase extends LinearOpMode {
         moveThatRobot(.4, 6, 6, 20);
         robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rotate(350, .75, 25);
+        rotate(90, .75, 25);
         robot.collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         newTime.reset();
         while (opModeIsActive() && newTime.seconds() <= 2) {
@@ -486,7 +494,7 @@ public class AutoBase extends LinearOpMode {
         moveThatRobot(.4,4,4,20);
         robot.leftDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         robot.rightDrive.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        rotate(1000, .75, 25);
+        rotate(-75, .75, 25);
         robot.collector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         newTime.reset();
         while (opModeIsActive() && newTime.seconds() <= 2) {
